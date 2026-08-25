@@ -1,0 +1,48 @@
+# PodMonitor for the nemotron35-dspark llm-d vs dynamo comparison.
+#
+# Why a PodMonitor and not a ServiceMonitor like the others in this directory:
+# the llm-d-modelservice chart creates the `nemotron35-llm-d` Service with NO
+# labels, so a ServiceMonitor selector cannot match it. The *pods* are labelled,
+# and dynamo will create its own Service shape anyway -- selecting pods on a
+# token-labs-owned label keeps one monitor working across both stacks.
+#
+# `release: kube-prometheus-stack` is mandatory: the Prometheus instance sets
+# podMonitorSelector.matchLabels to exactly that, so a monitor without it is
+# silently ignored (no error, no target, no metrics).
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: nemotron35-dspark-comparison
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [token-labs]
+  selector:
+    matchLabels:
+      token-labs/scenario: nemotron35-dspark
+  podMetricsEndpoints:
+  - targetPort: 8000
+    path: /metrics
+    # 15s rather than the 60s used by the older ServiceMonitors -- benchmark
+    # runs are short and 60s buckets smear the interesting transitions.
+    interval: 15s
+    scrapeTimeout: 10s
+    relabelings:
+    # Keep the node name: the whole point is spark-01 vs spark-02.
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod
+    # TODO(human): add the relabeling that distinguishes the two serving stacks.
+    #
+    # Right now every series from both deployments will look identical except
+    # for `node`, so `sum(rate(vllm:generation_tokens_total[1m]))` silently adds
+    # llm-d and dynamo together. Available __meta_kubernetes_pod_label_* sources
+    # on the llm-d pods today:
+    #   token-labs/scenario   = nemotron35-dspark
+    #   llm-d.ai/model        = nemotron35-lightning-llm-d
+    #   llm-d.ai/role         = decode
+    # (dots and slashes become underscores, e.g.
+    #  __meta_kubernetes_pod_label_llm_d_ai_role)

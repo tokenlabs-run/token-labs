@@ -71,15 +71,17 @@ decode:
       args:
         - --served-model-name
         - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+        - --moe-backend
+        - marlin
+        - --kv-cache-dtype
+        - fp8
+        - --enable-prefix-caching
         - --max-model-len
-        - "32768"
-        - --max-num-seqs
-        - "1"
+        - "1048576"
         - --gpu-memory-utilization
-        - "0.40"
+        - "0.85"
         - --quantization
         - modelopt_fp4
-        - --enable-prefix-caching
         - --mamba-cache-mode
         - align
         - --no-disable-hybrid-kv-cache-manager
@@ -88,9 +90,11 @@ decode:
         - --mamba-ssm-cache-dtype
         - float16
         - --speculative-config
-        - '{"method":"dspark","model":"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark","num_speculative_tokens":7,"attention_backend":"TRITON_ATTN"}'
+        - '{"method":"dspark","model":"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark","num_speculative_tokens":3}'
         - --reasoning-parser
         - nemotron_v3
+        - --tool-call-parser qwen3_coder
+        - --enable-auto-tool-choice
         - --trust-remote-code
       env:
         # The image default HOME belongs to its built-in user, while this
