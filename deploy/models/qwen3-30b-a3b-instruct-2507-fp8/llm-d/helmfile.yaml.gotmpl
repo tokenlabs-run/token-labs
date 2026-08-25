@@ -12,14 +12,14 @@ releases:
   - name: gaie-qwen3-control-comparison
     namespace: {{ $ns }}
     chart: gaie/inferencepool
-    version: v1.4.0
+    version: v1.5.0
     installed: true
     values:
       - gaie-values.yaml
   - name: llm-d-qwen3-control-{{ $mode }}
     namespace: {{ $ns }}
     chart: llm-d-modelservice/llm-d-modelservice
-    version: v0.4.9
+    version: v0.4.16
     installed: true
     needs:
       - {{ $ns }}/gaie-qwen3-control-comparison

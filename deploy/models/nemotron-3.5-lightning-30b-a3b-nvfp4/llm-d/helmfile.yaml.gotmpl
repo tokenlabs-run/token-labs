@@ -12,14 +12,14 @@ releases:
   - name: gaie-nemotron35-dspark-comparison
     namespace: {{ $ns }}
     chart: gaie/inferencepool
-    version: v1.4.0
+    version: v1.5.0
     installed: true
     values:
       - gaie-values.yaml
   - name: llm-d-nemotron35-dspark-{{ $mode }}
     namespace: {{ $ns }}
     chart: llm-d-modelservice/llm-d-modelservice
-    version: v0.4.9
+    version: v0.4.16
     installed: true
     needs:
       - {{ $ns }}/gaie-nemotron35-dspark-comparison
