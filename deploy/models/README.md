@@ -9,4 +9,7 @@ independent directory and controller-runnable entrypoint where appropriate.
   `llm-d/` and `dynamo/`.
 - `BENCHMARKING.md`: controller-side deployment and comparison procedure.
 
+Each `llm-d/` and `dynamo/` directory carries its own README with prerequisites,
+deploy commands, verification steps and runtime-specific caveats.
+
 Standalone experiments and retired workloads belong under `../archive/models/`.

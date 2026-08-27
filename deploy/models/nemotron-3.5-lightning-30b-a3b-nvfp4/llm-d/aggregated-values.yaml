@@ -9,7 +9,7 @@ modelArtifacts:
   uri: "hf://nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4"
   size: 40Gi
   authSecretName: "hf-token"
-  name: "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4"
+  name: "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
   labels:
     llm-d.ai/inference-serving: "true"
     llm-d.ai/model: nemotron35-lightning-llm-d
@@ -50,6 +50,8 @@ decode:
       imagePullPolicy: IfNotPresent
       modelCommand: vllmServe
       securityContext:
+        # UID/GID must match the `nvidia` account on the pinned node so the
+        # hostPath HF cache stays writable: spark-01 is 1002, spark-02 is 1001.
         runAsNonRoot: true
         runAsUser: 1002
         runAsGroup: 1002
@@ -70,8 +72,6 @@ decode:
         failureThreshold: 3
         timeoutSeconds: 10
       args:
-        - --served-model-name
-        - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
         - --moe-backend
         - marlin
         - --kv-cache-dtype
@@ -152,4 +152,4 @@ decode:
     - name: shm
       emptyDir:
         medium: Memory
-        sizeLimit: 8Gi
+        sizeLimit: 40Gi

@@ -13,17 +13,15 @@ data:
     {
       "method": "dspark",
       "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark",
-      "num_speculative_tokens": 1,
-      "attention_backend": "TRITON_ATTN"
+      "num_speculative_tokens": 3
     }
   speculative-config-synthetic: |-
     {
       "method": "dspark",
       "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark",
-      "num_speculative_tokens": 1,
+      "num_speculative_tokens": 3,
       "rejection_sample_method": "synthetic",
-      "synthetic_acceptance_length": 1.83,
-      "attention_backend": "TRITON_ATTN"
+      "synthetic_acceptance_length": 1.69
     }
 ---
 apiVersion: nvidia.com/v1beta1
@@ -120,14 +118,16 @@ spec:
                 - --model
                 - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
                 - --served-model-name
-                - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+                - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo
                 - --trust-remote-code
+                - --moe-backend
+                - marlin
+                - --kv-cache-dtype
+                - fp8
                 - --tensor-parallel-size
                 - "1"
                 - --max-model-len
-                - "32768"
-                - --max-num-seqs
-                - "1"
+                - "1048576"
                 - --gpu-memory-utilization
                 - "0.40"
                 - --quantization
@@ -141,8 +141,10 @@ spec:
                 - --mamba-ssm-cache-dtype
                 - float16
                 - --speculative-config=$(SPECULATIVE_CONFIG)
-                - --reasoning-parser
+                - --dyn-reasoning-parser
                 - nemotron_v3
+                - --dyn-tool-call-parser
+                - qwen3_coder
                 - --kv-transfer-config
                 - '{"kv_connector":"NixlConnector","kv_role":"kv_producer"}'
                 - --disaggregation-mode
@@ -245,14 +247,16 @@ spec:
                 - --model
                 - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
                 - --served-model-name
-                - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+                - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo
                 - --trust-remote-code
+                - --moe-backend
+                - marlin
+                - --kv-cache-dtype
+                - fp8
                 - --tensor-parallel-size
                 - "1"
                 - --max-model-len
-                - "32768"
-                - --max-num-seqs
-                - "1"
+                - "1048576"
                 - --gpu-memory-utilization
                 - "0.40"
                 - --quantization
@@ -266,8 +270,10 @@ spec:
                 - --mamba-ssm-cache-dtype
                 - float16
                 - --speculative-config=$(SPECULATIVE_CONFIG)
-                - --reasoning-parser
+                - --dyn-reasoning-parser
                 - nemotron_v3
+                - --dyn-tool-call-parser
+                - qwen3_coder
                 - --kv-transfer-config
                 - '{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
                 - --disaggregation-mode
