@@ -542,6 +542,28 @@
     </div>
   </div>
 
+  <!-- ── llm-d vs Dynamo Pareto ───────────────────────────── -->
+  <div class="section">
+    <div class="section-title">llm-d vs Dynamo — Aggregated Serving Pareto</div>
+    <p class="section-desc">
+      Same model, same weights, same KV dtype, same speculative decoder — only the serving
+      framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
+      backend directly (no gateway in the path).
+      Model: <span class="mono">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</span> ·
+      modelopt_fp4 weights · fp8 KV · dspark spec-decode (3 tokens) · TP=1 · DGX Spark GB10 ·
+      ISL 1024 / OSL 256 · concurrency 1&ndash;32
+    </p>
+    <p class="section-desc" style="margin-top:-0.35rem;">
+      Up and to the right is better: <strong>y</strong> is what the box produces in total,
+      <strong>x</strong> is what a single user feels. Raising concurrency walks each curve
+      up and to the left — you buy aggregate throughput with per-user speed.
+    </p>
+    <div class="fw-chart-wrap">
+      <canvas id="pareto-chart" height="300"></canvas>
+    </div>
+    <div id="pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
+  </div>
+
   <!-- ── Experiment Registry ──────────────────────────────── -->
   <div class="section">
     <div class="section-title">Experiment Registry</div>
@@ -854,28 +876,6 @@
       </div>
     </div>
     <div class="legend" id="fw-legend" style="margin-top:1rem;padding:0 0.25rem;"></div>
-  </div>
-
-  <!-- ── llm-d vs Dynamo Pareto ───────────────────────────── -->
-  <div class="section">
-    <div class="section-title">llm-d vs Dynamo — Aggregated Serving Pareto</div>
-    <p class="section-desc">
-      Same model, same weights, same KV dtype, same speculative decoder — only the serving
-      framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
-      backend directly (no gateway in the path).
-      Model: <span class="mono">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</span> ·
-      modelopt_fp4 weights · fp8 KV · dspark spec-decode (3 tokens) · TP=1 · DGX Spark GB10 ·
-      ISL 1024 / OSL 256 · concurrency 1&ndash;32
-    </p>
-    <p class="section-desc" style="margin-top:-0.35rem;">
-      Up and to the right is better: <strong>y</strong> is what the box produces in total,
-      <strong>x</strong> is what a single user feels. Raising concurrency walks each curve
-      up and to the left — you buy aggregate throughput with per-user speed.
-    </p>
-    <div class="fw-chart-wrap">
-      <canvas id="pareto-chart" height="300"></canvas>
-    </div>
-    <div id="pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
   </div>
 
   <!-- ── vLLM Optimization Waterfall ──────────────────────── -->
