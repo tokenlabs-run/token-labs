@@ -20,15 +20,26 @@ spec:
     interval: 30s
     rules:
 
-    # Pod availability: 1 if ready, 0 if not
+    # Serving availability: 1 if the engine answered its scrape, 0 if not.
+    #
+    # This used to be kube_pod_status_ready filtered on
+    # pod=~"ms-deepseek-r1-32b.*|ms-nemotron-nano-nvfp4.*". Those deployments
+    # are long gone, so the rule silently produced no series and every panel
+    # built on it ("Model Availability", "Error Budget Remaining", "Burn Rate")
+    # read "No data" while looking perfectly healthy.
+    #
+    # Two changes make it rot-resistant:
+    #  1. `up` for the PodMonitor job instead of a hardcoded pod-name regex --
+    #     membership is now decided by the token-labs/scenario label, so new or
+    #     renamed pods are picked up automatically.
+    #  2. `up` also means something stronger for an inference SLO than
+    #     pod-ready: the process is actually answering, not merely scheduled.
+    #
+    # Grouped by `stack` so llm-d and dynamo get independent budgets.
     - record: token_labs:pod_available:bool
       expr: |
-        max by (pod, namespace) (
-          kube_pod_status_ready{
-            namespace="token-labs",
-            pod=~"ms-deepseek-r1-32b.*|ms-nemotron-nano-nvfp4.*",
-            condition="true"
-          }
+        max by (pod, stack, node) (
+          up{job=~".*nemotron35-dspark.*"}
         )
 
     # 5-min availability ratio per pod (for burn rate calc)
@@ -55,20 +66,27 @@ spec:
           )
         )
 
-    # vLLM error rate — 5-minute window
+    # vLLM error rate — 5-minute window.
+    #
+    # Was http_request_duration_seconds_count{status=~"5.."}. That series does
+    # exist for these pods but carries no `status` label at all (only handler /
+    # method), so the numerator matched nothing and the ratio was always empty.
+    #
+    # vLLM exposes the outcome natively: vllm:request_success_total is labelled
+    # finished_reason = stop | length | abort | error. Requests that ended in
+    # `error` over all finished requests is the real serving error rate, and it
+    # reflects engine-level failures rather than HTTP status codes.
+    #
+    # No zero-traffic guard on the denominator on purpose: at zero requests the
+    # ratio is genuinely undefined and should read "no data", not 0%.
     - record: token_labs:error_rate:rate5m
       expr: |
-        sum by (model_name) (
-          rate(http_request_duration_seconds_count{
-            namespace="token-labs",
-            status=~"5.."
-          }[5m])
+        sum by (model_name, stack) (
+          rate(vllm:request_success_total{finished_reason="error"}[5m])
         )
         /
-        sum by (model_name) (
-          rate(http_request_duration_seconds_count{
-            namespace="token-labs"
-          }[5m])
+        sum by (model_name, stack) (
+          rate(vllm:request_success_total[5m])
         )
 
     # KV cache utilization — per vLLM model

@@ -40,6 +40,12 @@ spec:
       type: frontend
       replicas: 1
       podTemplate:
+        metadata:
+          labels:
+            # Selected by monitoring/nemotron35-dspark-comparison PodMonitor.
+            # The llm-d ModelService sets this on its pods; Dynamo has no
+            # equivalent of its own, so it must be declared here.
+            token-labs/scenario: nemotron35-dspark
         spec:
           nodeSelector:
             kubernetes.io/hostname: spark-02
@@ -95,6 +101,12 @@ spec:
       replicas: 1
       sharedMemorySize: 40Gi
       podTemplate:
+        metadata:
+          labels:
+            # Selected by monitoring/nemotron35-dspark-comparison PodMonitor.
+            # The llm-d ModelService sets this on its pods; Dynamo has no
+            # equivalent of its own, so it must be declared here.
+            token-labs/scenario: nemotron35-dspark
         spec:
           volumes:
             - name: shared-model-cache

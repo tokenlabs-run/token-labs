@@ -22,6 +22,14 @@ spec:
   selector:
     matchLabels:
       token-labs/scenario: nemotron35-dspark
+  # Two endpoints because the stacks expose metrics on different ports:
+  #   llm-d decode      -> 8000   (vLLM's own OpenAI server)
+  #   dynamo frontend   -> 8000   (dynamo HTTP frontend)
+  #   dynamo agg worker -> 9090   ("system" port; this is where the 401 vllm:*
+  #                                engine series live -- NOT on 8000)
+  # A pod only produces a target for a port it actually declares, so listing
+  # both is safe: each pod contributes exactly the endpoints it has. Scraping
+  # only 8000 (the original config) silently missed every Dynamo engine metric.
   podMetricsEndpoints:
   - targetPort: 8000
     path: /metrics
@@ -29,20 +37,42 @@ spec:
     # runs are short and 60s buckets smear the interesting transitions.
     interval: 15s
     scrapeTimeout: 10s
-    relabelings:
+    relabelings: &stackRelabelings
     # Keep the node name: the whole point is spark-01 vs spark-02.
     - sourceLabels: [__meta_kubernetes_pod_node_name]
       targetLabel: node
     - sourceLabels: [__meta_kubernetes_pod_name]
       targetLabel: pod
-    # TODO(human): add the relabeling that distinguishes the two serving stacks.
+    # Distinguish the two serving stacks. Without this, series from both
+    # deployments are identical except for `node`, so a query like
+    # sum(rate(vllm:generation_tokens_total[1m])) silently adds llm-d and
+    # dynamo together and reports a number that describes neither.
     #
-    # Right now every series from both deployments will look identical except
-    # for `node`, so `sum(rate(vllm:generation_tokens_total[1m]))` silently adds
-    # llm-d and dynamo together. Available __meta_kubernetes_pod_label_* sources
-    # on the llm-d pods today:
-    #   token-labs/scenario   = nemotron35-dspark
-    #   llm-d.ai/model        = nemotron35-lightning-llm-d
-    #   llm-d.ai/role         = decode
-    # (dots and slashes become underscores, e.g.
-    #  __meta_kubernetes_pod_label_llm_d_ai_role)
+    # Each stack is identified by a label only it sets. `regex: (.+)` matters:
+    # a replace action is skipped when the regex does not match, so the llm-d
+    # rule is a no-op on dynamo pods and vice versa. Without the guard the
+    # second rule would overwrite `stack` with an empty string on llm-d pods.
+    - sourceLabels: [__meta_kubernetes_pod_label_llm_d_ai_role]
+      regex: (.+)
+      targetLabel: stack
+      replacement: llm-d
+    - sourceLabels: [__meta_kubernetes_pod_label_nvidia_com_dynamo_component]
+      regex: (.+)
+      targetLabel: stack
+      replacement: dynamo
+    # Component within the stack: llm-d "decode"/"prefill" vs dynamo
+    # "Frontend"/"agg". Lets a panel separate the dynamo HTTP frontend (which
+    # reports no engine metrics) from the worker that does.
+    - sourceLabels: [__meta_kubernetes_pod_label_llm_d_ai_role]
+      regex: (.+)
+      targetLabel: role
+      replacement: ${1}
+    - sourceLabels: [__meta_kubernetes_pod_label_nvidia_com_dynamo_component]
+      regex: (.+)
+      targetLabel: role
+      replacement: ${1}
+  - targetPort: 9090
+    path: /metrics
+    interval: 15s
+    scrapeTimeout: 10s
+    relabelings: *stackRelabelings
