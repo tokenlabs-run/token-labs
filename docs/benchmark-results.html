@@ -856,6 +856,28 @@
     <div class="legend" id="fw-legend" style="margin-top:1rem;padding:0 0.25rem;"></div>
   </div>
 
+  <!-- ── llm-d vs Dynamo Pareto ───────────────────────────── -->
+  <div class="section">
+    <div class="section-title">llm-d vs Dynamo — Aggregated Serving Pareto</div>
+    <p class="section-desc">
+      Same model, same weights, same KV dtype, same speculative decoder — only the serving
+      framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
+      backend directly (no gateway in the path).
+      Model: <span class="mono">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</span> ·
+      modelopt_fp4 weights · fp8 KV · dspark spec-decode (3 tokens) · TP=1 · DGX Spark GB10 ·
+      ISL 1024 / OSL 256 · concurrency 1&ndash;32
+    </p>
+    <p class="section-desc" style="margin-top:-0.35rem;">
+      Up and to the right is better: <strong>y</strong> is what the box produces in total,
+      <strong>x</strong> is what a single user feels. Raising concurrency walks each curve
+      up and to the left — you buy aggregate throughput with per-user speed.
+    </p>
+    <div class="fw-chart-wrap">
+      <canvas id="pareto-chart" height="300"></canvas>
+    </div>
+    <div id="pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
+  </div>
+
   <!-- ── vLLM Optimization Waterfall ──────────────────────── -->
   <div class="section">
     <div class="section-title">vLLM Optimization Waterfall</div>
@@ -2190,6 +2212,167 @@ function renderFrameworkChart(activeCombo) {
 renderRegistry();
 
 // Guard all Chart.js calls — if chart.umd.min.js fails to load, rest of page still works
+// ── llm-d vs Dynamo Pareto ────────────────────────────────────────────────────
+// Measured with NVIDIA AIPerf 0.12.0 from the controller node against each
+// backend's ClusterIP. Same model / weights / KV dtype / spec-decode on both.
+// Populated by scripts/common/aggregate_aiperf_pareto.py.
+const PARETO_DATA = {
+  "llm-d": [
+    {"concurrency": 1, "tput_total": 99.73, "tput_per_user": 109.4, "ttft_p50": 219.93, "ttft_p95": 247.64, "itl_p50": 9.05, "itl_p95": 10.15, "req_latency_p50": 2527.87, "errors": 0},
+    {"concurrency": 2, "tput_total": 150.89, "tput_per_user": 83.61, "ttft_p50": 264.6, "ttft_p95": 409.56, "itl_p50": 11.9, "itl_p95": 14.39, "req_latency_p50": 3283.93, "errors": 0},
+    {"concurrency": 4, "tput_total": 208.02, "tput_per_user": 57.06, "ttft_p50": 286.69, "ttft_p95": 540.18, "itl_p50": 17.87, "itl_p95": 19.44, "req_latency_p50": 4900.68, "errors": 0},
+    {"concurrency": 8, "tput_total": 294.15, "tput_per_user": 39.93, "ttft_p50": 332.69, "ttft_p95": 1026.83, "itl_p50": 25.22, "itl_p95": 28.68, "req_latency_p50": 6842.16, "errors": 0},
+    {"concurrency": 16, "tput_total": 414.28, "tput_per_user": 28.49, "ttft_p50": 407.05, "ttft_p95": 1559.69, "itl_p50": 35.67, "itl_p95": 41.18, "req_latency_p50": 9628.87, "errors": 0},
+    {"concurrency": 32, "tput_total": 575.06, "tput_per_user": 19.84, "ttft_p50": 649.81, "ttft_p95": 3117.87, "itl_p50": 51.44, "itl_p95": 58.42, "req_latency_p50": 13901.16, "errors": 0}
+  ],
+  "dynamo": [
+    {"concurrency": 1, "tput_total": 99.71, "tput_per_user": 109.94, "ttft_p50": 213.08, "ttft_p95": 306.2, "itl_p50": 9.16, "itl_p95": 10.03, "req_latency_p50": 2551.68, "errors": 0},
+    {"concurrency": 2, "tput_total": 154.38, "tput_per_user": 84.62, "ttft_p50": 246.78, "ttft_p95": 408.57, "itl_p50": 12.15, "itl_p95": 12.54, "req_latency_p50": 3361.38, "errors": 0},
+    {"concurrency": 4, "tput_total": 208.55, "tput_per_user": 57.81, "ttft_p50": 395.75, "ttft_p95": 737.6, "itl_p50": 17.4, "itl_p95": 19.4, "req_latency_p50": 4834.46, "errors": 0},
+    {"concurrency": 8, "tput_total": 299.54, "tput_per_user": 41.34, "ttft_p50": 414.8, "ttft_p95": 1859.68, "itl_p50": 24.3, "itl_p95": 28.78, "req_latency_p50": 6724.42, "errors": 0},
+    {"concurrency": 16, "tput_total": 416.36, "tput_per_user": 28.59, "ttft_p50": 455.83, "ttft_p95": 1546.6, "itl_p50": 35.64, "itl_p95": 40.89, "req_latency_p50": 9654.27, "errors": 0},
+    {"concurrency": 32, "tput_total": 572.23, "tput_per_user": 19.65, "ttft_p50": 681.36, "ttft_p95": 3090.61, "itl_p50": 51.59, "itl_p95": 58.44, "req_latency_p50": 13990.24, "errors": 0}
+  ]
+};
+
+const PARETO_STYLE = {
+  "llm-d":  { color: "#76b900", label: "llm-d (vLLM aggregated)" },
+  "dynamo": { color: "#4a9eff", label: "Dynamo (vLLM aggregated)" },
+};
+
+// TODO(human): define PARETO_SLO — the interactivity floor this deployment holds.
+// The Pareto curve alone says what is *possible*; the SLO says which points are
+// actually shippable. Everything left of this line buys aggregate throughput by
+// making individual users wait longer than you are willing to accept.
+// Shape: { tokPerUser: <number>, label: "<short name>" }
+//   tokPerUser — minimum output tokens/sec/user you will serve. Reference points:
+//                human reading is ~5-10 tok/s; ~20 tok/s reads as comfortably
+//                interactive; >40 tok/s feels instant and is usually overkill for
+//                chat but matters for agentic loops that consume tokens directly.
+//   label      — rendered on the threshold line, e.g. "Interactive floor".
+// Set to null to draw no threshold.
+const PARETO_SLO = null;
+
+function renderPareto() {
+  const canvas = document.getElementById("pareto-chart");
+  if (!canvas) return;
+  const frameworks = Object.keys(PARETO_DATA).filter(k => PARETO_DATA[k].length);
+  if (!frameworks.length) return;
+
+  const datasets = frameworks.map(fw => {
+    const st = PARETO_STYLE[fw] || { color: "#a855f7", label: fw };
+    return {
+      label: st.label,
+      data: PARETO_DATA[fw].map(r => ({
+        x: r.tput_per_user, y: r.tput_total, c: r.concurrency,
+        ttft: r.ttft_p50, itl: r.itl_p50,
+      })),
+      borderColor: st.color,
+      backgroundColor: st.color,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      borderWidth: 2,
+      showLine: true,
+      tension: 0.25,
+    };
+  });
+
+  if (PARETO_SLO && PARETO_SLO.tokPerUser != null) {
+    const yMax = Math.max(...frameworks.flatMap(fw =>
+      PARETO_DATA[fw].map(r => r.tput_total))) * 1.1;
+    datasets.push({
+      label: PARETO_SLO.label || "SLO floor",
+      data: [{ x: PARETO_SLO.tokPerUser, y: 0 }, { x: PARETO_SLO.tokPerUser, y: yMax }],
+      borderColor: "#e05252",
+      borderDash: [6, 4],
+      borderWidth: 2,
+      pointRadius: 0,
+      showLine: true,
+      fill: false,
+    });
+  }
+
+  new Chart(canvas.getContext("2d"), {
+    type: "scatter",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "nearest", intersect: true },
+      plugins: {
+        legend: { labels: { usePointStyle: true, boxWidth: 8 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const d = ctx.raw;
+              if (d.c === undefined) return PARETO_SLO?.label ?? "";
+              return [
+                `${ctx.dataset.label}`,
+                `concurrency ${d.c}`,
+                `${d.y} tok/s total · ${d.x} tok/s/user`,
+                `TTFT p50 ${d.ttft} ms · ITL p50 ${d.itl} ms`,
+              ];
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: "Per-user output throughput (tok/s/user) — higher is snappier" },
+          grid: { color: "rgba(255,255,255,0.05)" },
+        },
+        y: {
+          title: { display: true, text: "Total output throughput (tok/s) — higher is more capacity" },
+          grid: { color: "rgba(255,255,255,0.05)" },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+
+  renderParetoTable(frameworks);
+}
+
+function renderParetoTable(frameworks) {
+  const wrap = document.getElementById("pareto-table-wrap");
+  if (!wrap) return;
+  const concs = [...new Set(frameworks.flatMap(fw =>
+    PARETO_DATA[fw].map(r => r.concurrency)))].sort((a, b) => a - b);
+  const cell = "padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);";
+  const head = "padding:0.55rem 0.75rem;text-align:right;color:var(--text-muted);font-weight:600;";
+
+  const rows = concs.map(c => {
+    const cells = frameworks.map(fw => {
+      const r = PARETO_DATA[fw].find(x => x.concurrency === c);
+      if (!r) return `<td style="${cell}">—</td><td style="${cell}">—</td><td style="${cell}">—</td>`;
+      return `<td style="${cell}">${r.tput_total}</td>` +
+             `<td style="${cell}">${r.tput_per_user}</td>` +
+             `<td style="${cell}">${r.ttft_p50}</td>`;
+    }).join("");
+    return `<tr><td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">${c}</td>${cells}</tr>`;
+  }).join("");
+
+  const grp = frameworks.map(fw =>
+    `<th colspan="3" style="${head};text-align:center;color:${PARETO_STYLE[fw]?.color || "#a855f7"};">${PARETO_STYLE[fw]?.label || fw}</th>`
+  ).join("");
+  const sub = frameworks.map(() =>
+    `<th style="${head}">tok/s</th><th style="${head}">tok/s/user</th><th style="${head}">TTFT p50</th>`
+  ).join("");
+
+  wrap.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:0.85rem;min-width:640px;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="${head};text-align:left;">Concurrency</th>${grp}
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th></th>${sub}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
 try {
   Chart.defaults.color = "#888";
   Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
@@ -2204,6 +2387,7 @@ try {
   renderFrameworkChart("ISL128/OSL128");
   renderAblation();
   renderTechniqueImpact();
+  renderPareto();
 } catch (e) {
   console.error("Chart render failed:", e);
 }

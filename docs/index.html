@@ -345,18 +345,19 @@
     <div class="section-header">
       <div>
         <h2 class="section-title">Recent Run</h2>
-        <p class="section-subtitle">Latest overnight observability run results</p>
+        <p class="section-subtitle">Latest serving framework A/B — llm-d vs Dynamo, aggregated</p>
       </div>
     </div>
-    <a href="overnight-run-2026-04-15.html" target="_blank" style="text-decoration:none;display:block;max-width:560px;">
+    <a href="benchmark-results.html#pareto-chart" target="_blank" style="text-decoration:none;display:block;max-width:560px;">
       <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:20px 22px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.background='var(--bg-card-hover)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--bg-card)';this.style.transform='none'">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:6px;font-family:monospace;">2026-04-15 &middot; Observability Run</div>
-        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">Overnight Observability Run — 15 Tasks</div>
-        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:12px;">DCGM, OTel, SLO, and failure simulation on DGX Spark GB10. Top finding: chunked prefill is the highest-leverage fix for 44.8s TTFT p95.</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:6px;font-family:monospace;">2026-08-28 &middot; AIPerf Framework A/B</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">llm-d vs Dynamo — Aggregated Serving Pareto</div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:12px;">Nemotron-3.5-Lightning-30B-A3B-NVFP4 on DGX Spark GB10, identical engine config on both sides, concurrency 1&ndash;32. Top finding: throughput is a dead heat (within &plusmn;2%), but llm-d holds a 25&ndash;38% TTFT advantage at mid concurrency.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(118,185,0,0.1);border:1px solid rgba(118,185,0,0.25);color:var(--accent);font-weight:600;">SLO Tier 1 ✓</span>
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;font-weight:600;">E2E Traces ✗</span>
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);color:#3b82f6;font-weight:600;">TTFT p95 44.8s</span>
+          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(118,185,0,0.1);border:1px solid rgba(118,185,0,0.25);color:var(--accent);font-weight:600;">Throughput parity &plusmn;2%</span>
+          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);color:#3b82f6;font-weight:600;">llm-d TTFT &minus;25% @ c=8</span>
+          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(118,185,0,0.1);border:1px solid rgba(118,185,0,0.25);color:var(--accent);font-weight:600;">Peak 575 tok/s</span>
+          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);color:#a855f7;font-weight:600;">0 errors / 1,280 req</span>
         </div>
       </div>
     </a>
