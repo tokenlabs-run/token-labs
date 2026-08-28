@@ -327,6 +327,23 @@
   <section class="section">
     <div class="section-header">
       <div>
+        <h2 class="section-title">Inference Endpoints</h2>
+        <p class="section-subtitle">Select a model to view pricing, try the playground, or grab API code.</p>
+      </div>
+      <div style="display:flex;gap:6px;" id="catalog-filters">
+        <button class="filter-chip active" data-filter="all" onclick="setCatalogFilter('all',this)">All</button>
+        <button class="filter-chip" data-filter="quantized" onclick="setCatalogFilter('quantized',this)">Quantized</button>
+        <button class="filter-chip" data-filter="base" onclick="setCatalogFilter('base',this)">Base</button>
+      </div>
+    </div>
+    <div class="model-grid" id="model-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted);">Loading models...</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div>
         <h2 class="section-title">Recent Run</h2>
         <p class="section-subtitle">Latest serving framework A/B — llm-d vs Dynamo, aggregated</p>
       </div>
@@ -344,23 +361,6 @@
         </div>
       </div>
     </a>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title">Inference Endpoints</h2>
-        <p class="section-subtitle">Select a model to view pricing, try the playground, or grab API code.</p>
-      </div>
-      <div style="display:flex;gap:6px;" id="catalog-filters">
-        <button class="filter-chip active" data-filter="all" onclick="setCatalogFilter('all',this)">All</button>
-        <button class="filter-chip" data-filter="quantized" onclick="setCatalogFilter('quantized',this)">Quantized</button>
-        <button class="filter-chip" data-filter="base" onclick="setCatalogFilter('base',this)">Base</button>
-      </div>
-    </div>
-    <div class="model-grid" id="model-grid">
-      <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted);">Loading models...</div>
-    </div>
   </section>
 
 

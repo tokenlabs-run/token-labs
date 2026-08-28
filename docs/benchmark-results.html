@@ -216,6 +216,7 @@
     .fw-vllm   { background: rgba(74,158,255,0.15); color: var(--blue);   border: 1px solid rgba(74,158,255,0.3); }
     .fw-llmd   { background: rgba(118,185,0,0.15);  color: var(--green);  border: 1px solid rgba(118,185,0,0.3); }
     .fw-sglang { background: rgba(168,85,247,0.15); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+    .fw-dynamo { background: rgba(245,166,35,0.15); color: var(--yellow); border: 1px solid rgba(245,166,35,0.3); }
     .metric-val { font-variant-numeric: tabular-nums; }
     .metric-null { color: var(--text-dim); }
 
@@ -519,23 +520,23 @@
   <!-- ── Summary Stats ────────────────────────────────────── -->
   <div class="section">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:2.5rem;">
-      <div class="card" style="padding:1rem 1.25rem;">
+      <div class="card" data-statcard="total" style="padding:1rem 1.25rem;">
         <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Total Experiments</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--text);" id="stat-total">14</div>
       </div>
-      <div class="card" style="padding:1rem 1.25rem;">
+      <div class="card" data-statcard="done" style="padding:1rem 1.25rem;">
         <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Completed</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--green);" id="stat-done">2</div>
       </div>
-      <div class="card" style="padding:1rem 1.25rem;">
+      <div class="card" data-statcard="pending" style="padding:1rem 1.25rem;">
         <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">In Progress / Pending</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--yellow);" id="stat-pending">4</div>
       </div>
-      <div class="card" style="padding:1rem 1.25rem;">
+      <div class="card" data-statcard="queued" style="padding:1rem 1.25rem;">
         <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Queued</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--text-muted);" id="stat-queued">6</div>
       </div>
-      <div class="card" style="padding:1rem 1.25rem;">
+      <div class="card" data-statcard="failed" style="padding:1rem 1.25rem;">
         <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Failed</div>
         <div style="font-size:1.8rem;font-weight:700;color:var(--red);" id="stat-failed">2</div>
       </div>
@@ -1386,7 +1387,7 @@ const REGISTRY_DATA = [
     name: "Prefix Caching (APC)",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     throughput: 350.6, ttft_p50: 188.0, itl_p50: 71.6,
     c1:  { throughput_tok_s: 12.7,  ttft_p50_ms: 84.0,  ttft_p99_ms: 304.0, itl_p50_ms: 78.6, itl_p99_ms: 78.9,  ok: 50 },
     c8:  { throughput_tok_s: 109.2, ttft_p50_ms: 198.0, ttft_p99_ms: 219.0, itl_p50_ms: 65.1, itl_p99_ms: 65.1,  ok: 50 },
@@ -1400,7 +1401,7 @@ const REGISTRY_DATA = [
     name: "Chunked Prefill (512 tok)",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     c1:  { throughput_tok_s: 12.6,  ttft_p50_ms: 80.0,  ttft_p99_ms: 177.0,  itl_p50_ms: 79.2, itl_p99_ms: 79.7,  ok: 50 },
     c8:  { throughput_tok_s: 108.6, ttft_p50_ms: 200.0, ttft_p99_ms: 3330.0, itl_p50_ms: 63.7, itl_p99_ms: 63.7,  ok: 50 },
     c32: { throughput_tok_s: 354.1, ttft_p50_ms: 239.0, ttft_p99_ms: 315.0,  itl_p50_ms: 70.5, itl_p99_ms: 70.6,  ok: 50 },
@@ -1414,7 +1415,7 @@ const REGISTRY_DATA = [
     name: "Higher Memory Utilization (0.85)",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     c1:  { throughput_tok_s: 12.7,  ttft_p50_ms: 84.0,  ttft_p99_ms: 165.0,  itl_p50_ms: 78.4, itl_p99_ms: 78.8, ok: 50 },
     c8:  { throughput_tok_s: 105.7, ttft_p50_ms: 201.0, ttft_p99_ms: 3465.0, itl_p50_ms: 65.3, itl_p99_ms: 65.5, ok: 50 },
     c32: { throughput_tok_s: 348.9, ttft_p50_ms: 193.0, ttft_p99_ms: 286.0,  itl_p50_ms: 71.9, itl_p99_ms: 72.0, ok: 50 },
@@ -1427,7 +1428,7 @@ const REGISTRY_DATA = [
     name: "FP8 KV Cache",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     c1:  { throughput_tok_s: 12.5,  ttft_p50_ms: 142.0, ttft_p99_ms: 176.0, itl_p50_ms: 79.2, itl_p99_ms: 81.4, ok: 50 },
     c8:  { throughput_tok_s: 112.8, ttft_p50_ms: 193.0, ttft_p99_ms: 3458.0, itl_p50_ms: 63.3, itl_p99_ms: 65.4, ok: 50 },
     c32: { throughput_tok_s: 334.5, ttft_p50_ms: 248.0, ttft_p99_ms: 261.0,  itl_p50_ms: 69.7, itl_p99_ms: 75.2, ok: 50 },
@@ -1440,7 +1441,7 @@ const REGISTRY_DATA = [
     name: "Speculative Decoding (ngram, k=5)",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     c1:  { throughput_tok_s: 12.6,  ttft_p50_ms: 80.0,  ttft_p99_ms: 142.0, itl_p50_ms: 79.9, itl_p99_ms: 82.7, ok: 50 },
     c8:  { throughput_tok_s: 100.0, ttft_p50_ms: 143.0, ttft_p99_ms: 244.0,  itl_p50_ms: 69.7, itl_p99_ms: 75.8, ok: 50 },
     c32: { throughput_tok_s: 304.6, ttft_p50_ms: 170.0, ttft_p99_ms: 173.0,  itl_p50_ms: 76.6, itl_p99_ms: 89.6, ok: 50 },
@@ -1452,7 +1453,7 @@ const REGISTRY_DATA = [
     name: "CUDA Graphs (no enforce_eager)",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     c1:  { throughput_tok_s: 12.6,  ttft_p50_ms: 82.0,  ttft_p99_ms: 155.0,  itl_p50_ms: 79.0, itl_p99_ms: 85.8, ok: 50 },
     c8:  { throughput_tok_s: 101.8, ttft_p50_ms: 142.0, ttft_p99_ms: 3436.0, itl_p50_ms: 68.5, itl_p99_ms: 80.6, ok: 50 },
     c32: { throughput_tok_s: 285.1, ttft_p50_ms: 183.0, ttft_p99_ms: 187.0,  itl_p50_ms: 76.4, itl_p99_ms: 84.0, ok: 50 },
@@ -1464,7 +1465,7 @@ const REGISTRY_DATA = [
     name: "Full Stack",
     model: "Qwen/Qwen2.5-7B-Instruct",
     framework: "llm-d",
-    status: "completed",
+    status: "done",
     throughput: 298.7, ttft_p50: 181.8, itl_p50: 75.7,
     c1:  { throughput_tok_s: 12.5,  ttft_p50_ms: 80.1,  ttft_p99_ms: 100.6, itl_p50_ms: 79.6, itl_p99_ms: 85.5, ok: 50 },
     c8:  { throughput_tok_s: 105.3, ttft_p50_ms: 139.6, ttft_p99_ms: 163.3, itl_p50_ms: 67.9, itl_p99_ms: 74.8, ok: 50 },
@@ -1485,6 +1486,29 @@ const REGISTRY_DATA = [
     hypothesis: "120B MoE model (12B active params) quantized to NVFP4 with Marlin backend and fp8 KV cache on a single B200. Peak throughput bounded by memory bandwidth; TTFT scales sharply with ISL.",
     notes: "ISL128/OSL128: 79.7 tok/s peak @ c=8, TTFT p50=341ms @ c=1, TTFT p99=1127ms @ c=8. ISL2048/OSL512: 49.0 tok/s peak, TTFT p99=11990ms @ c=8. ITL p50 stable at 62–125ms across combos. NVFP4 Marlin backend enables a 120B model on a single B200.",
     date: "2026-04-15",
+  },
+  {
+    _group: "Framework A/B — nvidia/Nemotron-3.5-Lightning-30B-A3B-NVFP4 · DGX Spark GB10 · AIPerf 0.12.0 · ISL1024/OSL256 · 2026-08-28",
+    id: "nemotron35-llmd-aiperf-ab",
+    name: "llm-d Aggregated (AIPerf A/B)",
+    model: "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+    framework: "llm-d",
+    status: "done",
+    throughput: 575.1, ttft_p50: 649.8, itl_p50: 51.4,
+    hypothesis: "Same weights, KV dtype and speculative decoder as the Dynamo arm, so the serving framework is the only variable. Measures whether llm-d's EPP routing layer costs throughput or latency versus Dynamo's frontend/worker split.",
+    notes: "Metrics shown at c=32. Full ladder c=1..32: 99.7 / 150.9 / 208.0 / 294.2 / 414.3 / 575.1 tok/s. Throughput within +/-2.3% of Dynamo everywhere and identical to 0.02% at c=1, confirming the two profiles are config-aligned. llm-d leads TTFT by 25-38% at c=4-8 (287ms vs 396ms, 333ms vs 415ms). ITL indistinguishable. 640 requests, 0 errors.",
+    date: "2026-08-28",
+  },
+  {
+    id: "nemotron35-dynamo-aiperf-ab",
+    name: "Dynamo Aggregated (AIPerf A/B)",
+    model: "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+    framework: "dynamo",
+    status: "done",
+    throughput: 572.2, ttft_p50: 681.4, itl_p50: 51.6,
+    hypothesis: "Dynamo aggregated worker serving the identical model/config as the llm-d arm. Tests whether the frontend-to-worker hop imposes a measurable per-request cost.",
+    notes: "Metrics shown at c=32. Full ladder c=1..32: 99.7 / 154.4 / 208.6 / 299.5 / 416.4 / 572.2 tok/s. Matches llm-d on throughput but trails on TTFT at mid concurrency; the gap closes again by c=32, which is the shape of a fixed per-request routing cost being amortised rather than a throughput ceiling. 640 requests, 0 errors.",
+    date: "2026-08-28",
   },
 ];
 
@@ -1832,8 +1856,9 @@ function renderRegistry() {
     }
 
     const fw = exp.framework;
-    const fwClass = fw === "vllm" ? "fw-vllm" : fw === "llm-d" ? "fw-llmd" : "fw-sglang";
-    const fwLabel = fw === "llm-d" ? "llm-d" : fw.toUpperCase();
+    const fwClass = fw === "vllm" ? "fw-vllm" : fw === "llm-d" ? "fw-llmd"
+                  : fw === "dynamo" ? "fw-dynamo" : "fw-sglang";
+    const fwLabel = fw === "llm-d" ? "llm-d" : fw === "dynamo" ? "Dynamo" : fw.toUpperCase();
 
     const st = exp.status;
     const stClass = `badge-${st}`;
@@ -2208,8 +2233,37 @@ function renderFrameworkChart(activeCombo) {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+// Summary stat cards are DERIVED from REGISTRY_DATA. They were previously
+// hardcoded and had drifted badly (claimed 14 experiments / 2 done / 4 pending
+// / 6 queued / 2 failed against a registry of 10, all finished). Computing them
+// means they cannot go stale again, and any status with no entries is hidden
+// rather than displayed as a zero.
+function renderRegistryStats() {
+  const counts = REGISTRY_DATA.reduce((acc, e) => {
+    acc[e.status] = (acc[e.status] || 0) + 1;
+    return acc;
+  }, {});
+  const shown = {
+    total:   REGISTRY_DATA.length,
+    done:    counts.done    || 0,
+    pending: (counts.pending || 0) + (counts.running || 0),
+    queued:  counts.queued  || 0,
+    failed:  counts.failed  || 0,
+  };
+  for (const [key, val] of Object.entries(shown)) {
+    const el = document.getElementById("stat-" + key);
+    if (el) el.textContent = val;
+    const card = document.querySelector(`[data-statcard="${key}"]`);
+    // keep Total and Completed always visible; hide empty status buckets
+    if (card && key !== "total" && key !== "done") {
+      card.style.display = val > 0 ? "" : "none";
+    }
+  }
+}
+
 // renderRegistry has no Chart.js dependency — run it first unconditionally
 renderRegistry();
+renderRegistryStats();
 
 // Guard all Chart.js calls — if chart.umd.min.js fails to load, rest of page still works
 // ── llm-d vs Dynamo Pareto ────────────────────────────────────────────────────
