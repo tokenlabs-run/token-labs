@@ -502,16 +502,16 @@
     <div class="hero-inner">
       <div>
         <h1 class="hero-title">Token Labs<br><span>Benchmark Dashboard</span></h1>
-        <p class="hero-sub">Inference performance on NVIDIA DGX Spark — real data, open lab.</p>
+        <p class="hero-sub">Reproducible inference performance across modern accelerator platforms — real data, open lab.</p>
         <div class="hero-badges">
           <span class="hw-badge">
             <svg viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 6h4M6 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            DGX Spark
+            AMD Instinct MI300X
           </span>
-          <span class="hw-badge">GB10 · Grace Blackwell</span>
-          <span class="hw-badge">128 GB Unified Memory</span>
-          <span class="hw-badge">SM121</span>
-          <span class="updated-badge" id="last-updated">Updated 2026-04-15</span>
+          <span class="hw-badge">192 GiB HBM3</span>
+          <span class="hw-badge">ROCm · gfx942</span>
+          <span class="hw-badge">NVIDIA DGX Spark · GB10</span>
+          <span class="updated-badge" id="last-updated">Updated 2026-08-29</span>
         </div>
       </div>
     </div>
@@ -543,9 +543,55 @@
     </div>
   </div>
 
-  <!-- ── llm-d vs Dynamo Pareto ───────────────────────────── -->
+  <!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
+  <div class="section" id="mi300x-qwen38">
+    <div class="section-title">Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d</div>
+    <p class="section-desc">
+      Aggregated vLLM serving on separate 1&times; AMD Instinct MI300X instances. NVIDIA AIPerf 0.12.0,
+      streaming chat, concurrency 4, four measured requests per point, fixed token lengths, seed 42.
+      Dynamo path: frontend &rarr; vLLM worker. llm-d path: Envoy &rarr; EPP &rarr; vLLM.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
+      <div class="card" style="padding:1rem 1.25rem;">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Decode-heavy · 1K/8K</div>
+        <div style="font-size:1.55rem;font-weight:700;color:var(--green);">Dynamo +58.8%</div>
+        <div style="font-size:.78rem;color:var(--text-muted);">132.06 vs 83.17 output tok/s</div>
+      </div>
+      <div class="card" style="padding:1rem 1.25rem;">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Long-context · 8K/8K</div>
+        <div style="font-size:1.55rem;font-weight:700;color:var(--blue);">Throughput parity</div>
+        <div style="font-size:.78rem;color:var(--text-muted);">83.71 vs 83.27 output tok/s</div>
+      </div>
+      <div class="card" style="padding:1rem 1.25rem;">
+        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Prefill-heavy · 8K/1K</div>
+        <div style="font-size:1.55rem;font-weight:700;color:var(--purple);">llm-d +9.7%</div>
+        <div style="font-size:.78rem;color:var(--text-muted);">105.28 vs 95.97 output tok/s</div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow-x:auto;">
+      <table class="registry" aria-label="MI300X AIPerf comparison">
+        <thead><tr><th>ISL / OSL</th><th>Framework</th><th>Output tok/s</th><th>Avg TTFT</th><th>Avg ITL</th><th>Avg latency</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2"><span class="mono">1K / 8K</span></td><td>Dynamo agg</td><td class="text-green">132.06</td><td>546.63 ms</td><td>30.22 ms</td><td>248.06 s</td></tr>
+          <tr><td>llm-d agg</td><td>83.17</td><td>804.06 ms</td><td>48.00 ms</td><td>393.91 s</td></tr>
+          <tr><td rowspan="2"><span class="mono">8K / 8K</span></td><td>Dynamo agg</td><td class="text-green">83.71</td><td>5,238.68 ms</td><td>47.14 ms</td><td>391.37 s</td></tr>
+          <tr><td>llm-d agg</td><td>83.27</td><td>4,882.57 ms</td><td>47.44 ms</td><td>393.44 s</td></tr>
+          <tr><td rowspan="2"><span class="mono">8K / 1K</span></td><td>Dynamo agg</td><td>95.97</td><td class="text-green">390.90 ms</td><td>41.31 ms</td><td>42.65 s</td></tr>
+          <tr><td>llm-d agg</td><td class="text-green">105.28</td><td>411.18 ms</td><td class="text-green">37.61 ms</td><td class="text-green">38.89 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-desc" style="margin-top:1rem;margin-bottom:.5rem;">
+      Versions: Dynamo 1.4.2 with vLLM 0.28.1rc1.dev43; llm-d with vLLM 0.28.0. Both used
+      <span class="mono">--max-model-len 32768</span>, GPU memory utilization 0.90, exact output lengths,
+      and the same model. Four requests per point make this a controlled snapshot rather than a statistically robust capacity study.
+    </p>
+    <p class="section-desc" style="margin-bottom:0;">Raw summary: <a href="mi300x-qwen38-aiperf.json">mi300x-qwen38-aiperf.json</a></p>
+  </div>
+
+  <!-- ── NVIDIA DGX Spark: llm-d vs Dynamo Pareto ────────── -->
   <div class="section">
-    <div class="section-title">llm-d vs Dynamo — Aggregated Serving Pareto</div>
+    <div class="section-title">NVIDIA DGX Spark (GB10) — llm-d vs Dynamo Pareto</div>
     <p class="section-desc">
       Same model, same weights, same KV dtype, same speculative decoder — only the serving
       framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
@@ -903,8 +949,8 @@
 <div class="page" style="padding-top:0;">
   <footer>
     <span>Token Labs · <a href="https://www.tokenlabs.run" target="_blank">tokenlabs.run</a></span>
-    <span>Hardware: NVIDIA DGX Spark · GB10 · SM121 · 128GB</span>
-    <span>Data: <a href="benchmark-results.json">benchmark-results.json</a></span>
+    <span>Hardware: AMD Instinct MI300X and NVIDIA DGX Spark</span>
+    <span>Data: <a href="mi300x-qwen38-aiperf.json">MI300X run</a> · <a href="benchmark-results.json">benchmark registry</a></span>
   </footer>
 </div>
 

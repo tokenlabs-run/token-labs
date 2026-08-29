@@ -1,0 +1,55 @@
+{
+  "run_date": "2026-08-29",
+  "title": "Qwen3.8-27B on AMD Instinct MI300X: Dynamo vs llm-d",
+  "model": "Qwen/Qwen3.8-27B",
+  "hardware": "1x AMD Instinct MI300X (192 GiB) per framework",
+  "benchmark": {
+    "tool": "NVIDIA AIPerf",
+    "version": "0.12.0",
+    "endpoint_type": "chat",
+    "streaming": true,
+    "concurrency": 4,
+    "request_count": 4,
+    "input_length_stddev": 0,
+    "output_length_stddev": 0,
+    "random_seed": 42,
+    "forced_output_length": true
+  },
+  "systems": {
+    "dynamo": {
+      "label": "Dynamo aggregated vLLM",
+      "dynamo_version": "1.4.2",
+      "vllm_version": "0.28.1rc1.dev43+g6f7df92a8",
+      "request_path": "Dynamo frontend -> Dynamo vLLM worker"
+    },
+    "llmd": {
+      "label": "llm-d aggregated vLLM",
+      "vllm_version": "0.28.0",
+      "request_path": "Envoy -> llm-d EPP -> vLLM"
+    }
+  },
+  "results": [
+    {
+      "scenario": "1K/8K",
+      "isl_tokens": 1024,
+      "osl_tokens": 8192,
+      "dynamo": {"output_tokens_per_second": 132.0631, "ttft_ms": 546.6269, "itl_ms": 30.2190, "latency_ms": 248063.0795},
+      "llmd": {"output_tokens_per_second": 83.1738, "ttft_ms": 804.0643, "itl_ms": 47.9965, "latency_ms": 393907.1268}
+    },
+    {
+      "scenario": "8K/8K",
+      "isl_tokens": 8192,
+      "osl_tokens": 8192,
+      "dynamo": {"output_tokens_per_second": 83.7114, "ttft_ms": 5238.6819, "itl_ms": 47.1426, "latency_ms": 391372.1119},
+      "llmd": {"output_tokens_per_second": 83.2697, "ttft_ms": 4882.5749, "itl_ms": 47.4375, "latency_ms": 393443.2072}
+    },
+    {
+      "scenario": "8K/1K",
+      "isl_tokens": 8192,
+      "osl_tokens": 1024,
+      "dynamo": {"output_tokens_per_second": 95.9692, "ttft_ms": 390.8985, "itl_ms": 41.3060, "latency_ms": 42646.9834},
+      "llmd": {"output_tokens_per_second": 105.2785, "ttft_ms": 411.1833, "itl_ms": 37.6142, "latency_ms": 38890.4590}
+    }
+  ],
+  "interpretation": "At concurrency 4, Dynamo leads the decode-heavy 1K/8K scenario by 58.8%, the two systems are within 0.5% for 8K/8K throughput, and llm-d leads 8K/1K by 9.7%. Four requests per point make this a controlled lab snapshot, not a statistically robust capacity study."
+}
