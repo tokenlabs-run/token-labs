@@ -589,6 +589,49 @@
     <p class="section-desc" style="margin-bottom:0;">Raw summary: <a href="mi300x-qwen38-aiperf.json">mi300x-qwen38-aiperf.json</a></p>
   </div>
 
+  <!-- ── AMD MI300X: partial P/D comparison ──────────────── -->
+  <div class="section" id="mi300x-qwen38-disagg">
+    <div class="section-title">Qwen3.8-27B on AMD MI300X — Prefill/Decode Disaggregated</div>
+    <p class="section-desc">
+      <strong style="color:var(--yellow);">Partial run · capacity interrupted.</strong>
+      Two MI300X workers per system, one prefill and one decode. Dynamo has 18/18 validated points;
+      5/18 llm-d points were recovered before the RunPod host became unavailable. Missing cells are
+      pending and will be replaced when MI300X capacity returns.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo P/D</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">18 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">validated · zero failures</div></div>
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">llm-d P/D recovered</div><div style="font-size:1.55rem;font-weight:700;color:var(--yellow);">5 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">clean-cache · zero failures</div></div>
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Measured 1K / 8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">Within 1.0%</div><div style="font-size:.78rem;color:var(--text-muted);">through c=16</div></div>
+    </div>
+    <div class="card" style="padding:0;overflow-x:auto;margin-bottom:1rem;">
+      <table class="registry" aria-label="Partial MI300X P/D comparison">
+        <thead><tr><th>ISL / OSL</th><th>c</th><th>Dynamo tok/s</th><th>llm-d tok/s</th><th>llm-d mean TTFT</th><th>llm-d mean ITL</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="6"><span class="mono">1K / 8K</span></td><td>1</td><td>66.02</td><td>65.50</td><td>1,314.20 ms</td><td>15.11 ms</td><td>Measured</td></tr>
+          <tr><td>2</td><td>123.57</td><td>122.48</td><td>2,424.61 ms</td><td>16.03 ms</td><td>Measured</td></tr>
+          <tr><td>4</td><td>213.55</td><td>211.64</td><td>4,640.94 ms</td><td>18.34 ms</td><td>Measured</td></tr>
+          <tr><td>8</td><td>356.17</td><td>355.50</td><td>9,180.36 ms</td><td>21.39 ms</td><td>Measured</td></tr>
+          <tr><td>16</td><td>620.59</td><td>616.07</td><td>17,645.34 ms</td><td>23.60 ms</td><td>Measured</td></tr>
+          <tr><td>32</td><td>1,007.86</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td rowspan="6"><span class="mono">8K / 8K</span></td><td>1</td><td>61.93</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>2</td><td>114.22</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>4</td><td>192.02</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>8</td><td>310.49</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>16</td><td>494.70</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>32</td><td>738.25</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td rowspan="6"><span class="mono">8K / 1K</span></td><td>1</td><td>51.65</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>2</td><td>82.13</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>4</td><td>121.75</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>8</td><td>170.24</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>16</td><td>217.73</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+          <tr><td>32</td><td>254.97</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="section-desc" style="margin-bottom:.5rem;">Validation: producer/consumer roles, matching NIXL compatibility hash, a successful 195.812 MiB remote KV transfer, and 0.0% local prefix-cache hits. Four additional jobs completed but their numeric artifacts were not recovered, so they remain pending.</p>
+    <p class="section-desc" style="margin-bottom:0;">Machine-readable data: <a href="mi300x-qwen38-disagg-partial.json">mi300x-qwen38-disagg-partial.json</a></p>
+  </div>
+
   <!-- ── NVIDIA DGX Spark: llm-d vs Dynamo Pareto ────────── -->
   <div class="section" id="dgx-spark-pareto">
     <div class="section-title">NVIDIA DGX Spark (GB10) — llm-d vs Dynamo Pareto</div>

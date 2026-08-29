@@ -1,0 +1,53 @@
+{
+  "run_date": "2026-08-29",
+  "status": "partial-capacity-interrupted",
+  "title": "Qwen3.8-27B on AMD MI300X: Dynamo vs llm-d P/D",
+  "model": "Qwen/Qwen3.8-27B",
+  "hardware": "2x AMD Instinct MI300X (192 GiB), one prefill and one decode worker per system",
+  "benchmark": {
+    "tool": "vLLM bench serve",
+    "streaming": true,
+    "fixed_lengths": true,
+    "random_seed": 42,
+    "request_rate": "inf",
+    "prefix_caching": false,
+    "concurrency": [1, 2, 4, 8, 16, 32],
+    "scenarios": ["1K/8K", "8K/8K", "8K/1K"]
+  },
+  "validation": {
+    "llmd_path": "Envoy -> llm-d EPP -> prefill vLLM -> NIXL KV transfer -> decode sidecar -> decode vLLM",
+    "dynamo_path": "Dynamo frontend -> typed prefill vLLM -> NIXL KV transfer -> typed decode vLLM",
+    "nixl_compatibility_hash": "6fb02f6548ca8079b38e94b358bb072c60eaf9ec30ef3a0270ad81381a67ba65",
+    "local_prefix_cache_hit_rate": 0.0,
+    "llmd_transfer_proof": "Successful 195.812 MiB NIXL transfer before the timed sweep"
+  },
+  "completion": {
+    "dynamo": {"measured": 18, "requested": 18},
+    "llmd": {"measured_and_recovered": 5, "completed_but_not_recovered": 4, "requested": 18}
+  },
+  "results": {
+    "1K/8K": {
+      "dynamo_output_tokens_per_second": {"1": 66.019, "2": 123.565, "4": 213.545, "8": 356.174, "16": 620.588, "32": 1007.864},
+      "llmd": [
+        {"concurrency": 1, "requests": 2, "errors": 0, "output_tokens_per_second": 65.50289057123385, "mean_ttft_ms": 1314.200472086668, "mean_itl_ms": 15.106942744680381},
+        {"concurrency": 2, "requests": 2, "errors": 0, "output_tokens_per_second": 122.4773556314978, "mean_ttft_ms": 2424.607196589932, "mean_itl_ms": 16.03449514570711},
+        {"concurrency": 4, "requests": 4, "errors": 0, "output_tokens_per_second": 211.63835856223122, "mean_ttft_ms": 4640.94206225127, "mean_itl_ms": 18.33523556841067},
+        {"concurrency": 8, "requests": 8, "errors": 0, "output_tokens_per_second": 355.49958940065824, "mean_ttft_ms": 9180.356689263135, "mean_itl_ms": 21.38697421619414},
+        {"concurrency": 16, "requests": 16, "errors": 0, "output_tokens_per_second": 616.0748620806193, "mean_ttft_ms": 17645.339757291367, "mean_itl_ms": 23.595331327388422}
+      ],
+      "pending_llmd": [32]
+    },
+    "8K/8K": {
+      "dynamo_output_tokens_per_second": {"1": 61.931, "2": 114.220, "4": 192.016, "8": 310.494, "16": 494.700, "32": 738.250},
+      "llmd": [],
+      "pending_llmd": [1, 2, 4, 8, 16, 32]
+    },
+    "8K/1K": {
+      "dynamo_output_tokens_per_second": {"1": 51.650, "2": 82.127, "4": 121.752, "8": 170.239, "16": 217.729, "32": 254.973},
+      "llmd": [],
+      "pending_llmd": [1, 2, 4, 8, 16, 32]
+    }
+  },
+  "interruption": "The RunPod MI300X host became unavailable before remaining llm-d artifacts could be copied off-host. Results will be updated when capacity returns. Completed-but-unrecovered values are not published as measurements.",
+  "provenance": "Dynamo values are normalized from locally retained JSON. llm-d values are exact summaries captured in the local benchmark session record before host loss."
+}
