@@ -543,6 +543,19 @@
     </div>
   </div>
 
+  <!-- ── NVIDIA DGX Spark: Dynamo P/D matrix ─────────────── -->
+  <div class="section" id="dgx-spark-dynamo-pd">
+    <div class="section-title">Nemotron 3.5 on two DGX Sparks — Dynamo Prefill/Decode</div>
+    <p class="section-desc">Disaggregated Dynamo with prefill pinned to <span class="mono">spark-01</span> and decode to <span class="mono">spark-02</span>. NVIDIA AIPerf 0.12.0, streaming chat, seed 42, exact-length synthetic prompts, one full concurrency wave per point (two requests at c=1), fp8 KV, and DSpark speculative decoding. Direct ClusterIP path; no gateway in the benchmark path.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Decode-heavy · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">780.79 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">peak at c=32</div></div>
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Balanced · 8K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">696.47 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">peak at c=32</div></div>
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Prefill-heavy · 8K/1K</div><div style="font-size:1.55rem;font-weight:700;color:var(--purple);">274.61 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">peak at c=32</div></div>
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Reliability</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">18 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">zero request errors</div></div>
+    </div>
+    <p class="section-desc" style="margin-bottom:0;">Full 18-row machine-readable matrix: <a href="nemotron35-dynamo-pd-spark.json">nemotron35-dynamo-pd-spark.json</a>. One balanced c=32 response ended at 8,133 tokens (0.7% below target); AIPerf retained it and all request records reported success.</p>
+  </div>
+
   <!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
   <div class="section" id="mi300x-qwen38">
     <div class="section-title">Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d</div>
