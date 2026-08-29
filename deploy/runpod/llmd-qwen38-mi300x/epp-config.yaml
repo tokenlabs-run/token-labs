@@ -1,0 +1,24 @@
+plugins:
+  - name: file-disc
+    type: file-discovery
+    parameters:
+      path: /workspace/llmd-config/endpoints.yaml
+      watchFile: true
+  - name: kv-cache-scorer
+    type: kv-cache-utilization-scorer
+  - name: random-picker
+    type: random-picker
+  - name: single-profile
+    type: single-profile-handler
+    parameters:
+      scorer: kv-cache-scorer
+      picker: random-picker
+
+schedulingProfiles:
+  - name: default
+    plugins:
+      - pluginRef: single-profile
+
+dataLayer:
+  discovery:
+    pluginRef: file-disc
