@@ -295,7 +295,7 @@
   <div class="nav-links">
     <a class="nav-link active" href="#" onclick="showCatalog();return false;">Explore</a>
     <a class="nav-link" href="https://grafana.tokenlabs.run" target="_blank">Monitoring</a>
-    <a class="nav-link" href="benchmark-results.html" target="_blank">Labs</a>
+    <a class="nav-link" href="labs.html">Labs</a>
     <a class="nav-link" href="overnight-run-2026-04-15.html" target="_blank">Run Log</a>
 
   </div>
@@ -313,7 +313,7 @@
 
   <section class="hero">
     <h1 class="hero-title">Start Building with <span class="accent">TokenLabs</span></h1>
-    <p class="hero-subtitle">Production-ready inference endpoints powered by NVIDIA DGX Spark. OpenAI-compatible API.</p>
+    <p class="hero-subtitle">Production-ready inference endpoints and open benchmarking across NVIDIA and AMD accelerators. OpenAI-compatible API.</p>
     <div class="hero-search">
       <span class="hero-search-icon">&#128269;</span>
       <input type="text" id="catalog-search" placeholder="Search models..." oninput="filterCatalog(this.value)" />
@@ -341,26 +341,31 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="recent-runs">
     <div class="section-header">
-      <div>
-        <h2 class="section-title">Recent Run</h2>
-        <p class="section-subtitle">Latest serving framework A/B — Dynamo vs llm-d on AMD MI300X</p>
-      </div>
+      <div><h2 class="section-title">Recent Lab Runs</h2><p class="section-subtitle">Serving experiments across AMD MI300X and NVIDIA DGX Spark.</p></div>
+      <a class="btn btn-ghost btn-sm" href="labs.html">View all runs &rarr;</a>
     </div>
-    <a href="benchmark-results.html#mi300x-qwen38" target="_blank" style="text-decoration:none;display:block;max-width:560px;">
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:20px 22px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.background='var(--bg-card-hover)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--bg-card)';this.style.transform='none'">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:6px;font-family:monospace;">2026-08-29 &middot; AIPerf 0.12.0 &middot; AMD MI300X</div>
-        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">Qwen3.8-27B — Dynamo vs llm-d Aggregated vLLM</div>
-        <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:12px;">Separate 1&times; MI300X instances, concurrency 4, exact 1K/8K, 8K/8K and 8K/1K token shapes. Dynamo leads decode-heavy 1K/8K by 58.8%; 8K/8K is at throughput parity; llm-d leads prefill-heavy 8K/1K by 9.7%.</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(118,185,0,0.1);border:1px solid rgba(118,185,0,0.25);color:var(--accent);font-weight:600;">Dynamo +58.8% · 1K/8K</span>
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);color:#3b82f6;font-weight:600;">Parity · 8K/8K</span>
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);color:#a855f7;font-weight:600;">llm-d +9.7% · 8K/1K</span>
-          <span style="font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(118,185,0,0.1);border:1px solid rgba(118,185,0,0.25);color:var(--accent);font-weight:600;">0 errors / 24 req</span>
-        </div>
-      </div>
-    </a>
+    <div class="model-grid">
+      <a class="feature-card" href="benchmark-results.html#mi300x-qwen38">
+        <div class="tag tag-green" style="display:inline-block;margin-bottom:12px;">2026-08-29 &middot; AMD MI300X</div>
+        <div class="feature-title">Qwen3.8-27B: Dynamo vs llm-d</div>
+        <div class="feature-desc">Long-context A/B across 1K/8K, 8K/8K, and 8K/1K. Dynamo wins decode-heavy traffic; llm-d wins the prefill-heavy shape.</div>
+        <span class="feature-arrow">Open MI300X results &rarr;</span>
+      </a>
+      <a class="feature-card" href="benchmark-results.html#dgx-spark-pareto">
+        <div class="tag tag-blue" style="display:inline-block;margin-bottom:12px;">2026-08-28 &middot; NVIDIA DGX Spark</div>
+        <div class="feature-title">Nemotron 30B: llm-d vs Dynamo Pareto</div>
+        <div class="feature-desc">Six concurrency points from c=1 to c=32. Throughput stays within &plusmn;2%, while llm-d improves mid-concurrency TTFT.</div>
+        <span class="feature-arrow">Explore Pareto curve &rarr;</span>
+      </a>
+      <a class="feature-card" href="qwen35-27b-phase-a.html">
+        <div class="tag tag-purple" style="display:inline-block;margin-bottom:12px;">2026-04-17 &middot; NVIDIA DGX Spark</div>
+        <div class="feature-title">Qwen3.5-27B framework sweep</div>
+        <div class="feature-desc">vLLM and SGLang across BF16, FP8, and GPTQ-Int4, selecting vLLM GPTQ-Int4 for the next optimization phase.</div>
+        <span class="feature-arrow">Read Phase A report &rarr;</span>
+      </a>
+    </div>
   </section>
 
 
