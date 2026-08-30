@@ -545,7 +545,7 @@
 
   <!-- NVIDIA DGX Spark: Dynamo vs llm-d P/D -->
   <div class="section" id="dgx-spark-dynamo-pd">
-    <div class="section-title">Nemotron 3.5 on two DGX Sparks — Dynamo vs llm-d Prefill/Decode</div>
+    <div class="section-title">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 on two DGX Sparks — Dynamo vs llm-d P/D</div>
     <p class="section-desc">Matched disaggregated runs with prefill pinned to <span class="mono">spark-01</span> and decode to <span class="mono">spark-02</span>. NVIDIA AIPerf 0.12.0, streaming chat, seed 42, exact-length synthetic prompts, one concurrency wave per point (two requests at c=1), fp8 KV, and DSpark speculative decoding. Prefix caching was disabled on both Dynamo and llm-d workers. Both paths performed remote prefill and transferred KV with NIXL; Dynamo used its frontend and llm-d used the decode-sidecar path.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
       <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">729.76 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32</div></div>
@@ -569,7 +569,7 @@
 
   <!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
   <div class="section" id="mi300x-qwen38">
-    <div class="section-title">Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d</div>
+    <div class="section-title">Qwen/Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d</div>
     <p class="section-desc">
       Aggregated vLLM serving on separate 1&times; AMD Instinct MI300X instances. NVIDIA AIPerf 0.12.0,
       streaming chat, concurrency 4, four measured requests per point, fixed token lengths, seed 42.
@@ -615,7 +615,7 @@
 
   <!-- ── AMD MI300X: partial P/D comparison ──────────────── -->
   <div class="section" id="mi300x-qwen38-disagg">
-    <div class="section-title">Qwen3.8-27B on AMD MI300X — Prefill/Decode Disaggregated</div>
+    <div class="section-title">Qwen/Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d P/D (partial)</div>
     <p class="section-desc">
       <strong style="color:var(--yellow);">Partial run · capacity interrupted.</strong>
       Two MI300X workers per system, one prefill and one decode. Dynamo has 18/18 validated points;
@@ -656,9 +656,9 @@
     <p class="section-desc" style="margin-bottom:0;">Machine-readable data: <a href="mi300x-qwen38-disagg-partial.json">mi300x-qwen38-disagg-partial.json</a></p>
   </div>
 
-  <!-- ── NVIDIA DGX Spark: llm-d vs Dynamo Pareto ────────── -->
+  <!-- ── NVIDIA DGX Spark: Dynamo vs llm-d Pareto ────────── -->
   <div class="section" id="dgx-spark-pareto">
-    <div class="section-title">NVIDIA DGX Spark (GB10) — llm-d vs Dynamo Pareto</div>
+    <div class="section-title">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 on NVIDIA DGX Spark (GB10) — Dynamo vs llm-d Pareto</div>
     <p class="section-desc">
       Same model, same weights, same KV dtype, same speculative decoder — only the serving
       framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
@@ -2412,7 +2412,7 @@ function renderPdPareto(combo) {
   const combos = ["ISL1024/OSL8192","ISL8192/OSL8192","ISL8192/OSL1024"].filter(function(c) { return _pdParetoData[c]; });
   _pdParetoCombo = combos.includes(combo) ? combo : combos[0];
   const byFw = _pdParetoData[_pdParetoCombo];
-  const frameworks = ["llmd", "dynamo"].filter(function(fw) { return byFw[fw] && byFw[fw].length; });
+  const frameworks = ["dynamo", "llmd"].filter(function(fw) { return byFw[fw] && byFw[fw].length; });
   renderPdParetoTabs();
   if (_pdParetoChart) _pdParetoChart.destroy();
   _pdParetoChart = new Chart(canvas.getContext("2d"), {
@@ -2471,7 +2471,7 @@ async function initPdPareto() {
   renderPdPareto();
 }
 
-// ── llm-d vs Dynamo Pareto ────────────────────────────────────────────────────
+// ── Dynamo vs llm-d Pareto ────────────────────────────────────────────────────
 // Measured with NVIDIA AIPerf 0.12.0 from the controller node against each
 // backend's ClusterIP. Same model / weights / KV dtype / spec-decode on both.
 // Populated by scripts/common/aggregate_aiperf_pareto.py.
@@ -2546,7 +2546,7 @@ function renderPareto(combo) {
   if (!combos.length) return;
   _paretoCombo = combos.includes(combo) ? combo : combos[0];
   const byFw = PARETO_DATA[_paretoCombo];
-  const frameworks = Object.keys(byFw).filter(k => byFw[k].length);
+  const frameworks = ["dynamo", "llm-d"].filter(k => byFw[k] && byFw[k].length);
   if (!frameworks.length) return;
   renderParetoTabs();
   if (_paretoChart) { _paretoChart.destroy(); _paretoChart = null; }
