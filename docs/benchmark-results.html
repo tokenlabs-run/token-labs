@@ -546,18 +546,18 @@
   <!-- NVIDIA DGX Spark: Dynamo vs llm-d P/D -->
   <div class="section" id="dgx-spark-dynamo-pd">
     <div class="section-title">Nemotron 3.5 on two DGX Sparks — Dynamo vs llm-d Prefill/Decode</div>
-    <p class="section-desc">Matched disaggregated runs with prefill pinned to <span class="mono">spark-01</span> and decode to <span class="mono">spark-02</span>. NVIDIA AIPerf 0.12.0, streaming chat, seed 42, exact-length synthetic prompts, one concurrency wave per point (two requests at c=1), fp8 KV, and DSpark speculative decoding. Prefix caching was disabled on both llm-d workers; its decode-sidecar path sent prefill remotely and transferred KV with NIXL.</p>
+    <p class="section-desc">Matched disaggregated runs with prefill pinned to <span class="mono">spark-01</span> and decode to <span class="mono">spark-02</span>. NVIDIA AIPerf 0.12.0, streaming chat, seed 42, exact-length synthetic prompts, one concurrency wave per point (two requests at c=1), fp8 KV, and DSpark speculative decoding. Prefix caching was disabled on both Dynamo and llm-d workers. Both paths performed remote prefill and transferred KV with NIXL; Dynamo used its frontend and llm-d used the decode-sidecar path.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">780.79 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32</div></div>
+      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">729.76 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32</div></div>
       <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">llm-d peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">595.51 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32 · prefix cache off</div></div>
       <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Reliability</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">36 / 36</div><div style="font-size:.78rem;color:var(--text-muted);">zero request errors</div></div>
     </div>
     <div class="table-wrap" style="margin-bottom:1rem;"><table><thead><tr><th>ISL / OSL</th><th>c</th><th>Dynamo tok/s</th><th>llm-d tok/s</th><th>Difference</th></tr></thead><tbody>
-      <tr><td><span class="mono">1K / 8K</span></td><td>32</td><td>780.79</td><td>595.51</td><td>Dynamo +31.1%</td></tr>
-      <tr><td><span class="mono">8K / 8K</span></td><td>32</td><td>696.47</td><td>526.60</td><td>Dynamo +32.3%</td></tr>
-      <tr><td><span class="mono">8K / 1K</span></td><td>32</td><td>274.61</td><td>220.97</td><td>Dynamo +24.3%</td></tr>
+      <tr><td><span class="mono">1K / 8K</span></td><td>32</td><td>729.76</td><td>595.51</td><td>Dynamo +22.5%</td></tr>
+      <tr><td><span class="mono">8K / 8K</span></td><td>32</td><td>629.86</td><td>526.60</td><td>Dynamo +19.6%</td></tr>
+      <tr><td><span class="mono">8K / 1K</span></td><td>32</td><td>270.74</td><td>220.97</td><td>Dynamo +22.5%</td></tr>
     </tbody></table></div>
-    <p class="section-desc" style="margin-bottom:0;">Machine-readable 18-row matrices: <a href="nemotron35-dynamo-pd-spark.json">Dynamo</a>, <a href="nemotron35-llmd-pd-spark.json">llm-d</a>, and <a href="nemotron35-pd-comparison-spark.json">combined comparison</a>. All 36 cells completed without request errors. Actual output lengths can differ slightly from requested lengths because of tokenizer and stop-token behavior. Request metrics are authoritative; sidecar server-counter resets produced telemetry warnings without benchmark request failures.</p>
+    <p class="section-desc" style="margin-bottom:0;">Machine-readable 18-row matrices: <a href="nemotron35-dynamo-pd-spark.json">Dynamo</a>, <a href="nemotron35-llmd-pd-spark.json">llm-d</a>, and <a href="nemotron35-pd-comparison-spark.json">combined comparison</a>. This prefix-cache-off rerun supersedes the earlier cached Dynamo dataset. All 36 current comparison cells completed without request errors. Actual output lengths can differ slightly from requested lengths because of tokenizer and stop-token behavior. Request metrics are authoritative; sidecar server-counter resets produced telemetry warnings without benchmark request failures.</p>
   </div>
 
   <!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
