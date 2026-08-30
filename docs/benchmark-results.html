@@ -557,6 +557,13 @@
       <tr><td><span class="mono">8K / 8K</span></td><td>32</td><td>629.86</td><td>526.60</td><td>Dynamo +19.6%</td></tr>
       <tr><td><span class="mono">8K / 1K</span></td><td>32</td><td>270.74</td><td>220.97</td><td>Dynamo +22.5%</td></tr>
     </tbody></table></div>
+    <div style="margin-top:1.5rem;">
+      <div class="section-title" style="font-size:1.1rem;">Prefix-cache-off P/D Pareto curves</div>
+      <p class="section-desc">Up and to the right is better: total output throughput is plotted against per-user output throughput. Select a workload to compare all six concurrency points.</p>
+      <div class="tab-row" id="pd-pareto-tabs"></div>
+      <div class="fw-chart-wrap"><canvas id="pd-pareto-chart" height="300"></canvas></div>
+      <div id="pd-pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
+    </div>
     <p class="section-desc" style="margin-bottom:0;">Machine-readable 18-row matrices: <a href="nemotron35-dynamo-pd-spark.json">Dynamo</a>, <a href="nemotron35-llmd-pd-spark.json">llm-d</a>, and <a href="nemotron35-pd-comparison-spark.json">combined comparison</a>. This prefix-cache-off rerun supersedes the earlier cached Dynamo dataset. All 36 current comparison cells completed without request errors. Actual output lengths can differ slightly from requested lengths because of tokenizer and stop-token behavior. Request metrics are authoritative; sidecar server-counter resets produced telemetry warnings without benchmark request failures.</p>
   </div>
 
@@ -2373,6 +2380,97 @@ renderRegistry();
 renderRegistryStats();
 
 // Guard all Chart.js calls — if chart.umd.min.js fails to load, rest of page still works
+// ── Disaggregated P/D Pareto ──────────────────────────────────────────────────
+const PD_PARETO_STYLE = {
+  llmd: { color: "#76b900", label: "llm-d P/D" },
+  dynamo: { color: "#4a9eff", label: "Dynamo P/D" },
+};
+let _pdParetoData = null;
+let _pdParetoChart = null;
+let _pdParetoCombo = null;
+
+function pdParetoLabel(combo) {
+  const nums = combo.match(/\d+/g) || [];
+  return nums.length === 2 ? "ISL " + Number(nums[0]).toLocaleString() + " / OSL " + Number(nums[1]).toLocaleString() : combo;
+}
+
+function renderPdParetoTabs() {
+  const row = document.getElementById("pd-pareto-tabs");
+  if (!row || !_pdParetoData) return;
+  const combos = ["ISL1024/OSL8192","ISL8192/OSL8192","ISL8192/OSL1024"].filter(function(c) { return _pdParetoData[c]; });
+  row.innerHTML = combos.map(function(c) {
+    return "<button class=\"tab-btn" + (c === _pdParetoCombo ? " active" : "") + "\" data-combo=\"" + c + "\">" + pdParetoLabel(c) + "</button>";
+  }).join("");
+  row.querySelectorAll(".tab-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() { renderPdPareto(btn.dataset.combo); });
+  });
+}
+
+function renderPdPareto(combo) {
+  const canvas = document.getElementById("pd-pareto-chart");
+  if (!canvas || !_pdParetoData) return;
+  const combos = ["ISL1024/OSL8192","ISL8192/OSL8192","ISL8192/OSL1024"].filter(function(c) { return _pdParetoData[c]; });
+  _pdParetoCombo = combos.includes(combo) ? combo : combos[0];
+  const byFw = _pdParetoData[_pdParetoCombo];
+  const frameworks = ["llmd", "dynamo"].filter(function(fw) { return byFw[fw] && byFw[fw].length; });
+  renderPdParetoTabs();
+  if (_pdParetoChart) _pdParetoChart.destroy();
+  _pdParetoChart = new Chart(canvas.getContext("2d"), {
+    type: "scatter",
+    data: { datasets: frameworks.map(function(fw) {
+      const st = PD_PARETO_STYLE[fw];
+      return {
+        label: st.label,
+        data: byFw[fw].map(function(r) { return { x:r.tput_per_user, y:r.tput_total, c:r.concurrency, ttft:r.ttft_p50, itl:r.itl_p50 }; }),
+        borderColor: st.color, backgroundColor: st.color, pointRadius: 5, pointHoverRadius: 7,
+        borderWidth: 2, showLine: true, tension: 0.25,
+      };
+    }) },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "nearest", intersect: true },
+      plugins: {
+        legend: { labels: { usePointStyle: true, boxWidth: 8 } },
+        tooltip: { callbacks: { label: function(ctx) {
+          const d = ctx.raw;
+          return [ctx.dataset.label, "concurrency " + d.c, d.y + " tok/s total · " + d.x + " tok/s/user", "TTFT p50 " + d.ttft + " ms · ITL p50 " + d.itl + " ms"];
+        } } },
+      },
+      scales: {
+        x: { title: { display:true, text:"Per-user output throughput (tok/s/user) — higher is snappier" }, grid:{ color:"rgba(255,255,255,0.05)" } },
+        y: { title: { display:true, text:"Total output throughput (tok/s) — higher is more capacity" }, grid:{ color:"rgba(255,255,255,0.05)" }, beginAtZero:true },
+      },
+    },
+  });
+  renderPdParetoTable(frameworks, byFw);
+}
+
+function renderPdParetoTable(frameworks, byFw) {
+  const wrap = document.getElementById("pd-pareto-table-wrap");
+  if (!wrap) return;
+  const concs = [1,2,4,8,16,32];
+  const cell = "padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);";
+  const head = "padding:0.55rem 0.75rem;text-align:right;color:var(--text-muted);font-weight:600;";
+  const rows = concs.map(function(c) {
+    const cells = frameworks.map(function(fw) {
+      const r = byFw[fw].find(function(x) { return x.concurrency === c; });
+      return "<td style=\"" + cell + "\">" + r.tput_total + "</td><td style=\"" + cell + "\">" + r.tput_per_user + "</td><td style=\"" + cell + "\">" + r.ttft_p50 + "</td>";
+    }).join("");
+    return "<tr><td style=\"padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);\">" + c + "</td>" + cells + "</tr>";
+  }).join("");
+  const groups = frameworks.map(function(fw) { const st=PD_PARETO_STYLE[fw]; return "<th colspan=\"3\" style=\"" + head + "text-align:center;color:" + st.color + ";\">" + st.label + "</th>"; }).join("");
+  const subs = frameworks.map(function() { return "<th style=\"" + head + "\">tok/s</th><th style=\"" + head + "\">tok/s/user</th><th style=\"" + head + "\">TTFT p50</th>"; }).join("");
+  wrap.innerHTML = "<table style=\"width:100%;border-collapse:collapse;font-size:0.85rem;min-width:640px;\"><thead><tr style=\"border-bottom:1px solid var(--border);\"><th style=\"" + head + "text-align:left;\">Concurrency</th>" + groups + "</tr><tr style=\"border-bottom:1px solid var(--border);\"><th></th>" + subs + "</tr></thead><tbody>" + rows + "</tbody></table>";
+}
+
+async function initPdPareto() {
+  const response = await fetch("nemotron35-pd-comparison-spark.json?v=20260830-prefix-off");
+  if (!response.ok) throw new Error("P/D comparison data unavailable");
+  const payload = await response.json();
+  _pdParetoData = payload.combos;
+  renderPdPareto();
+}
+
 // ── llm-d vs Dynamo Pareto ────────────────────────────────────────────────────
 // Measured with NVIDIA AIPerf 0.12.0 from the controller node against each
 // backend's ClusterIP. Same model / weights / KV dtype / spec-decode on both.
@@ -2582,6 +2680,7 @@ try {
   renderAblation();
   renderTechniqueImpact();
   renderPareto();
+  initPdPareto().catch(function(e) { console.error("P/D Pareto render failed:", e); });
 } catch (e) {
   console.error("Chart render failed:", e);
 }
