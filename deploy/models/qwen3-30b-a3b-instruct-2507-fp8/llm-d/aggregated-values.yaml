@@ -1,4 +1,4 @@
-# llm-d ModelService — Nemotron 3.5 Lightning with DSpark speculative decoding
+# llm-d ModelService — Qwen3 30B A3B Instruct 2507 FP8 (stable control workload)
 multinode: false
 accelerator:
   type: nvidia
@@ -9,7 +9,7 @@ modelArtifacts:
   uri: "hf://Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
   size: 40Gi
   authSecretName: "hf-token"
-  name: "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
+  name: "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-llm-d"
   labels:
     llm-d.ai/inference-serving: "true"
     llm-d.ai/model: qwen3-30b-control-llm-d
@@ -49,6 +49,16 @@ decode:
       image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.3.1
       imagePullPolicy: IfNotPresent
       modelCommand: vllmServe
+      securityContext:
+        # UID/GID must match the `nvidia` account on the pinned node so the
+        # hostPath HF cache stays writable: spark-01 is 1002:1003, spark-02
+        # is 1001:1001. Without this the image's default uid 1000 (dynamo)
+        # can read the cache but cannot create a new models--* directory,
+        # so any model not already cached dies with PermissionError.
+        runAsNonRoot: true
+        runAsUser: 1002
+        runAsGroup: 1003
+        allowPrivilegeEscalation: false
       startupProbe:
         httpGet:
           path: /v1/models
@@ -65,8 +75,11 @@ decode:
         failureThreshold: 3
         timeoutSeconds: 10
       args:
-        - --served-model-name
-        - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+        # No explicit --served-model-name: the modelservice chart injects one
+        # from modelArtifacts.name (the -llm-d suffixed value). A second flag
+        # here is appended after it and wins, silently reverting the served name
+        # to the bare one the gateway does not route. Matches the Nemotron llm-d
+        # values, which set the served name only via modelArtifacts.
         - --max-model-len
         - "32768"
         - --max-num-seqs
@@ -76,6 +89,34 @@ decode:
         - --enable-prefix-caching
         - --trust-remote-code
       env:
+        # Non-root uid 1002 has no /etc/passwd entry in this image, so any
+        # library calling getpass.getuser() (torch inductor does, via
+        # default_cache_dir) dies with KeyError: getpwuid(). Pointing every
+        # cache root at an explicit writable path avoids that lookup and
+        # keeps writes off the read-only image layers. Mirrors the Nemotron
+        # llm-d values.
+        # torch inductor's codecache calls default_cache_dir() directly,
+        # which calls getpass.getuser() unconditionally -- TORCHINDUCTOR_CACHE_DIR
+        # does not short-circuit that path. getpass.getuser() consults these
+        # env vars before falling back to pwd.getpwuid(), so setting them is
+        # what actually keeps uid 1002 (absent from the image's /etc/passwd)
+        # from raising KeyError: getpwuid().
+        - name: USER
+          value: nvidia
+        - name: LOGNAME
+          value: nvidia
+        - name: HOME
+          value: /tmp
+        - name: XDG_CACHE_HOME
+          value: /tmp/.cache
+        - name: FLASHINFER_WORKSPACE_DIR
+          value: /tmp/.cache/flashinfer
+        - name: TRITON_CACHE_DIR
+          value: /tmp/.triton-cache
+        - name: VLLM_CACHE_ROOT
+          value: /tmp/vllm-cache
+        - name: TORCHINDUCTOR_CACHE_DIR
+          value: /tmp/torchinductor-cache
         - name: HF_HOME
           value: /model-cache
         - name: HF_HUB_CACHE
