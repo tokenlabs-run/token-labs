@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TokenLabs – Inference Endpoints</title>
+  <title>TokenLabs · LLM Inference Systems Lab</title>
+  <meta name="description" content="Reproducible LLM inference systems research across serving frameworks, workloads, and heterogeneous GPU infrastructure.">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -83,6 +84,8 @@
     .section { max-width: 1200px; margin: 0 auto; padding: 0 32px 60px; }
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
     .section-title { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; }
+    .hero-kicker { display:inline-block; margin-bottom:16px; color:var(--accent); font:700 12px ui-monospace,Menlo,monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .hero-actions { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:28px; }
     .section-subtitle { font-size: 0.9rem; color: var(--text-secondary); }
 
     /* MODEL GRID */
@@ -115,6 +118,20 @@
     .feature-arrow { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--accent); font-weight: 600; }
 
     /* STATS ROW */
+    .proof-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .proof-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; display:flex; flex-direction:column; }
+    .proof-card:hover { border-color:var(--accent-border); background:var(--bg-card-hover); }
+    .proof-meta { color:var(--text-muted); font:700 11px ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.06em; }
+    .proof-value { font-size:2rem; font-weight:800; color:var(--accent); margin:12px 0 4px; letter-spacing:-.03em; }
+    .proof-card h3 { font-size:17px; line-height:1.35; margin-bottom:9px; }
+    .proof-card p { font-size:13px; color:var(--text-secondary); line-height:1.55; }
+    .proof-label { margin-top:16px; padding-top:14px; border-top:1px solid var(--border); color:var(--text-muted); font-size:12px; line-height:1.5; }
+    .proof-link { margin-top:auto; padding-top:16px; color:var(--accent); text-decoration:none; font-size:13px; font-weight:700; }
+    .positioning { display:grid; grid-template-columns:1.2fr 1fr; gap:16px; }
+    .positioning-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; }
+    .positioning-card h3 { margin-bottom:10px; font-size:16px; }
+    .positioning-card p { color:var(--text-secondary); font-size:13px; line-height:1.65; }
+    .research-note { color:var(--text-muted); font-size:12px; line-height:1.5; margin-top:14px; }
     .stats-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 40px; }
     .stat-block { text-align: center; padding: 0 24px; }
     .stat-block:not(:last-child) { border-right: 1px solid var(--border); }
@@ -285,6 +302,11 @@
       .stats-row { gap: 10px; }
       .stat-block { padding: 0 12px; }
       .stat-number { font-size: 1.5rem; }
+      .proof-grid,.positioning { grid-template-columns:1fr; }
+      .nav-right { display:none; }
+      .nav-logo { margin-right:8px; }
+      .nav-links { overflow-x:auto; }
+      .nav-link { padding:7px 9px; white-space:nowrap; }
     }
   </style>
 </head>
@@ -296,18 +318,19 @@
     TokenLabs
   </a>
   <div class="nav-links">
-    <a class="nav-link active" href="#" onclick="showCatalog();return false;">Explore</a>
+    <a class="nav-link active" href="#" onclick="showCatalog();return false;">Findings</a>
+    <a class="nav-link" href="benchmark-results.html">Dashboard</a>
+    <a class="nav-link" href="methodology.html">Methodology</a>
     <a class="nav-link" href="https://grafana.tokenlabs.run" target="_blank">Monitoring</a>
-    <a class="nav-link" href="labs.html">Labs</a>
-    <a class="nav-link" href="overnight-run-2026-04-15.html" target="_blank">Run Log</a>
+    <a class="nav-link" href="labs.html">Notebook</a>
 
   </div>
   <div class="nav-right">
     <span class="live-badge" id="live-badge"><span class="live-dot" id="live-dot"></span><span id="live-text">LIVE</span></span>
     <input type="password" id="api-key-input" class="api-key-input" placeholder="API Key"
-      title="API key for tokenlabs.run — contact admin or see github.com/elizabetht/token-labs"
-      oninput="saveApiKey(this.value)" /><a href="https://github.com/elizabetht/token-labs" target="_blank" style="color:#aaa;text-decoration:none;margin-left:4px" title="Get API key">?</a>
-    <a class="btn btn-ghost btn-sm" href="https://github.com/elizabetht/token-labs" target="_blank">GitHub</a>
+      title="API key for the TokenLabs research endpoint"
+      oninput="saveApiKey(this.value)" /><a href="https://github.com/tokenlabs-run/token-labs" target="_blank" style="color:#aaa;text-decoration:none;margin-left:4px" title="TokenLabs source">?</a>
+    <a class="btn btn-ghost btn-sm" href="https://github.com/tokenlabs-run/token-labs" target="_blank">GitHub</a>
   </div>
 </nav>
 
@@ -315,23 +338,26 @@
 <div id="catalog-view" class="catalog-view">
 
   <section class="hero">
-    <h1 class="hero-title">Start Building with <span class="accent">TokenLabs</span></h1>
-    <p class="hero-subtitle">Production-ready inference endpoints and open benchmarking across NVIDIA and AMD accelerators. OpenAI-compatible API.</p>
-    <div class="hero-search">
-      <span class="hero-search-icon">&#128269;</span>
-      <input type="text" id="catalog-search" placeholder="Search models..." oninput="filterCatalog(this.value)" />
-    </div>
-    <div class="stats-row" id="hero-stats">
-      <div class="stat-block"><div class="stat-number" id="stat-models">-</div><div class="stat-label">Models</div></div>
-      <div class="stat-block"><div class="stat-number" id="stat-min-price">—</div><div class="stat-label">From / 1M Input</div></div>
-    </div>
+    <div class="hero-kicker">Open LLM inference systems lab</div>
+    <h1 class="hero-title">Measure the workload.<br><span class="accent">Make the system decision.</span></h1>
+    <p class="hero-subtitle">Reproducible experiments in serving performance, disaggregated inference, routing, observability, and production SLOs across heterogeneous GPU infrastructure.</p>
+    <div class="hero-actions"><a class="btn btn-primary" href="h200-mi300x-dynamo-pd.html">Read the latest study</a><a class="btn btn-ghost" href="methodology.html">Review methodology</a><a class="btn btn-ghost" href="https://github.com/tokenlabs-run/token-labs">Reproduce on GitHub</a></div>
   </section>
 
-  <section class="section">
+  <section class="section" id="published-findings">
+    <div class="section-header"><div><h2 class="section-title">Published findings</h2><p class="section-subtitle">Reviewed results with operational recommendations and machine-readable evidence.</p></div></div>
+    <div class="proof-grid">
+      <article class="proof-card"><div class="proof-meta">H200 → MI300X · 2026-08-30</div><div class="proof-value">1,971 tok/s</div><h3>Cross-vendor prefill/decode works—but the network defines the operating point.</h3><p>A 21-point Qwen3-30B-A3B FP8 matrix completed with 381 requests, zero failures, and independently verified KV transfer bytes.</p><div class="proof-label"><strong>Recommendation:</strong> treat host-staged public TCP as a compatibility baseline, not a production KV fabric; c=32 was the efficient peak for long-output traffic.</div><a class="proof-link" href="h200-mi300x-dynamo-pd.html">Study, matrix, and raw evidence &rarr;</a></article>
+      <article class="proof-card"><div class="proof-meta">DGX Spark P/D · 2026-08-30</div><div class="proof-value">+22.5%</div><h3>Framework choice changes throughput under a matched disaggregated workload.</h3><p>Dynamo outperformed llm-d at c=32 across 1K/8K, 8K/8K, and 8K/1K shapes in a 36-point, prefix-cache-off comparison.</p><div class="proof-label"><strong>Recommendation:</strong> use Dynamo for maximum throughput in this tested two-node configuration; revalidate against the latency SLO before generalizing.</div><a class="proof-link" href="benchmark-results.html#dgx-spark-dynamo-pd">Comparison and reproducibility details &rarr;</a></article>
+      <article class="proof-card"><div class="proof-meta">Long context · DGX Spark</div><div class="proof-value">1.1s → 12.0s</div><h3>Long-context prefill is a tail-latency capacity problem.</h3><p>Nemotron-120B TTFT p99 rose from 1.127s to 11.990s as input length increased from 128 to 2,048 tokens at concurrency 8.</p><div class="proof-label"><strong>Recommendation:</strong> isolate long-context traffic, define a separate TTFT SLO, and evaluate chunked prefill and admission control.</div><a class="proof-link" href="benchmark-results.html#section-nemotron-120b">Explore the workload sweep &rarr;</a></article>
+    </div>
+  </section>
+  <section class="section"><div class="positioning"><div class="positioning-card"><h3>Question → telemetry → controlled run → recommendation</h3><p>Each published study names the decision, fixes the workload and environment, reports tail latency and throughput, explains the mechanism, and states where the conclusion does not generalize.</p></div><div class="positioning-card"><h3>Published work and notebook are separate</h3><p>Reviewed findings live here. Partial runs, capacity interruptions, failed configurations, and active hypotheses remain visible in the <a href="labs.html" style="color:var(--accent)">lab notebook</a>.</p></div></div></section>
+  <section class="section" id="live-demo">
     <div class="section-header">
       <div>
-        <h2 class="section-title">Inference Endpoints</h2>
-        <p class="section-subtitle">Select a model to view pricing, try the playground, or grab API code.</p>
+        <h2 class="section-title">Live research endpoints</h2>
+        <p class="section-subtitle">OpenAI-compatible models used to exercise the serving platform. Availability is live; displayed prices are research estimates.</p>
       </div>
       <div style="display:flex;gap:6px;" id="catalog-filters">
         <button class="filter-chip active" data-filter="all" onclick="setCatalogFilter('all',this)">All</button>
@@ -339,14 +365,20 @@
         <button class="filter-chip" data-filter="base" onclick="setCatalogFilter('base',this)">Base</button>
       </div>
     </div>
+    <div class="hero-search" style="margin:0 0 20px">
+      <span class="hero-search-icon">&#128269;</span>
+      <input type="text" id="catalog-search" placeholder="Search research endpoints..." oninput="filterCatalog(this.value)" />
+    </div>
     <div class="model-grid" id="model-grid">
       <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted);">Loading models...</div>
     </div>
+    <div class="stats-row" id="hero-stats"><div class="stat-block"><div class="stat-number" id="stat-models">-</div><div class="stat-label">Live models</div></div><div class="stat-block"><div class="stat-number" id="stat-min-price">—</div><div class="stat-label">Research estimate / 1M input</div></div></div>
+    <p class="research-note">Prices are demo/research estimates derived from benchmark data, not a commercial offer.</p>
   </section>
 
   <section class="section" id="recent-runs">
     <div class="section-header">
-      <div><h2 class="section-title">Recent Lab Runs</h2><p class="section-subtitle">Serving experiments across AMD MI300X and NVIDIA DGX Spark.</p></div>
+      <div><h2 class="section-title">Lab notebook</h2><p class="section-subtitle">Completed, partial, and exploratory serving work across AMD and NVIDIA accelerators.</p></div>
       <a class="btn btn-ghost btn-sm" href="labs.html">View all runs &rarr;</a>
     </div>
     <div class="model-grid">
@@ -375,7 +407,7 @@
 
 
   <footer class="footer">
-    TokenLabs &mdash; Open-source inference platform &middot; <a href="https://github.com/elizabetht/token-labs" target="_blank">GitHub</a>
+    TokenLabs &mdash; Open LLM inference systems lab &middot; <a href="methodology.html">Methodology</a> &middot; <a href="https://github.com/tokenlabs-run/token-labs" target="_blank">GitHub</a>
   </footer>
 </div>
 
@@ -413,11 +445,11 @@
             <div class="spec-grid" id="spec-grid"></div>
           </div>
           <div class="info-card">
-            <div class="info-card-title">Pricing &middot; per token</div>
+            <div class="info-card-title">Demo cost estimate &middot; per token</div>
             <div class="pricing-row"><div><div class="pricing-row-label">Input tokens</div><div class="pricing-row-unit">per 1M tokens</div></div><div class="pricing-row-price" id="ov-price-in">$0.00</div></div>
             <div class="pricing-row"><div><div class="pricing-row-label">Cached input tokens</div><div class="pricing-row-unit">per 1M tokens</div></div><div class="pricing-row-price" id="ov-price-cached">$0.0000</div></div>
             <div class="pricing-row"><div><div class="pricing-row-label">Output tokens</div><div class="pricing-row-unit">per 1M tokens</div></div><div class="pricing-row-price" id="ov-price-out">$0.00</div></div>
-            <p style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.5;">Prices derived from CI benchmarks (vLLM on DGX Spark).</p>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.5;">Research estimate derived from CI benchmarks; not a commercial offer.</p>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:20px;">
@@ -425,7 +457,7 @@
             <div class="info-card-title">Quick links</div>
             <div class="model-links">
               <a href="https://grafana.tokenlabs.run" target="_blank" class="model-link"><span>&#128200;</span><span style="flex:1">Grafana Monitoring</span><span class="model-link-arrow">&rarr;</span></a>
-              <a href="https://github.com/elizabetht/token-labs" target="_blank" class="model-link"><span>&#128279;</span><span style="flex:1">GitHub Repository</span><span class="model-link-arrow">&rarr;</span></a>
+              <a href="https://github.com/tokenlabs-run/token-labs" target="_blank" class="model-link"><span>&#128279;</span><span style="flex:1">GitHub Repository</span><span class="model-link-arrow">&rarr;</span></a>
             </div>
           </div>
           <div class="info-card">
