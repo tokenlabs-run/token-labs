@@ -1,0 +1,103 @@
+[
+    {
+        "Architecture": "amd64",
+        "Config": {
+            "Env": [
+                "PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NVARCH=x86_64",
+                "NVIDIA_REQUIRE_CUDA=cuda>=13.0 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551 brand=unknown,driver>=565,driver<566 brand=grid,driver>=565,driver<566 brand=tesla,driver>=565,driver<566 brand=nvidia,driver>=565,driver<566 brand=quadro,driver>=565,driver<566 brand=quadrortx,driver>=565,driver<566 brand=nvidiartx,driver>=565,driver<566 brand=vapps,driver>=565,driver<566 brand=vpc,driver>=565,driver<566 brand=vcs,driver>=565,driver<566 brand=vws,driver>=565,driver<566 brand=cloudgaming,driver>=565,driver<566 brand=unknown,driver>=570,driver<571 brand=grid,driver>=570,driver<571 brand=tesla,driver>=570,driver<571 brand=nvidia,driver>=570,driver<571 brand=quadro,driver>=570,driver<571 brand=quadrortx,driver>=570,driver<571 brand=nvidiartx,driver>=570,driver<571 brand=vapps,driver>=570,driver<571 brand=vpc,driver>=570,driver<571 brand=vcs,driver>=570,driver<571 brand=vws,driver>=570,driver<571 brand=cloudgaming,driver>=570,driver<571 brand=unknown,driver>=575,driver<576 brand=grid,driver>=575,driver<576 brand=tesla,driver>=575,driver<576 brand=nvidia,driver>=575,driver<576 brand=quadro,driver>=575,driver<576 brand=quadrortx,driver>=575,driver<576 brand=nvidiartx,driver>=575,driver<576 brand=vapps,driver>=575,driver<576 brand=vpc,driver>=575,driver<576 brand=vcs,driver>=575,driver<576 brand=vws,driver>=575,driver<576 brand=cloudgaming,driver>=575,driver<576",
+                "NV_CUDA_CUDART_VERSION=13.0.96-1",
+                "CUDA_VERSION=13.0.2",
+                "LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64",
+                "NVIDIA_VISIBLE_DEVICES=all",
+                "NVIDIA_DRIVER_CAPABILITIES=compute,utility",
+                "DEBIAN_FRONTEND=noninteractive",
+                "UV_HTTP_TIMEOUT=500",
+                "UV_INDEX_STRATEGY=unsafe-best-match",
+                "UV_LINK_MODE=copy",
+                "UV_PYTHON_INSTALL_DIR=/opt/uv/python",
+                "UV_CACHE_DIR=/opt/uv/cache",
+                "VLLM_ENABLE_CUDA_COMPATIBILITY=0",
+                "TORCH_CUDA_ARCH_LIST=7.5 8.0 8.6 8.9 9.0 10.0 12.0",
+                "VLLM_USAGE_SOURCE=production-docker-image",
+                "VLLM_BUILD_COMMIT=ffd46bfab2128bb84146050e98b51a617c6575ab",
+                "VLLM_BUILD_PIPELINE=019d130e-464e-4ff7-b84b-492992c0c06b",
+                "VLLM_BUILD_URL=https://buildkite.com/vllm/release-v2/builds/4244",
+                "VLLM_IMAGE_TAG=vllm/vllm-openai:v0.26.0"
+            ],
+            "Labels": {
+                "ai.vllm.build.commit": "ffd46bfab2128bb84146050e98b51a617c6575ab",
+                "ai.vllm.build.pipeline": "019d130e-464e-4ff7-b84b-492992c0c06b",
+                "ai.vllm.build.url": "https://buildkite.com/vllm/release-v2/builds/4244",
+                "ai.vllm.image.tag": "vllm/vllm-openai:v0.26.0",
+                "maintainer": "NVIDIA CORPORATION <cudatools@nvidia.com>",
+                "org.opencontainers.image.ref.name": "ubuntu",
+                "org.opencontainers.image.revision": "ffd46bfab2128bb84146050e98b51a617c6575ab",
+                "org.opencontainers.image.source": "https://github.com/vllm-project/vllm",
+                "org.opencontainers.image.url": "https://buildkite.com/vllm/release-v2/builds/4244",
+                "org.opencontainers.image.version": "vllm/vllm-openai:v0.26.0"
+            },
+            "WorkingDir": "/vllm-workspace"
+        },
+        "Created": "2026-08-30T03:34:54.89828265Z",
+        "Descriptor": {
+            "digest": "sha256:d41839c027dc491117958af148f2c35d3a7892a923f8bdd9630fe132fcf94429",
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "size": 8318
+        },
+        "Id": "sha256:d41839c027dc491117958af148f2c35d3a7892a923f8bdd9630fe132fcf94429",
+        "Metadata": {
+            "LastTagTime": "2026-08-30T03:34:54.931049694Z"
+        },
+        "Os": "linux",
+        "Parent": "sha256:e862ae7bf8b6f5fe1501e6fdd2479e01ad05f19d0b265e68a18a19bc90ecc367",
+        "RepoDigests": [
+            "token-labs/dynamo-vllm-cuda@sha256:d41839c027dc491117958af148f2c35d3a7892a923f8bdd9630fe132fcf94429"
+        ],
+        "RepoTags": [
+            "token-labs/dynamo-vllm-cuda:1.4.2-vllm0.26-mc0.3.13-bootstrap"
+        ],
+        "RootFS": {
+            "Layers": [
+                "sha256:767e56ba346ae714b6e6b816baa839051145ed78cfa0e4524a86cc287b0c4b00",
+                "sha256:a34bd8b26cb282b40938915d45732d898d4d09459cd3be508617c2b02e5f9b39",
+                "sha256:0f09a2d797f7f8a8a702ccc542c861cf6bc25831172c34974865c8387e1d9a20",
+                "sha256:50a43a0352744fd68e68cb9fafee74db9b087024b86ebbc29ba287f40672c319",
+                "sha256:b7ec8fd7c485bbedbe64cbc5a7a810ceabb9156e95c83ba60596ddb9b4955d48",
+                "sha256:615128a70d94e67cf85772025df6ef034ec2b62ac730254a8478eb1d831f7108",
+                "sha256:7f74acf646113830b21517f355de5f3bc2dee1c32c8a36b52651d123b589cec5",
+                "sha256:7168a9e978d485e9532efbbed2963c6721b37c8b11d31c1228d22e96cc2b59e7",
+                "sha256:c806a56556904160fdd49b7f385925fc334740db5e8b1ad4e2f3842340b7c36c",
+                "sha256:c2905a915563032438458dc4aeb956a2e160e63af35673b193a5141b3443dddf",
+                "sha256:fb25d931f6f482d8ecbf72917f71b3b75121c65a17da6e74c7fff418d8531491",
+                "sha256:d13f3e53152fddaed89a56a28bcb63b318e8d017b232ec72a0c7ed4c28b2fef7",
+                "sha256:213ce160db3b7304055e0ce9711f5f2fbf87ea739a4d1080fc74aafb80f09bef",
+                "sha256:213ce160db3b7304055e0ce9711f5f2fbf87ea739a4d1080fc74aafb80f09bef",
+                "sha256:e6442e3c7a6d81f08d59c9cf02bc531f3c31f56fe5e969be2d6a525a3377e87e",
+                "sha256:e7850c035607862acdc44c19f0fa68b1a2c25d6092b4a34477ff6b2c7ef381f9",
+                "sha256:cd8a20619a08722ec9ad890a628aa01f25817e5d154e34072e9305ceaf09ef24",
+                "sha256:f958bd0e4a6020a1ccf9d92a43f1670c800f747f148eb1fdf6e97658d192a26d",
+                "sha256:4d1228e88527103e77ce4e810f0dfc2f898528bfd2d244715518254abed2ecc7",
+                "sha256:b677635aa1e08214daca313ec9d20ff29ec70c7ed9b6e9f65cc9ac432a39b38a",
+                "sha256:411dcd0f63844c14de08c93d03bef0dd2a885ea6fb6cd07b6a3d67ec2a3ba1aa",
+                "sha256:a53d38862c562d187774387966156e074f07ecd2e3a4b2d3dc03725118d9a25c",
+                "sha256:161d79580338a5fd3428482295db24beb5fb28cdec2d7de42ed1078b3c5694ed",
+                "sha256:9cf5f5e1331cdc0d037830d2244874593b76adf9367c114d70f5f1bfca22b149",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:48e1cbce5c004fb0dad36600febc492a78e61b214bfd3d8efcfe6786119921bb",
+                "sha256:00958e7511d0109aebf6387537d02468473788f2158032132dc183425bb04bf9",
+                "sha256:26058da35523aaa8134f0a21e710bf41018c22e4dbe7a63d2bc303ba1fc3ded7",
+                "sha256:73d2fd33e55cafcd51f81317d5cbc3553754704fb8c5818089492de080c5bc3f",
+                "sha256:695015ddad1c7bc77a59d0abfdd4df8d865d504e84aca173f3a8ea7d04157e1a",
+                "sha256:ef67da7985239e651c3617432410898b83a43586c3a8923f8cfc179fff06ae44",
+                "sha256:264c075878ed595213d29cbc4ee0160cbd87bdc76368d1158353aaed79ef9aec",
+                "sha256:fb35280f01e55b99d744170b04648ef61a47b199c79e209e33ff9a37205cac1d",
+                "sha256:ca596861c9bb5c6b6761af3ce47709c5e9e3c1b0cec63f4fec83944d8b38a422",
+                "sha256:e20d54fd43c10abb5394f1359ea03fd2c3a52a6f58ccb4d10c15a65c94155f5e",
+                "sha256:7dbd738f8d6284ec6a9e7073ea6441c37f49ad68f5727ad5ec75df0c17fadcaf"
+            ],
+            "Type": "layers"
+        },
+        "Size": 9090537695
+    }
+]

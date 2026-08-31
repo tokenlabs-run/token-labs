@@ -31,7 +31,7 @@ decode:
   strategy:
     type: Recreate
   nodeSelector:
-    kubernetes.io/hostname: spark-01
+    kubernetes.io/hostname: spark-02
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -39,7 +39,7 @@ decode:
           - matchExpressions:
               - key: kubernetes.io/hostname
                 operator: In
-                values: ["spark-01"]
+                values: ["spark-02"]
   tolerations:
     - key: nvidia.com/gpu
       operator: Exists
@@ -76,7 +76,6 @@ decode:
         - "0.40"
         - --quantization
         - modelopt_fp4
-        - --enable-prefix-caching
         - --mamba-cache-mode
         - align
         - --no-disable-hybrid-kv-cache-manager
@@ -119,10 +118,16 @@ decode:
           value: "1"
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         - name: VLLM_WORKER_MULTIPROC_METHOD
           value: spawn
         - name: VLLM_DISABLED_KERNELS
           value: FlashInferFP8ScaledMMLinearKernel
+        - name: VLLM_SSM_CONV_STATE_LAYOUT
+          value: DS
       resources:
         requests:
           cpu: "4"
@@ -199,7 +204,6 @@ prefill:
         - "0.40"
         - --quantization
         - modelopt_fp4
-        - --enable-prefix-caching
         - --mamba-cache-mode
         - align
         - --no-disable-hybrid-kv-cache-manager
@@ -242,10 +246,16 @@ prefill:
           value: "1"
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         - name: VLLM_WORKER_MULTIPROC_METHOD
           value: spawn
         - name: VLLM_DISABLED_KERNELS
           value: FlashInferFP8ScaledMMLinearKernel
+        - name: VLLM_SSM_CONV_STATE_LAYOUT
+          value: DS
       resources:
         requests:
           cpu: "4"

@@ -1,0 +1,2036 @@
+{
+  "data": {
+    "benchmark_id": "c9d660191b92",
+    "end_ns": 1788042203183751979,
+    "endpoint_summaries": {
+      "10.100.193.86:8000": {
+        "endpoint_url": "http://10.100.193.86:8000/metrics",
+        "info": {
+          "avg_fetch_latency_ms": 85.87872097,
+          "avg_update_interval_ms": 321.2937696464646,
+          "duration_seconds": 31.808083195,
+          "first_fetch_ns": 1788042203234428905,
+          "first_update_ns": 1788042203234428905,
+          "last_fetch_ns": 1788042235042512100,
+          "last_update_ns": 1788042235042512100,
+          "median_update_interval_ms": 329.452012,
+          "total_fetches": 100,
+          "unique_updates": 100
+        },
+        "metrics": {
+          "http_request_duration_highr_seconds": {
+            "description": "Latency with many buckets but no API specific labels. Made for more accurate percentile calculations.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 5,
+                  "0.01": 2,
+                  "0.025": 2,
+                  "0.05": 2,
+                  "0.075": 2,
+                  "0.1": 2,
+                  "0.25": 2,
+                  "0.5": 2,
+                  "0.75": 2,
+                  "1.0": 2,
+                  "1.5": 2,
+                  "10.0": 2,
+                  "2.0": 2,
+                  "2.5": 2,
+                  "3.0": 2,
+                  "3.5": 2,
+                  "30.0": 5,
+                  "4.0": 2,
+                  "4.5": 2,
+                  "5.0": 2,
+                  "60.0": 5,
+                  "7.5": 2
+                },
+                "stats": {
+                  "avg": 8.558282759971917,
+                  "count": 5,
+                  "count_rate": 0.1567243554369482,
+                  "p10_estimate": 0.0011703524399628116,
+                  "p1_estimate": 0.00011703524399628115,
+                  "p25_estimate": 0.002925881099907029,
+                  "p50_estimate": 11.196352508477801,
+                  "p5_estimate": 0.0005851762199814058,
+                  "p75_estimate": 13.862313992418956,
+                  "p90_estimate": 16.182842794683843,
+                  "p95_estimate": 16.956352395438806,
+                  "p99_estimate": 17.575160076042778,
+                  "sum": 42.79141379985958,
+                  "sum_rate": 1.3412913492037448
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "http_request_duration_seconds": {
+            "description": "Latency with only few buckets by handler. Made to be only used if aggregation by handler is important.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 2,
+                  "0.1": 2,
+                  "0.5": 2,
+                  "1.0": 2
+                },
+                "labels": {
+                  "handler": "/v1/models",
+                  "method": "GET"
+                },
+                "stats": {
+                  "avg": 0.0004664594307541847,
+                  "count": 2,
+                  "count_rate": 0.06268974217477928,
+                  "p10_estimate": 0.0013199689146131282,
+                  "p1_estimate": 0.0001319968914613128,
+                  "p25_estimate": 0.0032999222865328203,
+                  "p50_estimate": 0.006599844573065641,
+                  "p5_estimate": 0.0006599844573065641,
+                  "p75_estimate": 0.009899766859598461,
+                  "p90_estimate": 0.011879720231518153,
+                  "p95_estimate": 0.012539704688824716,
+                  "p99_estimate": 0.013067692254669968,
+                  "sum": 0.0009329188615083694,
+                  "sum_rate": 0.000029242221448974154
+                }
+              },
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.1": 0,
+                  "0.5": 0,
+                  "1.0": 0
+                },
+                "labels": {
+                  "handler": "/v1/chat/completions",
+                  "method": "POST"
+                },
+                "stats": {
+                  "avg": 14.263493626999358,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 3.6526987253998717,
+                  "p1_estimate": 1.2652698725399871,
+                  "p25_estimate": 7.631746813499679,
+                  "p50_estimate": 14.263493626999358,
+                  "p5_estimate": 2.326349362699936,
+                  "p75_estimate": 20.895240440499038,
+                  "p90_estimate": 24.874288528598846,
+                  "p95_estimate": 26.20063789129878,
+                  "p99_estimate": 27.261717381458727,
+                  "sum": 42.790480880998075,
+                  "sum_rate": 1.3412621069822959
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "http_requests": {
+            "description": "Total number of requests by method, status and handler.",
+            "series": [
+              {
+                "labels": {
+                  "handler": "/v1/models",
+                  "method": "GET",
+                  "status": "2xx"
+                },
+                "stats": {
+                  "rate": 0.06268974217477928,
+                  "total": 2.0
+                }
+              },
+              {
+                "labels": {
+                  "handler": "/v1/chat/completions",
+                  "method": "POST",
+                  "status": "2xx"
+                },
+                "stats": {
+                  "rate": 0.09403461326216893,
+                  "total": 3.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "process_cpu_seconds": {
+            "description": "Total user and system CPU time spent in seconds.",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.1460670992672383,
+                  "total": 4.660000000000082
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "process_max_fds": {
+            "description": "Maximum number of open file descriptors.",
+            "series": [
+              {
+                "stats": {
+                  "avg": 1048576.0,
+                  "max": 1048576.0,
+                  "min": 1048576.0,
+                  "p1": 1048576.0,
+                  "p10": 1048576.0,
+                  "p25": 1048576.0,
+                  "p5": 1048576.0,
+                  "p50": 1048576.0,
+                  "p75": 1048576.0,
+                  "p90": 1048576.0,
+                  "p95": 1048576.0,
+                  "p99": 1048576.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "process_open_fds": {
+            "description": "Number of open file descriptors.",
+            "series": [
+              {
+                "stats": {
+                  "avg": 77.06122448979592,
+                  "max": 78.0,
+                  "min": 76.0,
+                  "p1": 76.97,
+                  "p10": 77.0,
+                  "p25": 77.0,
+                  "p5": 77.0,
+                  "p50": 77.0,
+                  "p75": 77.0,
+                  "p90": 77.0,
+                  "p95": 78.0,
+                  "p99": 78.0,
+                  "std": 0.2805122902139534
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "process_resident_memory_bytes": {
+            "description": "Resident memory size in bytes.",
+            "series": [
+              {
+                "stats": {
+                  "avg": 1762144256.0,
+                  "max": 1762144256.0,
+                  "min": 1762144256.0,
+                  "p1": 1762144256.0,
+                  "p10": 1762144256.0,
+                  "p25": 1762144256.0,
+                  "p5": 1762144256.0,
+                  "p50": 1762144256.0,
+                  "p75": 1762144256.0,
+                  "p90": 1762144256.0,
+                  "p95": 1762144256.0,
+                  "p99": 1762144256.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "process_start_time_seconds": {
+            "description": "Start time of the process since unix epoch in seconds.",
+            "series": [
+              {
+                "stats": {
+                  "avg": 1788037633.4500008,
+                  "max": 1788037633.45,
+                  "min": 1788037633.45,
+                  "p1": 1788037633.45,
+                  "p10": 1788037633.45,
+                  "p25": 1788037633.45,
+                  "p5": 1788037633.45,
+                  "p50": 1788037633.45,
+                  "p75": 1788037633.45,
+                  "p90": 1788037633.45,
+                  "p95": 1788037633.45,
+                  "p99": 1788037633.45,
+                  "std": 7.189331689344645e-7
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "process_virtual_memory_bytes": {
+            "description": "Virtual memory size in bytes.",
+            "series": [
+              {
+                "stats": {
+                  "avg": 24397888198.530613,
+                  "max": 24397889536.0,
+                  "min": 24397873152.0,
+                  "p1": 24397873152.0,
+                  "p10": 24397889536.0,
+                  "p25": 24397889536.0,
+                  "p5": 24397873152.0,
+                  "p50": 24397889536.0,
+                  "p75": 24397889536.0,
+                  "p90": 24397889536.0,
+                  "p95": 24397889536.0,
+                  "p99": 24397889536.0,
+                  "std": 4509.073167398167
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "python_gc_collections": {
+            "description": "Number of times this generation was collected",
+            "series": [
+              {
+                "labels": {
+                  "generation": "0"
+                },
+                "stats": {
+                  "rate": 0.03134487108738964,
+                  "total": 1.0
+                }
+              },
+              {
+                "labels": {
+                  "generation": "1"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "generation": "2"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "python_gc_objects_collected": {
+            "description": "Objects collected during gc",
+            "series": [
+              {
+                "labels": {
+                  "generation": "0"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "generation": "1"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "generation": "2"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "python_gc_objects_uncollectable": {
+            "description": "Uncollectable objects found during GC",
+            "series": [
+              {
+                "labels": {
+                  "generation": "0"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "generation": "1"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "generation": "2"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "python_info": {
+            "description": "Python platform information",
+            "series": [
+              {
+                "labels": {
+                  "implementation": "CPython",
+                  "major": "3",
+                  "minor": "12",
+                  "patchlevel": "13",
+                  "version": "3.12.13"
+                },
+                "stats": {
+                  "avg": 1.0,
+                  "max": 1.0,
+                  "min": 1.0,
+                  "p1": 1.0,
+                  "p10": 1.0,
+                  "p25": 1.0,
+                  "p5": 1.0,
+                  "p50": 1.0,
+                  "p75": 1.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:cache_config_info": {
+            "description": "Information of the LLMEngine CacheConfig",
+            "series": [
+              {
+                "labels": {
+                  "_block_size_resolved": "True",
+                  "block_size": "2144",
+                  "cache_dtype": "fp8_e4m3",
+                  "enable_prefix_caching": "False",
+                  "engine": "0",
+                  "gpu_memory_utilization": "0.4",
+                  "is_attention_free": "False",
+                  "kv_cache_dtype_skip_layers": "[]",
+                  "kv_cache_max_concurrency": "7.814741035856573",
+                  "kv_cache_memory_bytes": "None",
+                  "kv_cache_size_tokens": "8194349",
+                  "kv_offloading_backend": "native",
+                  "kv_offloading_size": "None",
+                  "kv_sharing_fast_prefill": "False",
+                  "mamba_block_size": "1048576",
+                  "mamba_cache_dtype": "auto",
+                  "mamba_cache_mode": "none",
+                  "mamba_page_size_padded": "None",
+                  "mamba_ssm_cache_dtype": "float16",
+                  "num_cpu_blocks": "None",
+                  "num_gpu_blocks": "3923",
+                  "num_gpu_blocks_override": "None",
+                  "prefix_caching_hash_algo": "sha256",
+                  "prefix_match_unit": "None",
+                  "replayssm_buffer_len": "16",
+                  "skip_page_size_padded": "None",
+                  "sliding_window": "None",
+                  "use_replayssm": "False",
+                  "user_specified_block_size": "False",
+                  "user_specified_mamba_block_size": "False"
+                },
+                "stats": {
+                  "avg": 1.0,
+                  "max": 1.0,
+                  "min": 1.0,
+                  "p1": 1.0,
+                  "p10": 1.0,
+                  "p25": 1.0,
+                  "p5": 1.0,
+                  "p50": 1.0,
+                  "p75": 1.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:e2e_request_latency_seconds": {
+            "description": "Histogram of e2e request latency in seconds.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.3": 0,
+                  "0.5": 0,
+                  "0.8": 0,
+                  "1.0": 0,
+                  "1.5": 0,
+                  "10.0": 0,
+                  "120.0": 3,
+                  "15.0": 3,
+                  "1920.0": 3,
+                  "2.0": 0,
+                  "2.5": 0,
+                  "20.0": 3,
+                  "240.0": 3,
+                  "30.0": 3,
+                  "40.0": 3,
+                  "480.0": 3,
+                  "5.0": 0,
+                  "50.0": 3,
+                  "60.0": 3,
+                  "7680.0": 3,
+                  "960.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 14.261736949284872,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 13.59904563899385,
+                  "p1_estimate": 13.40671582365718,
+                  "p25_estimate": 13.919595331221633,
+                  "p50_estimate": 14.453844818267935,
+                  "p5_estimate": 13.492195741584588,
+                  "p75_estimate": 14.699932501839644,
+                  "p90_estimate": 14.84758511198267,
+                  "p95_estimate": 14.896802648697012,
+                  "p99_estimate": 14.936176678068486,
+                  "sum": 42.785210847854614,
+                  "sum_rate": 1.341096918472788
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:engine_sleep_state": {
+            "description": "Engine sleep state; awake = 0 means engine is sleeping; awake = 1 means engine is awake; weights_offloaded = 1 means sleep level 1; discard_all = 1 means sleep level 2.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "sleep_state": "awake"
+                },
+                "stats": {
+                  "avg": 1.0,
+                  "max": 1.0,
+                  "min": 1.0,
+                  "p1": 1.0,
+                  "p10": 1.0,
+                  "p25": 1.0,
+                  "p5": 1.0,
+                  "p50": 1.0,
+                  "p75": 1.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "sleep_state": "weights_offloaded"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "sleep_state": "discard_all"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:estimated_flops_per_gpu": {
+            "description": "Estimated number of floating point operations per GPU (for Model Flops Utilization calculations).",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:estimated_read_bytes_per_gpu": {
+            "description": "Estimated number of bytes read from memory per GPU (for Model Flops Utilization calculations).",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:estimated_write_bytes_per_gpu": {
+            "description": "Estimated number of bytes written to memory per GPU (for Model Flops Utilization calculations).",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:external_prefix_cache_hits": {
+            "description": "External prefix cache hits from KV connector cross-instance cache sharing, in terms of number of cached tokens.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 514.4947140284136,
+                  "total": 16414.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:external_prefix_cache_queries": {
+            "description": "External prefix cache queries from KV connector cross-instance cache sharing, in terms of number of queried tokens.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 514.5574037705884,
+                  "total": 16416.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:generation_tokens": {
+            "description": "Number of generation tokens processed.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 64.4450549556731,
+                  "total": 2056.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:inter_token_latency_seconds": {
+            "description": "Histogram of inter-token latency in seconds.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 1135,
+                  "0.01": 6,
+                  "0.025": 1127,
+                  "0.05": 1135,
+                  "0.075": 1135,
+                  "0.1": 1135,
+                  "0.15": 1135,
+                  "0.2": 1135,
+                  "0.3": 1135,
+                  "0.4": 1135,
+                  "0.5": 1135,
+                  "0.75": 1135,
+                  "1.0": 1135,
+                  "10.0": 1135,
+                  "2.5": 1135,
+                  "20.0": 1135,
+                  "40.0": 1135,
+                  "5.0": 1135,
+                  "7.5": 1135,
+                  "80.0": 1135
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.020073314284339613,
+                  "count": 1135,
+                  "count_rate": 35.57642868418724,
+                  "p10_estimate": 0.01681149035694014,
+                  "p1_estimate": 0.016062231670045512,
+                  "p25_estimate": 0.018060254835097857,
+                  "p50_estimate": 0.02014152896536071,
+                  "p5_estimate": 0.016395235530887568,
+                  "p75_estimate": 0.022222803095623564,
+                  "p90_estimate": 0.022918018982054762,
+                  "p95_estimate": 0.022954925012389226,
+                  "p99_estimate": 0.022984449836656793,
+                  "sum": 22.78321171272546,
+                  "sum_rate": 0.7141368340920854
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:iteration_tokens_total": {
+            "description": "Histogram of number of tokens per engine_step.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 1137,
+                  "1.0": 216,
+                  "1024.0": 1137,
+                  "128.0": 1137,
+                  "16.0": 1137,
+                  "16384.0": 1137,
+                  "2048.0": 1137,
+                  "256.0": 1137,
+                  "32.0": 1137,
+                  "4096.0": 1137,
+                  "512.0": 1137,
+                  "64.0": 1137,
+                  "8.0": 1137,
+                  "8192.0": 1137
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 1.8100263852242744,
+                  "count": 1137,
+                  "count_rate": 35.639118426362025,
+                  "p10_estimate": 0.46404335350825193,
+                  "p1_estimate": 0.0,
+                  "p25_estimate": 1.0,
+                  "p50_estimate": 1.0,
+                  "p5_estimate": 0.201080390545289,
+                  "p75_estimate": 3.023567796683351,
+                  "p90_estimate": 4.318681803198009,
+                  "p95_estimate": 4.750386472036229,
+                  "p99_estimate": 5.095750207106805,
+                  "sum": 2058.0,
+                  "sum_rate": 64.50774469784788
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:kv_cache_usage_perc": {
+            "description": "KV-cache usage. 1 means 100 percent usage.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.0032105652051744,
+                  "max": 0.0038245792962774416,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0023202447730749903,
+                  "p25": 0.0033146353901071235,
+                  "p5": 0.0,
+                  "p50": 0.0033146353901071235,
+                  "p75": 0.0038245792962774416,
+                  "p90": 0.0038245792962774416,
+                  "p95": 0.0038245792962774416,
+                  "p99": 0.0038245792962774416,
+                  "std": 0.001114610578734049
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:mm_cache_hits": {
+            "description": "Multi-modal cache hits, in terms of number of cached items.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:mm_cache_queries": {
+            "description": "Multi-modal cache queries, in terms of number of queried items.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:nixl_bytes_transferred": {
+            "description": "Histogram of bytes transferred per NIXL KV Cache transfers.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 2,
+                  "1.34217728e+08": 2,
+                  "131072.0": 0,
+                  "2.097152e+06": 0,
+                  "2.147483648e+09": 2,
+                  "2048.0": 0,
+                  "3.3554432e+07": 0,
+                  "32768.0": 0,
+                  "5.36870912e+08": 2,
+                  "524288.0": 0,
+                  "8.388608e+06": 0,
+                  "8.589934592e+09": 2,
+                  "8192.0": 0
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 59277312.0,
+                  "count": 2,
+                  "count_rate": 0.06268974217477928,
+                  "p10_estimate": 39144652.8,
+                  "p1_estimate": 34614804.48,
+                  "p25_estimate": 46694400.0,
+                  "p50_estimate": 59277312.0,
+                  "p5_estimate": 36628070.4,
+                  "p75_estimate": 71860224.0,
+                  "p90_estimate": 79409971.2,
+                  "p95_estimate": 81926553.6,
+                  "p99_estimate": 83939819.52,
+                  "sum": 118554624.0,
+                  "sum_rate": 3716079.4060939504
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:nixl_num_descriptors": {
+            "description": "Histogram of number of descriptors per NIXL  KV Cache transfers.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 2,
+                  "10.0": 0,
+                  "100.0": 2,
+                  "1000.0": 2,
+                  "10000.0": 2,
+                  "20.0": 0,
+                  "200.0": 2,
+                  "2000.0": 2,
+                  "20000.0": 2,
+                  "30.0": 0,
+                  "400.0": 2,
+                  "4000.0": 2,
+                  "50.0": 0,
+                  "50000.0": 2,
+                  "75.0": 2
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 54.0,
+                  "count": 2,
+                  "count_rate": 0.06268974217477928,
+                  "p10_estimate": 50.9125,
+                  "p1_estimate": 50.09125,
+                  "p25_estimate": 52.28125,
+                  "p50_estimate": 54.5625,
+                  "p5_estimate": 50.45625,
+                  "p75_estimate": 56.84375,
+                  "p90_estimate": 58.2125,
+                  "p95_estimate": 58.66875,
+                  "p99_estimate": 59.03375,
+                  "sum": 108.0,
+                  "sum_rate": 3.3852460774380817
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:nixl_num_failed_notifications": {
+            "description": "Number of failed NIXL KV Cache notifications.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:nixl_num_failed_transfers": {
+            "description": "Number of failed NIXL KV Cache transfers.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:nixl_num_kv_expired_reqs": {
+            "description": "Number of requests that had their KV expire. NOTE: This metric is tracked on the P instance.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:nixl_post_time_seconds": {
+            "description": "Histogram of transfer post time for NIXL KV Cache transfers.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 2,
+                  "0.001": 2,
+                  "0.005": 2,
+                  "0.01": 2,
+                  "0.025": 2,
+                  "0.05": 2,
+                  "0.075": 2,
+                  "0.1": 2,
+                  "0.2": 2,
+                  "0.3": 2,
+                  "0.5": 2,
+                  "0.75": 2,
+                  "1.0": 2,
+                  "5.0": 2
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.00011800000000000005,
+                  "count": 2,
+                  "count_rate": 0.06268974217477928,
+                  "p10_estimate": 0.00003020000000000001,
+                  "p1_estimate": 3.0200000000000007e-6,
+                  "p25_estimate": 0.00007550000000000002,
+                  "p50_estimate": 0.00015100000000000004,
+                  "p5_estimate": 0.000015100000000000005,
+                  "p75_estimate": 0.00022650000000000006,
+                  "p90_estimate": 0.0002718000000000001,
+                  "p95_estimate": 0.00028690000000000003,
+                  "p99_estimate": 0.00029898000000000007,
+                  "sum": 0.0002360000000000001,
+                  "sum_rate": 7.397389576623959e-6
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:nixl_xfer_time_seconds": {
+            "description": "Histogram of transfer duration for NIXL KV Cache transfers.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 2,
+                  "0.005": 0,
+                  "0.01": 0,
+                  "0.025": 0,
+                  "0.05": 0,
+                  "0.075": 0,
+                  "0.1": 0,
+                  "0.2": 0,
+                  "0.3": 0,
+                  "0.5": 0,
+                  "0.75": 0,
+                  "1.0": 0,
+                  "5.0": 2
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 3.1310759999996662,
+                  "count": 2,
+                  "count_rate": 0.06268974217477928,
+                  "p10_estimate": 2.3310759999996664,
+                  "p1_estimate": 2.1510759999996663,
+                  "p25_estimate": 2.6310759999996662,
+                  "p50_estimate": 3.1310759999996662,
+                  "p5_estimate": 2.2310759999996663,
+                  "p75_estimate": 3.6310759999996662,
+                  "p90_estimate": 3.931075999999666,
+                  "p95_estimate": 4.031075999999667,
+                  "p99_estimate": 4.111075999999667,
+                  "sum": 6.2621519999993325,
+                  "sum_rate": 0.19628634716961832
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:num_preemptions": {
+            "description": "Cumulative number of preemption from the engine.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:num_requests_running": {
+            "description": "Number of requests in model execution batches.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.7142857142857143,
+                  "max": 1.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 1.0,
+                  "p75": 1.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.4540766091864999
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:num_requests_waiting": {
+            "description": "Number of requests waiting to be processed.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.17346938775510204,
+                  "max": 1.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.3805993700684862
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:num_requests_waiting_by_reason": {
+            "description": "Number of waiting requests by reason. Reason labels: 'capacity' = waiting for scheduling capacity; 'deferred' = deferred by transient constraints (LoRA budget, KV transfer, blocked status). Sum of all reasons equals vllm:num_requests_waiting.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "reason": "capacity"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "reason": "deferred"
+                },
+                "stats": {
+                  "avg": 0.17346938775510204,
+                  "max": 1.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 1.0,
+                  "p95": 1.0,
+                  "p99": 1.0,
+                  "std": 0.3805993700684862
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "vllm:prefix_cache_hits": {
+            "description": "Prefix cache hits, in terms of number of cached tokens.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:prefix_cache_queries": {
+            "description": "Prefix cache queries, in terms of number of queried tokens.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:prompt_tokens": {
+            "description": "Number of prefill tokens processed.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 514.5574037705884,
+                  "total": 16416.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:prompt_tokens_by_source": {
+            "description": "Number of prompt tokens by source.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "source": "local_compute"
+                },
+                "stats": {
+                  "rate": 0.06268974217477928,
+                  "total": 2.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "source": "local_cache_hit"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "source": "external_kv_transfer"
+                },
+                "stats": {
+                  "rate": 514.4947140284136,
+                  "total": 16414.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:prompt_tokens_cached": {
+            "description": "Number of cached prompt tokens (local + external).",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 514.4947140284136,
+                  "total": 16414.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:request_decode_time_seconds": {
+            "description": "Histogram of time spent in DECODE phase for request.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.3": 0,
+                  "0.5": 0,
+                  "0.8": 0,
+                  "1.0": 0,
+                  "1.5": 0,
+                  "10.0": 0,
+                  "120.0": 3,
+                  "15.0": 3,
+                  "1920.0": 3,
+                  "2.0": 0,
+                  "2.5": 0,
+                  "20.0": 3,
+                  "240.0": 3,
+                  "30.0": 3,
+                  "40.0": 3,
+                  "480.0": 3,
+                  "5.0": 0,
+                  "50.0": 3,
+                  "60.0": 3,
+                  "7680.0": 3,
+                  "960.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 11.202427867799997,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 10.622167237706709,
+                  "p1_estimate": 10.49160859593572,
+                  "p25_estimate": 10.839764973991691,
+                  "p50_estimate": 11.202427867799997,
+                  "p5_estimate": 10.549634658945049,
+                  "p75_estimate": 11.565090761608303,
+                  "p90_estimate": 11.782688497893286,
+                  "p95_estimate": 11.855221076654946,
+                  "p99_estimate": 11.913247139664275,
+                  "sum": 33.60728360339999,
+                  "sum_rate": 1.0534159721459164
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_generation_tokens": {
+            "description": "Number of generation tokens processed.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "1.0": 0,
+                  "10.0": 0,
+                  "100.0": 0,
+                  "1000.0": 0,
+                  "10000.0": 3,
+                  "100000.0": 3,
+                  "1e+06": 3,
+                  "2.0": 0,
+                  "20.0": 0,
+                  "200.0": 0,
+                  "2000.0": 3,
+                  "20000.0": 3,
+                  "200000.0": 3,
+                  "5.0": 0,
+                  "50.0": 0,
+                  "500.0": 0,
+                  "5000.0": 3,
+                  "50000.0": 3,
+                  "500000.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 1024.0,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 1000.0,
+                  "p1_estimate": 1000.0,
+                  "p25_estimate": 1000.0,
+                  "p50_estimate": 1000.0,
+                  "p5_estimate": 1000.0,
+                  "p75_estimate": 1127.1111111111113,
+                  "p90_estimate": 1203.377777777778,
+                  "p95_estimate": 1228.8000000000002,
+                  "p99_estimate": 1249.137777777778,
+                  "sum": 3072.0,
+                  "sum_rate": 96.29144398046098
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_inference_time_seconds": {
+            "description": "Histogram of time spent in RUNNING phase for request.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.3": 0,
+                  "0.5": 0,
+                  "0.8": 0,
+                  "1.0": 0,
+                  "1.5": 0,
+                  "10.0": 0,
+                  "120.0": 3,
+                  "15.0": 3,
+                  "1920.0": 3,
+                  "2.0": 0,
+                  "2.5": 0,
+                  "20.0": 3,
+                  "240.0": 3,
+                  "30.0": 3,
+                  "40.0": 3,
+                  "480.0": 3,
+                  "5.0": 0,
+                  "50.0": 3,
+                  "60.0": 3,
+                  "7680.0": 3,
+                  "960.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 11.246071483939886,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 10.686491481512947,
+                  "p1_estimate": 10.560585980966886,
+                  "p25_estimate": 10.896333982423048,
+                  "p50_estimate": 11.246071483939886,
+                  "p5_estimate": 10.61654398120958,
+                  "p75_estimate": 11.595808985456724,
+                  "p90_estimate": 11.805651486366825,
+                  "p95_estimate": 11.875598986670193,
+                  "p99_estimate": 11.931556986912886,
+                  "sum": 33.73821445181966,
+                  "sum_rate": 1.0575199827109933
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_max_num_generation_tokens": {
+            "description": "Histogram of maximum number of requested generation tokens.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "1.0": 0,
+                  "10.0": 0,
+                  "100.0": 0,
+                  "1000.0": 0,
+                  "10000.0": 3,
+                  "100000.0": 3,
+                  "1e+06": 3,
+                  "2.0": 0,
+                  "20.0": 0,
+                  "200.0": 0,
+                  "2000.0": 3,
+                  "20000.0": 3,
+                  "200000.0": 3,
+                  "5.0": 0,
+                  "50.0": 0,
+                  "500.0": 0,
+                  "5000.0": 3,
+                  "50000.0": 3,
+                  "500000.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 1024.0,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 1000.0,
+                  "p1_estimate": 1000.0,
+                  "p25_estimate": 1000.0,
+                  "p50_estimate": 1000.0,
+                  "p5_estimate": 1000.0,
+                  "p75_estimate": 1127.1111111111113,
+                  "p90_estimate": 1203.377777777778,
+                  "p95_estimate": 1228.8000000000002,
+                  "p99_estimate": 1249.137777777778,
+                  "sum": 3072.0,
+                  "sum_rate": 96.29144398046098
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_params_max_tokens": {
+            "description": "Histogram of the max_tokens request parameter.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "1.0": 0,
+                  "10.0": 0,
+                  "100.0": 0,
+                  "1000.0": 0,
+                  "10000.0": 3,
+                  "100000.0": 3,
+                  "1e+06": 3,
+                  "2.0": 0,
+                  "20.0": 0,
+                  "200.0": 0,
+                  "2000.0": 3,
+                  "20000.0": 3,
+                  "200000.0": 3,
+                  "5.0": 0,
+                  "50.0": 0,
+                  "500.0": 0,
+                  "5000.0": 3,
+                  "50000.0": 3,
+                  "500000.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 1024.0,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 1000.0,
+                  "p1_estimate": 1000.0,
+                  "p25_estimate": 1000.0,
+                  "p50_estimate": 1000.0,
+                  "p5_estimate": 1000.0,
+                  "p75_estimate": 1127.1111111111113,
+                  "p90_estimate": 1203.377777777778,
+                  "p95_estimate": 1228.8000000000002,
+                  "p99_estimate": 1249.137777777778,
+                  "sum": 3072.0,
+                  "sum_rate": 96.29144398046098
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_params_n": {
+            "description": "Histogram of the n request parameter.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "1.0": 3,
+                  "10.0": 3,
+                  "2.0": 3,
+                  "20.0": 3,
+                  "5.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 1.0,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 0.6333333333333333,
+                  "p1_estimate": 0.5733333333333334,
+                  "p25_estimate": 0.7333333333333334,
+                  "p50_estimate": 0.9,
+                  "p5_estimate": 0.6,
+                  "p75_estimate": 0.95,
+                  "p90_estimate": 0.98,
+                  "p95_estimate": 0.99,
+                  "p99_estimate": 0.998,
+                  "sum": 3.0,
+                  "sum_rate": 0.09403461326216893
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_prefill_kv_computed_tokens": {
+            "description": "Histogram of new KV tokens computed during prefill (excluding cached tokens).",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "1.0": 3,
+                  "10.0": 3,
+                  "100.0": 3,
+                  "1000.0": 3,
+                  "10000.0": 3,
+                  "100000.0": 3,
+                  "1e+06": 3,
+                  "2.0": 3,
+                  "20.0": 3,
+                  "200.0": 3,
+                  "2000.0": 3,
+                  "20000.0": 3,
+                  "200000.0": 3,
+                  "5.0": 3,
+                  "50.0": 3,
+                  "500.0": 3,
+                  "5000.0": 3,
+                  "50000.0": 3,
+                  "500000.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 1.0,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 0.6333333333333333,
+                  "p1_estimate": 0.5733333333333334,
+                  "p25_estimate": 0.7333333333333334,
+                  "p50_estimate": 0.9,
+                  "p5_estimate": 0.6,
+                  "p75_estimate": 0.95,
+                  "p90_estimate": 0.98,
+                  "p95_estimate": 0.99,
+                  "p99_estimate": 0.998,
+                  "sum": 3.0,
+                  "sum_rate": 0.09403461326216893
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_prefill_time_seconds": {
+            "description": "Histogram of time spent in PREFILL phase for request.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.3": 3,
+                  "0.5": 3,
+                  "0.8": 3,
+                  "1.0": 3,
+                  "1.5": 3,
+                  "10.0": 3,
+                  "120.0": 3,
+                  "15.0": 3,
+                  "1920.0": 3,
+                  "2.0": 3,
+                  "2.5": 3,
+                  "20.0": 3,
+                  "240.0": 3,
+                  "30.0": 3,
+                  "40.0": 3,
+                  "480.0": 3,
+                  "5.0": 3,
+                  "50.0": 3,
+                  "60.0": 3,
+                  "7680.0": 3,
+                  "960.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.04364361613988876,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 0.022554265633924424,
+                  "p1_estimate": 0.01780916177008245,
+                  "p25_estimate": 0.030462772073661052,
+                  "p50_estimate": 0.04364361613988876,
+                  "p5_estimate": 0.019918096820678882,
+                  "p75_estimate": 0.05682446020611648,
+                  "p90_estimate": 0.06473296664585311,
+                  "p95_estimate": 0.06736913545909864,
+                  "p99_estimate": 0.06947807050969508,
+                  "sum": 0.1309308484196663,
+                  "sum_rate": 0.004104010565076994
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_prompt_tokens": {
+            "description": "Number of prefill tokens processed.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "1.0": 0,
+                  "10.0": 0,
+                  "100.0": 0,
+                  "1000.0": 0,
+                  "10000.0": 3,
+                  "100000.0": 3,
+                  "1e+06": 3,
+                  "2.0": 0,
+                  "20.0": 0,
+                  "200.0": 0,
+                  "2000.0": 0,
+                  "20000.0": 3,
+                  "200000.0": 3,
+                  "5.0": 0,
+                  "50.0": 0,
+                  "500.0": 0,
+                  "5000.0": 0,
+                  "50000.0": 3,
+                  "500000.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 8209.0,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 8209.000934870675,
+                  "p1_estimate": 8209.000934870675,
+                  "p25_estimate": 8209.000934870675,
+                  "p50_estimate": 8209.000934870675,
+                  "p5_estimate": 8209.000934870675,
+                  "p75_estimate": 8209.000934870675,
+                  "p90_estimate": 8209.000934870675,
+                  "p95_estimate": 8209.000934870675,
+                  "p99_estimate": 8209.000934870675,
+                  "sum": 24627.0,
+                  "sum_rate": 771.9301402691448
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_queue_time_seconds": {
+            "description": "Histogram of time spent in WAITING phase for request.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.3": 0,
+                  "0.5": 0,
+                  "0.8": 0,
+                  "1.0": 0,
+                  "1.5": 0,
+                  "10.0": 3,
+                  "120.0": 3,
+                  "15.0": 3,
+                  "1920.0": 3,
+                  "2.0": 0,
+                  "2.5": 0,
+                  "20.0": 3,
+                  "240.0": 3,
+                  "30.0": 3,
+                  "40.0": 3,
+                  "480.0": 3,
+                  "5.0": 3,
+                  "50.0": 3,
+                  "60.0": 3,
+                  "7680.0": 3,
+                  "960.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 3.0012497821201882,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 2.691728545386054,
+                  "p1_estimate": 2.631578571531631,
+                  "p25_estimate": 2.7919785018100916,
+                  "p50_estimate": 2.959061762516821,
+                  "p5_estimate": 2.658311893244708,
+                  "p75_estimate": 3.1894270526286013,
+                  "p90_estimate": 3.327646226695669,
+                  "p95_estimate": 3.373719284718025,
+                  "p99_estimate": 3.41057773113591,
+                  "sum": 9.003749346360564,
+                  "sum_rate": 0.28222136256484065
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:request_success": {
+            "description": "Count of successfully processed requests.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "finished_reason": "stop",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "finished_reason": "length",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.09403461326216893,
+                  "total": 3.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "finished_reason": "abort",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "finished_reason": "error",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "engine": "0",
+                  "finished_reason": "repetition",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:request_time_per_output_token_seconds": {
+            "description": "Histogram of time_per_output_token_seconds per request.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 3,
+                  "0.01": 0,
+                  "0.025": 3,
+                  "0.05": 3,
+                  "0.075": 3,
+                  "0.1": 3,
+                  "0.15": 3,
+                  "0.2": 3,
+                  "0.3": 3,
+                  "0.4": 3,
+                  "0.5": 3,
+                  "0.75": 3,
+                  "1.0": 3,
+                  "10.0": 3,
+                  "2.5": 3,
+                  "20.0": 3,
+                  "40.0": 3,
+                  "5.0": 3,
+                  "7.5": 3,
+                  "80.0": 3
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 0.010950564875659671,
+                  "count": 3,
+                  "count_rate": 0.09403461326216893,
+                  "p10_estimate": 0.010418494125937915,
+                  "p1_estimate": 0.010304426340858753,
+                  "p25_estimate": 0.01060860710106985,
+                  "p50_estimate": 0.010925462059623072,
+                  "p5_estimate": 0.010355123134227269,
+                  "p75_estimate": 0.011279971242231193,
+                  "p90_estimate": 0.011492676751796067,
+                  "p95_estimate": 0.011563578588317691,
+                  "p99_estimate": 0.01162030005753499,
+                  "sum": 0.03285169462697901,
+                  "sum_rate": 0.001029732133084948
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "vllm:spec_decode_num_accepted_tokens": {
+            "description": "Number of accepted tokens.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 28.83728140039847,
+                  "total": 920.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:spec_decode_num_accepted_tokens_per_pos": {
+            "description": "Accepted tokens per draft position.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d",
+                  "position": "0"
+                },
+                "stats": {
+                  "rate": 28.83728140039847,
+                  "total": 920.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:spec_decode_num_draft_tokens": {
+            "description": "Number of draft tokens.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 35.57642868418724,
+                  "total": 1135.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:spec_decode_num_drafts": {
+            "description": "Number of spec decoding drafts.",
+            "series": [
+              {
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "rate": 35.57642868418724,
+                  "total": 1135.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "vllm:time_to_first_token_seconds": {
+            "description": "Histogram of time to first token in seconds.",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 2,
+                  "0.001": 0,
+                  "0.005": 0,
+                  "0.01": 0,
+                  "0.02": 0,
+                  "0.04": 0,
+                  "0.06": 0,
+                  "0.08": 0,
+                  "0.1": 0,
+                  "0.25": 0,
+                  "0.5": 0,
+                  "0.75": 0,
+                  "1.0": 0,
+                  "10.0": 2,
+                  "160.0": 2,
+                  "2.5": 0,
+                  "20.0": 2,
+                  "2560.0": 2,
+                  "40.0": 2,
+                  "5.0": 2,
+                  "640.0": 2,
+                  "7.5": 2,
+                  "80.0": 2
+                },
+                "labels": {
+                  "engine": "0",
+                  "model_name": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-llm-d"
+                },
+                "stats": {
+                  "avg": 3.1878448724746704,
+                  "count": 2,
+                  "count_rate": 0.06268974217477928,
+                  "p10_estimate": 2.6878448724746704,
+                  "p1_estimate": 2.5753448724746706,
+                  "p25_estimate": 2.8753448724746704,
+                  "p50_estimate": 3.1878448724746704,
+                  "p5_estimate": 2.6253448724746704,
+                  "p75_estimate": 3.5003448724746704,
+                  "p90_estimate": 3.6878448724746704,
+                  "p95_estimate": 3.7503448724746704,
+                  "p99_estimate": 3.8003448724746702,
+                  "sum": 6.375689744949341,
+                  "sum_rate": 0.19984517314862923
+                }
+              }
+            ],
+            "type": "histogram"
+          }
+        }
+      }
+    },
+    "endpoints_configured": [
+      "http://10.100.193.86:8000/metrics"
+    ],
+    "endpoints_successful": [
+      "http://10.100.193.86:8000/metrics"
+    ],
+    "error_summary": [],
+    "start_ns": 1788042188113015149,
+    "warmup_end_ns": 1788042203263343259
+  },
+  "phase": {
+    "end_ns": 1788042203183746158,
+    "phase_index": 0,
+    "phase_kind": "warmup",
+    "phase_name": "warmup",
+    "profiling_index": null,
+    "start_ns": 1788042188113027191,
+    "was_cancelled": false
+  },
+  "schema_version": 1,
+  "warnings": []
+}

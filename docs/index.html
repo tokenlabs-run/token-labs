@@ -265,7 +265,10 @@
     .live-badge.degraded .live-dot { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
     .model-card-catalog.unverified { opacity: 0.55; filter: grayscale(0.8); }
     .model-card-catalog.unverified:hover { opacity: 0.75; transform: none; box-shadow: none; }
+    /* amber = uncertainty (gateway unreachable, we cannot tell) */
     .card-status { margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: #fbbf24; font-family: ui-monospace, Menlo, monospace; }
+    /* red = a definite negative (gateway answered, model is not served) */
+    .card-status.status-unavailable { color: #f87171; }
 
     /* FOOTER */
     .footer { border-top: 1px solid var(--border); padding: 32px; text-align: center; color: var(--text-muted); font-size: 12px; }
@@ -667,13 +670,37 @@ function modelDefaults(modelId) {
 
 // `verified` records whether these ids came from a successful /v1/models call.
 // The static MODEL_ENRICHMENT fallback is display metadata, not a liveness signal.
-function buildModels(ids, verified) {
+//
+// `status` distinguishes the two reasons a model can be unverified, which mean
+// opposite things and must not share a label:
+//   'live'        -- returned by /v1/models
+//   'unavailable' -- the gateway answered and did NOT list it, so it is
+//                    definitely not being served right now
+//   'unknown'     -- the gateway did not answer, so we cannot tell either way
+function buildModels(ids, verified, status) {
   const result = {};
   for (const id of ids) {
     const enrichment = MODEL_ENRICHMENT[id] || modelDefaults(id);
-    result[id] = { ...enrichment, fullModelName: id, baseUrl: DEFAULT_API_BASE, verified: !!verified };
+    result[id] = {
+      ...enrichment,
+      fullModelName: id,
+      baseUrl: DEFAULT_API_BASE,
+      verified: !!verified,
+      status: status || (verified ? 'live' : 'unknown'),
+    };
   }
   return result;
+}
+
+// Everything the gateway advertises, plus every model we have metadata for that
+// it did not advertise -- the latter shown as UNAVAILABLE rather than hidden, so
+// a torn-down model visibly reads as "not serving" instead of silently vanishing.
+function buildCatalog(liveIds) {
+  const models = buildModels(liveIds, true, 'live');
+  for (const id of Object.keys(MODEL_ENRICHMENT)) {
+    if (!models[id]) models[id] = buildModels([id], false, 'unavailable')[id];
+  }
+  return models;
 }
 
 let MODELS = {};
@@ -739,7 +766,9 @@ function renderCatalog(query, filter) {
         ${m.tags.map((t,i)=>`<span class="tag ${m.tagColors[i]}">${t}</span>`).join("")}
         ${m.verified
           ? (m.inputPricePerM > 0 ? `<span class="card-price">$${m.inputPricePerM.toFixed(2)} in · $${m.outputPricePerM.toFixed(2)} out</span>` : '<span class="card-price">Free</span>')
-          : '<span class="card-status">STATUS UNKNOWN</span>'}
+          : (m.status === 'unavailable'
+            ? '<span class="card-status status-unavailable">UNAVAILABLE</span>'
+            : '<span class="card-status">STATUS UNKNOWN</span>')}
       </div>
     </div>
   `).join('');
@@ -769,17 +798,25 @@ async function fetchModels() {
     if (!resp.ok) { markUnverified(); return false; }
     const data = await resp.json();
     const ids = (data.data || []).map(m => m.id).filter(Boolean);
-    if (!ids.length) { markUnverified(); return false; }
+    // An empty list is a SUCCESSFUL answer meaning "nothing is deployed", not a
+    // failure. Treating it as one is what made a fully torn-down cluster render
+    // as STATUS UNKNOWN -- claiming ignorance when the gateway had told us
+    // plainly that it serves nothing.
 
-    const newModels = buildModels(ids, true);
-    const oldKeys = Object.keys(MODELS).sort().join(",");
-    const newKeys = Object.keys(newModels).sort().join(",");
-    // A verification flip (unverified -> verified) must re-render even when the id set is identical.
-    if (oldKeys === newKeys && _modelsVerified) { updateLiveBadge(true); return true; }
+    const newModels = buildCatalog(ids);
+    const oldLive = Object.values(MODELS).filter(m => m.verified).map(m => m.fullModelName).sort().join(",");
+    const newLive = ids.slice().sort().join(",");
+    // Compare the LIVE set, not every key: the catalog also holds unavailable
+    // models, so its key list barely changes and would mask real transitions.
+    if (oldLive === newLive && _modelsVerified) { updateLiveBadge(true); return true; }
 
     MODELS = newModels;
     _modelsVerified = true;
-    if (!MODELS[selectedModelKey]) selectedModelKey = Object.keys(MODELS)[0] || null;
+    // Prefer a model that is actually serving, so the detail view does not open
+    // on something that cannot answer.
+    if (!MODELS[selectedModelKey] || !MODELS[selectedModelKey].verified) {
+      selectedModelKey = ids[0] || Object.keys(MODELS)[0] || null;
+    }
     renderCatalog(document.getElementById('catalog-search').value, catalogFilter);
     if (selectedModelKey && document.getElementById('detail-view').classList.contains('view-active')) {
       refreshHeader(); refreshOverview(); refreshApiPanel(); refreshPlaygroundSelects(); refreshColHeaders();
@@ -799,7 +836,10 @@ function markUnverified() {
   updateLiveBadge(false);
   if (!_modelsVerified) return;
   _modelsVerified = false;
-  for (const m of Object.values(MODELS)) m.verified = false;
+  // 'unknown', never 'unavailable': the gateway did not answer, so a model we
+  // last saw serving may well still be serving. Asserting otherwise would be a
+  // claim the data does not support.
+  for (const m of Object.values(MODELS)) { m.verified = false; m.status = 'unknown'; }
   renderCatalog(document.getElementById('catalog-search').value, catalogFilter);
 }
 
@@ -811,8 +851,9 @@ function schedulePoll() {
 async function initModels() {
   const ok = await fetchModels();
   if (!ok) {
-    // Fallback catalog is browsable metadata only — nothing here is confirmed serving.
-    MODELS = buildModels(Object.keys(MODEL_ENRICHMENT), false);
+    // Fallback catalog is browsable metadata only — nothing here is confirmed
+    // serving, and the gateway never answered, so the honest state is 'unknown'.
+    MODELS = buildModels(Object.keys(MODEL_ENRICHMENT), false, 'unknown');
     _modelsVerified = false;
     selectedModelKey = Object.keys(MODELS)[0] || null;
   }

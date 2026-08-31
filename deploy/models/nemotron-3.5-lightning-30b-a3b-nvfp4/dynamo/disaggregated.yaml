@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
-# GB10 adaptation of NVIDIA's GB200 1P/1D recipe. Both workers share one
-# time-sliced GB10; this profile is experimental, not NVIDIA-validated.
+# GB10 adaptation of NVIDIA's GB200 1P/1D recipe. Prefill and decode use separate
+# time-sliced resource slots on separate GB10s; this profile is experimental, not NVIDIA-validated.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -132,7 +132,6 @@ spec:
                 - "0.40"
                 - --quantization
                 - modelopt_fp4
-                - --enable-prefix-caching
                 - --mamba-cache-mode
                 - align
                 - --no-disable-hybrid-kv-cache-manager
@@ -218,7 +217,7 @@ spec:
                 - name: dshm
                   mountPath: /dev/shm
           nodeSelector:
-            kubernetes.io/hostname: spark-02
+            kubernetes.io/hostname: spark-01
     - name: VllmDecodeWorker
       type: decode
       replicas: 1
@@ -261,7 +260,6 @@ spec:
                 - "0.40"
                 - --quantization
                 - modelopt_fp4
-                - --enable-prefix-caching
                 - --mamba-cache-mode
                 - align
                 - --no-disable-hybrid-kv-cache-manager

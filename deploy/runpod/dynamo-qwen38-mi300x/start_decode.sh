@@ -7,14 +7,17 @@ export DYN_DISCOVERY_BACKEND=etcd
 export DYN_EVENT_PLANE=zmq
 export DYN_REQUEST_PLANE=tcp
 export ETCD_ENDPOINTS="http://${PREFILL_IP}:2379"
+export VLLM_SSM_CONV_STATE_LAYOUT=DS
+export VLLM_NIXL_SIDE_CHANNEL_HOST="$DECODE_IP"
 
-kv_config=$(printf '{"kv_connector":"MoRIIOConnector","kv_role":"kv_consumer","kv_connector_extra_config":{"local_ip":"%s","http_port":8100,"handshake_port":5601,"notify_port":5602,"backend":"rdma","decode_host":"%s","decode_handshake_port":5601,"decode_notify_port":5602,"tp_size":1,"remote_dp_size":1}}' "$DECODE_IP" "$DECODE_IP")
+kv_config='{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
 
 exec /opt/dynamo/bin/python -m dynamo.vllm \
   --model /workspace/models/Qwen3.8-27B \
   --served-model-name Qwen/Qwen3.8-27B \
   --max-model-len 32768 \
   --gpu-memory-utilization 0.90 \
+  --no-enable-prefix-caching \
   --disaggregation-mode decode \
   --kv-transfer-config "$kv_config" \
   --dyn-reasoning-parser qwen3

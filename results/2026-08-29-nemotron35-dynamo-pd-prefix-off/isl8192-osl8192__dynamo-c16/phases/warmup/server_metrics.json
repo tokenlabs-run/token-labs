@@ -1,0 +1,2393 @@
+{
+  "data": {
+    "benchmark_id": "2ad10788fa4d",
+    "end_ns": 1788047736796343830,
+    "endpoint_summaries": {
+      "10.100.50.31:8000": {
+        "endpoint_url": "http://10.100.50.31:8000/metrics",
+        "info": {
+          "avg_fetch_latency_ms": 77.36184901177856,
+          "avg_update_interval_ms": 332.5861377971698,
+          "duration_seconds": 282.033044852,
+          "first_fetch_ns": 1788047736957653819,
+          "first_update_ns": 1788047736957653819,
+          "last_fetch_ns": 1788048018990698671,
+          "last_update_ns": 1788048018990698671,
+          "median_update_interval_ms": 333.019403,
+          "total_fetches": 849,
+          "unique_updates": 849
+        },
+        "metrics": {
+          "dynamo_component_router_input_sequence_tokens": {
+            "description": "Input sequence length in tokens observed at the router",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "100": 0,
+                  "130000": 0,
+                  "15000": 0,
+                  "1800": 0,
+                  "210": 0,
+                  "31000": 0,
+                  "3600": 0,
+                  "430": 0,
+                  "63000": 0,
+                  "7400": 0,
+                  "870": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_inter_token_latency_seconds": {
+            "description": "Average inter-token latency observed at the router",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "0.0019": 0,
+                  "0.0035": 0,
+                  "0.0067": 0,
+                  "0.013": 0,
+                  "0.024": 0,
+                  "0.045": 0,
+                  "0.084": 0,
+                  "0.16": 0,
+                  "0.3": 0,
+                  "0.56": 0,
+                  "1.1": 0,
+                  "2": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_kv_hit_rate": {
+            "description": "Predicted KV cache hit rate at routing time (0.0-1.0)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "0.05": 0,
+                  "0.1": 0,
+                  "0.15000000000000002": 0,
+                  "0.2": 0,
+                  "0.25": 0,
+                  "0.30000000000000004": 0,
+                  "0.35000000000000003": 0,
+                  "0.4": 0,
+                  "0.45": 0,
+                  "0.5": 0,
+                  "0.55": 0,
+                  "0.6000000000000001": 0,
+                  "0.65": 0,
+                  "0.7000000000000001": 0,
+                  "0.75": 0,
+                  "0.8": 0,
+                  "0.8500000000000001": 0,
+                  "0.9": 0,
+                  "0.9500000000000001": 0,
+                  "1": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_kv_transfer_estimated_latency_seconds": {
+            "description": "Upper-bound estimation of KV cache transfer latency in disaggregated serving (prefill_complete to first_token)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "0.0019": 0,
+                  "0.0037": 0,
+                  "0.0072": 0,
+                  "0.014": 0,
+                  "0.027": 0,
+                  "0.052": 0,
+                  "0.1": 0,
+                  "0.19": 0,
+                  "0.37": 0,
+                  "0.72": 0,
+                  "1.4": 0,
+                  "10": 0,
+                  "2.7": 0,
+                  "5.2": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_non_max_overlap_selections": {
+            "description": "Total admitted prefill scheduler selections with less KV cache overlap than another eligible worker",
+            "series": [
+              {
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76",
+                  "worker_type": "prefill"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_component_router_output_sequence_tokens": {
+            "description": "Output sequence length in tokens observed at the router",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "100": 0,
+                  "16000": 0,
+                  "1800": 0,
+                  "210": 0,
+                  "32000": 0,
+                  "3700": 0,
+                  "430": 0,
+                  "7600": 0,
+                  "880": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_overlap_blocks_lost": {
+            "description": "Difference in effective KV cache overlap between the highest-overlap eligible prefill worker and selected worker",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.25": 0,
+                  "0.5": 0,
+                  "1": 0,
+                  "1024": 0,
+                  "128": 0,
+                  "16": 0,
+                  "2": 0,
+                  "2048": 0,
+                  "256": 0,
+                  "32": 0,
+                  "4": 0,
+                  "4096": 0,
+                  "512": 0,
+                  "64": 0,
+                  "8": 0,
+                  "8192": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76",
+                  "worker_type": "prefill"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_requests": {
+            "description": "Total number of requests processed by the router",
+            "series": [
+              {
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_component_router_requests_started": {
+            "description": "Total number of requests admitted by the router scheduler",
+            "series": [
+              {
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_component_router_shared_cache_beyond_blocks": {
+            "description": "Shared cache blocks beyond device overlap for the selected worker",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "1": 0,
+                  "1024": 0,
+                  "128": 0,
+                  "16": 0,
+                  "2": 0,
+                  "2048": 0,
+                  "256": 0,
+                  "32": 0,
+                  "4": 0,
+                  "512": 0,
+                  "64": 0,
+                  "8": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_shared_cache_hit_rate": {
+            "description": "Fraction of request blocks found in the shared KV cache (0.0-1.0)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "0.05": 0,
+                  "0.1": 0,
+                  "0.15000000000000002": 0,
+                  "0.2": 0,
+                  "0.25": 0,
+                  "0.30000000000000004": 0,
+                  "0.35000000000000003": 0,
+                  "0.4": 0,
+                  "0.45": 0,
+                  "0.5": 0,
+                  "0.55": 0,
+                  "0.6000000000000001": 0,
+                  "0.65": 0,
+                  "0.7000000000000001": 0,
+                  "0.75": 0,
+                  "0.8": 0,
+                  "0.8500000000000001": 0,
+                  "0.9": 0,
+                  "0.9500000000000001": 0,
+                  "1": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_component_router_time_to_first_token_seconds": {
+            "description": "Time to first token observed at the router",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0": 0,
+                  "0.0022": 0,
+                  "0.0047": 0,
+                  "0.01": 0,
+                  "0.022": 0,
+                  "0.047": 0,
+                  "0.1": 0,
+                  "0.22": 0,
+                  "0.47": 0,
+                  "1": 0,
+                  "10": 0,
+                  "100": 0,
+                  "2.2": 0,
+                  "22": 0,
+                  "220": 0,
+                  "4.7": 0,
+                  "48": 0,
+                  "480": 0
+                },
+                "labels": {
+                  "dynamo_component": "backend",
+                  "dynamo_namespace": "token_labs_vllm_disagg_gb10_dspark",
+                  "router_id": "4844683723016822",
+                  "worker_id": "113636d45c0a76"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_active_requests": {
+            "description": "Number of requests currently being handled by the frontend, from HTTP handler entry to response completion",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 13.813898704358069,
+                  "max": 16.0,
+                  "min": 0.0,
+                  "p1": 1.0,
+                  "p10": 7.0,
+                  "p25": 13.0,
+                  "p5": 4.0,
+                  "p50": 16.0,
+                  "p75": 16.0,
+                  "p90": 16.0,
+                  "p95": 16.0,
+                  "p99": 16.0,
+                  "std": 3.911852453389006
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_audio_per_request": {
+            "description": "Number of audio_url content parts per request",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 16,
+                  "1": 16,
+                  "10": 16,
+                  "100": 16,
+                  "2": 16,
+                  "20": 16,
+                  "3": 16,
+                  "30": 16,
+                  "4": 16,
+                  "40": 16,
+                  "5": 16,
+                  "50": 16,
+                  "6": 16,
+                  "7": 16,
+                  "8": 16,
+                  "9": 16
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.0,
+                  "p1_estimate": 0.0,
+                  "p25_estimate": 0.0,
+                  "p50_estimate": 0.0,
+                  "p5_estimate": 0.0,
+                  "p75_estimate": 0.0,
+                  "p90_estimate": 0.0,
+                  "p95_estimate": 0.0,
+                  "p99_estimate": 0.0,
+                  "sum": 0.0,
+                  "sum_rate": 0.0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_cached_tokens": {
+            "description": "Number of cached tokens (prefix cache hits) per request",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 8,
+                  "100": 8,
+                  "130000": 16,
+                  "15000": 16,
+                  "1800": 8,
+                  "210": 8,
+                  "31000": 16,
+                  "3600": 8,
+                  "430": 8,
+                  "63000": 16,
+                  "7400": 16,
+                  "870": 8
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 2192.0,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.0,
+                  "p1_estimate": 0.0,
+                  "p25_estimate": 0.0,
+                  "p50_estimate": 1800.0,
+                  "p5_estimate": 0.0,
+                  "p75_estimate": 4105.0,
+                  "p90_estimate": 5173.75,
+                  "p95_estimate": 5530.0,
+                  "p99_estimate": 5815.0,
+                  "sum": 35072.0,
+                  "sum_rate": 124.31582658430423
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_detokenize_token_count": {
+            "description": "Total tokens detokenized",
+            "series": [
+              {
+                "stats": {
+                  "rate": 583289.3053776661,
+                  "total": 164557668.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_detokenize_total_us": {
+            "description": "Cumulative detokenization time (microseconds)",
+            "series": [
+              {
+                "stats": {
+                  "rate": 2212653.8166518635,
+                  "total": 624234233.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_disconnected_clients": {
+            "description": "Number of disconnected clients",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_event_loop_delay_seconds": {
+            "description": "Event loop delay canary: drift from 10ms sleep (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 25305,
+                  "0": 0,
+                  "0.001": 2932,
+                  "0.005": 25305,
+                  "0.01": 25305,
+                  "0.025": 25305,
+                  "0.05": 25305,
+                  "0.1": 25305,
+                  "0.25": 25305,
+                  "0.5": 25305,
+                  "1": 25305
+                },
+                "stats": {
+                  "avg": 0.0011485039343213294,
+                  "count": 25305,
+                  "count_rate": 89.69582549372201,
+                  "p10_estimate": 0.0008707679338391028,
+                  "p1_estimate": 0.00009404214939162665,
+                  "p25_estimate": 0.001143568702111127,
+                  "p50_estimate": 0.0012157675166800503,
+                  "p5_estimate": 0.0004392536091460605,
+                  "p75_estimate": 0.0012879663312489733,
+                  "p90_estimate": 0.0013312856199903273,
+                  "p95_estimate": 0.0013457253829041117,
+                  "p99_estimate": 0.0013572771932351395,
+                  "sum": 29.06289205800124,
+                  "sum_rate": 0.10301600847173913
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_event_loop_stall": {
+            "description": "Number of event loop stalls (delay > 5ms)",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_image_tokens_per_request": {
+            "description": "Calculated image-placeholder token count per image-bearing request; recorded from the response path only when every image resolves and processor overrides are absent",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "1024": 0,
+                  "128": 0,
+                  "16": 0,
+                  "16384": 0,
+                  "2048": 0,
+                  "256": 0,
+                  "32": 0,
+                  "32768": 0,
+                  "4": 0,
+                  "4096": 0,
+                  "512": 0,
+                  "64": 0,
+                  "65536": 0,
+                  "8": 0,
+                  "8192": 0
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_images_per_request": {
+            "description": "Number of image_url content parts per request",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 16,
+                  "1": 16,
+                  "10": 16,
+                  "100": 16,
+                  "2": 16,
+                  "20": 16,
+                  "3": 16,
+                  "30": 16,
+                  "4": 16,
+                  "40": 16,
+                  "5": 16,
+                  "50": 16,
+                  "6": 16,
+                  "7": 16,
+                  "8": 16,
+                  "9": 16
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.0,
+                  "p1_estimate": 0.0,
+                  "p25_estimate": 0.0,
+                  "p50_estimate": 0.0,
+                  "p5_estimate": 0.0,
+                  "p75_estimate": 0.0,
+                  "p90_estimate": 0.0,
+                  "p95_estimate": 0.0,
+                  "p99_estimate": 0.0,
+                  "sum": 0.0,
+                  "sum_rate": 0.0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_inflight_requests": {
+            "description": "Number of inflight requests",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 13.813898704358069,
+                  "max": 16.0,
+                  "min": 0.0,
+                  "p1": 1.0,
+                  "p10": 7.0,
+                  "p25": 13.0,
+                  "p5": 4.0,
+                  "p50": 16.0,
+                  "p75": 16.0,
+                  "p90": 16.0,
+                  "p95": 16.0,
+                  "p99": 16.0,
+                  "std": 3.911852453389006
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_input_sequence_tokens": {
+            "description": "Input sequence length in tokens",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 0,
+                  "100": 0,
+                  "130000": 16,
+                  "15000": 16,
+                  "1800": 0,
+                  "210": 0,
+                  "31000": 16,
+                  "3600": 0,
+                  "430": 0,
+                  "63000": 16,
+                  "7400": 0,
+                  "870": 0
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 8208.0625,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 8208.062577345503,
+                  "p1_estimate": 8208.062577345503,
+                  "p25_estimate": 8208.062577345503,
+                  "p50_estimate": 8208.062577345503,
+                  "p5_estimate": 8208.062577345503,
+                  "p75_estimate": 8208.062577345503,
+                  "p90_estimate": 8208.062577345503,
+                  "p95_estimate": 8208.062577345503,
+                  "p99_estimate": 8208.062577345503,
+                  "sum": 131329.0,
+                  "sum_rate": 465.50733318573475
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_inter_token_latency_seconds": {
+            "description": "Inter-token latency in seconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 130945,
+                  "0": 0,
+                  "0.0019": 0,
+                  "0.0035": 8,
+                  "0.0067": 416,
+                  "0.013": 3652,
+                  "0.024": 92653,
+                  "0.045": 124926,
+                  "0.084": 128396,
+                  "0.16": 130929,
+                  "0.3": 130945,
+                  "0.56": 130945,
+                  "1.1": 130945,
+                  "2": 130945
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 0.025759488619603796,
+                  "count": 130945,
+                  "count_rate": 464.14621099685553,
+                  "p10_estimate": 0.015469827819757585,
+                  "p1_estimate": 0.008262491336668646,
+                  "p25_estimate": 0.01782034093486885,
+                  "p50_estimate": 0.021212226472419965,
+                  "p5_estimate": 0.01468632344805383,
+                  "p75_estimate": 0.026983433430014633,
+                  "p90_estimate": 0.039763900848662694,
+                  "p95_estimate": 0.04402405665487871,
+                  "p99_estimate": 0.11892673836676682,
+                  "sum": 3373.076237294019,
+                  "sum_rate": 11.956169040005722
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_model_context_length": {
+            "description": "Maximum context length in tokens for a worker serving the model",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 1048576.0,
+                  "max": 1048576.0,
+                  "min": 1048576.0,
+                  "p1": 1048576.0,
+                  "p10": 1048576.0,
+                  "p25": 1048576.0,
+                  "p5": 1048576.0,
+                  "p50": 1048576.0,
+                  "p75": 1048576.0,
+                  "p90": 1048576.0,
+                  "p95": 1048576.0,
+                  "p99": 1048576.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_model_kv_cache_block_size": {
+            "description": "KV cache block size in tokens for a worker serving the model",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 2192.0,
+                  "max": 2192.0,
+                  "min": 2192.0,
+                  "p1": 2192.0,
+                  "p10": 2192.0,
+                  "p25": 2192.0,
+                  "p5": 2192.0,
+                  "p50": 2192.0,
+                  "p75": 2192.0,
+                  "p90": 2192.0,
+                  "p95": 2192.0,
+                  "p99": 2192.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_model_max_num_batched_tokens": {
+            "description": "Maximum number of batched tokens for a worker serving the model",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 2048.0,
+                  "max": 2048.0,
+                  "min": 2048.0,
+                  "p1": 2048.0,
+                  "p10": 2048.0,
+                  "p25": 2048.0,
+                  "p5": 2048.0,
+                  "p50": 2048.0,
+                  "p75": 2048.0,
+                  "p90": 2048.0,
+                  "p95": 2048.0,
+                  "p99": 2048.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_model_max_num_seqs": {
+            "description": "Maximum number of sequences for a worker serving the model",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 256.0,
+                  "max": 256.0,
+                  "min": 256.0,
+                  "p1": 256.0,
+                  "p10": 256.0,
+                  "p25": 256.0,
+                  "p5": 256.0,
+                  "p50": 256.0,
+                  "p75": 256.0,
+                  "p90": 256.0,
+                  "p95": 256.0,
+                  "p99": 256.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_model_migration_limit": {
+            "description": "Maximum number of request migrations allowed for the model",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_model_total_kv_blocks": {
+            "description": "Total KV cache blocks available for a worker serving the model",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 3933.0,
+                  "max": 3933.0,
+                  "min": 3933.0,
+                  "p1": 3933.0,
+                  "p10": 3933.0,
+                  "p25": 3933.0,
+                  "p5": 3933.0,
+                  "p50": 3933.0,
+                  "p75": 3933.0,
+                  "p90": 3933.0,
+                  "p95": 3933.0,
+                  "p99": 3933.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_output_sequence_tokens": {
+            "description": "Output sequence length in tokens",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 0,
+                  "100": 0,
+                  "16000": 16,
+                  "1800": 0,
+                  "210": 0,
+                  "32000": 16,
+                  "3700": 0,
+                  "430": 0,
+                  "7600": 0,
+                  "880": 0
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 8192.0,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 7600.0,
+                  "p1_estimate": 7600.0,
+                  "p25_estimate": 7600.0,
+                  "p50_estimate": 7639.953125,
+                  "p5_estimate": 7600.0,
+                  "p75_estimate": 9386.15625,
+                  "p90_estimate": 10567.40625,
+                  "p95_estimate": 10961.15625,
+                  "p99_estimate": 11276.15625,
+                  "sum": 131072.0,
+                  "sum_rate": 464.59637380411505
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_output_tokens": {
+            "description": "Total number of output tokens generated (updates in real-time)",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "rate": 464.20292442139214,
+                  "total": 130961.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_queued_requests": {
+            "description": "Number of requests in HTTP processing queue",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 1.8916372202591283,
+                  "max": 16.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 8.0,
+                  "p95": 13.0,
+                  "p99": 16.0,
+                  "std": 4.048064792755777
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_request_duration_seconds": {
+            "description": "Duration of LLM requests",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 0,
+                  "130": 0,
+                  "16": 0,
+                  "2": 0,
+                  "260": 11,
+                  "32": 0,
+                  "4": 0,
+                  "510": 16,
+                  "64": 0,
+                  "8": 0
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 244.27560634006272,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 180.82517199442174,
+                  "p1_estimate": 157.62767014757586,
+                  "p25_estimate": 219.48767507249826,
+                  "p50_estimate": 253.93780976164527,
+                  "p5_estimate": 167.93767096839622,
+                  "p75_estimate": 275.9038677739941,
+                  "p90_estimate": 289.5465344460598,
+                  "p95_estimate": 296.9260463517385,
+                  "p99_estimate": 302.82965587628144,
+                  "sum": 3908.4097014410036,
+                  "sum_rate": 13.853706166307939
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_requests": {
+            "description": "Total number of LLM requests processed",
+            "series": [
+              {
+                "labels": {
+                  "endpoint": "chat_completions",
+                  "error_type": "",
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo",
+                  "request_type": "stream",
+                  "status": "success"
+                },
+                "stats": {
+                  "rate": 0.05671342453663514,
+                  "total": 16.0
+                }
+              },
+              {
+                "labels": {
+                  "endpoint": "chat_completions",
+                  "error_type": "",
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo",
+                  "request_type": "unary",
+                  "status": "success"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_requests_started": {
+            "description": "Total number of LLM requests accepted by the frontend handler",
+            "series": [
+              {
+                "labels": {
+                  "endpoint": "chat_completions",
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo",
+                  "request_type": "stream"
+                },
+                "stats": {
+                  "rate": 0.05671342453663514,
+                  "total": 16.0
+                }
+              },
+              {
+                "labels": {
+                  "endpoint": "chat_completions",
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo",
+                  "request_type": "unary"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_stage_duration_seconds": {
+            "description": "Pipeline stage duration (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0.0001": 0,
+                  "0.0005": 3,
+                  "0.001": 7,
+                  "0.005": 8,
+                  "0.01": 12,
+                  "0.05": 16,
+                  "0.1": 16,
+                  "0.5": 16,
+                  "1": 16,
+                  "2.5": 16,
+                  "5": 16
+                },
+                "labels": {
+                  "stage": "preprocess"
+                },
+                "stats": {
+                  "avg": 0.004952397500000002,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.00021817404716379865,
+                  "p1_estimate": 0.0001077261070745698,
+                  "p25_estimate": 0.0005,
+                  "p50_estimate": 0.00325753690248566,
+                  "p5_estimate": 0.000138630535372849,
+                  "p75_estimate": 0.00803125,
+                  "p90_estimate": 0.0151507380497132,
+                  "p95_estimate": 0.022650738049713202,
+                  "p99_estimate": 0.028650738049713197,
+                  "sum": 0.07923836000000004,
+                  "sum_rate": 0.00028086742189167065
+                }
+              },
+              {
+                "buckets": {
+                  "+Inf": 32,
+                  "0.0001": 32,
+                  "0.0005": 32,
+                  "0.001": 32,
+                  "0.005": 32,
+                  "0.01": 32,
+                  "0.05": 32,
+                  "0.1": 32,
+                  "0.5": 32,
+                  "1": 32,
+                  "2.5": 32,
+                  "5": 32
+                },
+                "labels": {
+                  "stage": "route"
+                },
+                "stats": {
+                  "avg": 0.00001307715624999999,
+                  "count": 32,
+                  "count_rate": 0.11342684907327027,
+                  "p10_estimate": 0.0,
+                  "p1_estimate": 0.0,
+                  "p25_estimate": 2.289718172626262e-6,
+                  "p50_estimate": 8.902290138643756e-6,
+                  "p5_estimate": 0.0,
+                  "p75_estimate": 0.000023586269919949965,
+                  "p90_estimate": 0.00003256365243318795,
+                  "p95_estimate": 0.00003555611327093392,
+                  "p99_estimate": 0.00003795008194113072,
+                  "sum": 0.00041846899999999966,
+                  "sum_rate": 1.4833006282763218e-6
+                }
+              },
+              {
+                "buckets": {
+                  "+Inf": 32,
+                  "0.0001": 0,
+                  "0.0005": 0,
+                  "0.001": 0,
+                  "0.005": 0,
+                  "0.01": 0,
+                  "0.05": 0,
+                  "0.1": 0,
+                  "0.5": 0,
+                  "1": 1,
+                  "2.5": 3,
+                  "5": 8
+                },
+                "labels": {
+                  "stage": "transport_roundtrip"
+                },
+                "stats": {
+                  "avg": 16.725505227062484,
+                  "count": 32,
+                  "count_rate": 0.11342684907327027,
+                  "p10_estimate": 2.7057300231030146,
+                  "p1_estimate": 1.0220873833565527,
+                  "p25_estimate": 4.915438252727753,
+                  "p50_estimate": 15.672617640244553,
+                  "p5_estimate": 1.8084322289263275,
+                  "p75_estimate": 26.70098920183059,
+                  "p90_estimate": 33.318012138782215,
+                  "p95_estimate": 35.523686451099415,
+                  "p99_estimate": 37.28822590095319,
+                  "sum": 535.2161672659995,
+                  "sum_rate": 1.8971213570642096
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_stage_requests": {
+            "description": "Number of requests currently in the given pipeline stage",
+            "series": [
+              {
+                "labels": {
+                  "phase": "",
+                  "stage": "preprocess"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_template_seconds": {
+            "description": "Template application time in preprocessor (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0.00001": 0,
+                  "0.00005": 13,
+                  "0.0001": 16,
+                  "0.0005": 16,
+                  "0.001": 16,
+                  "0.005": 16,
+                  "0.01": 16,
+                  "0.05": 16
+                },
+                "stats": {
+                  "avg": 0.00004734931249999997,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.00002310940712945588,
+                  "p1_estimate": 0.000018955560975609725,
+                  "p25_estimate": 0.000030032484052532804,
+                  "p50_estimate": 0.000041570945590994344,
+                  "p5_estimate": 0.000020801714821763572,
+                  "p75_estimate": 0.00005,
+                  "p90_estimate": 0.00008405556910569099,
+                  "p95_estimate": 0.00009429167682926825,
+                  "p99_estimate": 0.00009885833536585365,
+                  "sum": 0.0007575889999999995,
+                  "sum_rate": 2.6853416613303032e-6
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_time_to_first_token_seconds": {
+            "description": "Time to first token in seconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 0,
+                  "0.0022": 0,
+                  "0.0047": 0,
+                  "0.01": 0,
+                  "0.022": 0,
+                  "0.047": 0,
+                  "0.1": 0,
+                  "0.22": 0,
+                  "0.47": 0,
+                  "1": 0,
+                  "10": 2,
+                  "100": 16,
+                  "2.2": 0,
+                  "22": 6,
+                  "220": 16,
+                  "4.7": 1,
+                  "48": 11,
+                  "480": 16
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 33.45723108750002,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 9.315837883889538,
+                  "p1_estimate": 4.595295340055993,
+                  "p25_estimate": 16.271879663594703,
+                  "p50_estimate": 30.348258989175335,
+                  "p5_estimate": 6.73127716138193,
+                  "p75_estimate": 49.136820446122734,
+                  "p90_estimate": 60.561018620841466,
+                  "p95_estimate": 67.1240667205695,
+                  "p99_estimate": 72.37450520035192,
+                  "sum": 535.3156974000003,
+                  "sum_rate": 1.8974741504856956
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_tokenize_seconds": {
+            "description": "Tokenization time in preprocessor (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0.0001": 0,
+                  "0.0005": 4,
+                  "0.001": 7,
+                  "0.005": 8,
+                  "0.01": 12,
+                  "0.05": 16,
+                  "0.1": 16,
+                  "0.5": 16,
+                  "1": 16
+                },
+                "stats": {
+                  "avg": 0.004901733187499998,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.00015038874592521564,
+                  "p1_estimate": 0.00010005831188878235,
+                  "p25_estimate": 0.0004500971864813039,
+                  "p50_estimate": 0.0032519437296260785,
+                  "p5_estimate": 0.00010029155944391173,
+                  "p75_estimate": 0.00803125,
+                  "p90_estimate": 0.015038874592521564,
+                  "p95_estimate": 0.022538874592521567,
+                  "p99_estimate": 0.028538874592521562,
+                  "sum": 0.07842773099999997,
+                  "sum_rate": 0.0002779940752280012
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_tokenizer_cache_cached_tokens": {
+            "description": "Total tokens returned from the L1 tokenizer prefix cache",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "rate": 232.78025101061894,
+                  "total": 65672.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_tokenizer_cache_hits": {
+            "description": "Cumulative L1 tokenizer prefix-cache hits",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.05671342453663514,
+                  "total": 16.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_tokenizer_cache_misses": {
+            "description": "Cumulative L1 tokenizer prefix-cache misses",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_tokenizer_cache_uncached_tokens": {
+            "description": "Total tokens freshly encoded after an L1 tokenizer prefix-cache lookup",
+            "series": [
+              {
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "rate": 232.72708217511584,
+                  "total": 65657.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_frontend_tokenizer_latency_ms": {
+            "description": "Tokenizer latency in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0.5": 16,
+                  "1": 16,
+                  "128": 16,
+                  "16": 16,
+                  "2": 16,
+                  "256": 16,
+                  "32": 16,
+                  "4": 16,
+                  "512": 16,
+                  "64": 16,
+                  "8": 16
+                },
+                "labels": {
+                  "operation": "detokenize"
+                },
+                "stats": {
+                  "avg": 0.0037763556213378895,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.0037763556213378895,
+                  "p1_estimate": 0.0037763556213378895,
+                  "p25_estimate": 0.0037763556213378895,
+                  "p50_estimate": 0.0037763556213378895,
+                  "p5_estimate": 0.0037763556213378895,
+                  "p75_estimate": 0.0037763556213378895,
+                  "p90_estimate": 0.0037763556213378895,
+                  "p95_estimate": 0.0037763556213378895,
+                  "p99_estimate": 0.0037763556213378895,
+                  "sum": 0.06042168994140623,
+                  "sum_rate": 0.0002141700595542443
+                }
+              },
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0.5": 4,
+                  "1": 8,
+                  "128": 16,
+                  "16": 16,
+                  "2": 8,
+                  "256": 16,
+                  "32": 16,
+                  "4": 8,
+                  "512": 16,
+                  "64": 16,
+                  "8": 11
+                },
+                "labels": {
+                  "operation": "tokenize"
+                },
+                "stats": {
+                  "avg": 4.896927187500001,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.34999401944971054,
+                  "p1_estimate": 0.18251655281306003,
+                  "p25_estimate": 0.5408907290656827,
+                  "p50_estimate": 3.94559264887405,
+                  "p5_estimate": 0.2653159380239609,
+                  "p75_estimate": 8.486457831194581,
+                  "p90_estimate": 10.773674166200475,
+                  "p95_estimate": 11.870066638709314,
+                  "p99_estimate": 12.747180616716385,
+                  "sum": 78.35083500000002,
+                  "sum_rate": 0.27772151050967825
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_videos_per_request": {
+            "description": "Number of video_url content parts per request",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 16,
+                  "0": 16,
+                  "1": 16,
+                  "10": 16,
+                  "100": 16,
+                  "2": 16,
+                  "20": 16,
+                  "3": 16,
+                  "30": 16,
+                  "4": 16,
+                  "40": 16,
+                  "5": 16,
+                  "50": 16,
+                  "6": 16,
+                  "7": 16,
+                  "8": 16,
+                  "9": 16
+                },
+                "labels": {
+                  "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo"
+                },
+                "stats": {
+                  "avg": 0.0,
+                  "count": 16,
+                  "count_rate": 0.05671342453663514,
+                  "p10_estimate": 0.0,
+                  "p1_estimate": 0.0,
+                  "p25_estimate": 0.0,
+                  "p50_estimate": 0.0,
+                  "p5_estimate": 0.0,
+                  "p75_estimate": 0.0,
+                  "p90_estimate": 0.0,
+                  "p95_estimate": 0.0,
+                  "p99_estimate": 0.0,
+                  "sum": 0.0,
+                  "sum_rate": 0.0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_frontend_worker_last_input_sequence_tokens": {
+            "description": "Last observed input sequence tokens per worker",
+            "series": [
+              {
+                "labels": {
+                  "dp_rank": "none",
+                  "worker_id": "6328828527013270",
+                  "worker_type": "prefill"
+                },
+                "stats": {
+                  "avg": 8208.071849234393,
+                  "max": 8211.0,
+                  "min": 8208.0,
+                  "p1": 8208.0,
+                  "p10": 8208.0,
+                  "p25": 8208.0,
+                  "p5": 8208.0,
+                  "p50": 8208.0,
+                  "p75": 8208.0,
+                  "p90": 8208.0,
+                  "p95": 8208.0,
+                  "p99": 8211.0,
+                  "std": 0.39843028778452505
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_worker_last_inter_token_latency_seconds": {
+            "description": "Last observed inter-token latency per worker (seconds)",
+            "series": [
+              {
+                "labels": {
+                  "dp_rank": "none",
+                  "worker_id": "5608055347451274",
+                  "worker_type": "decode"
+                },
+                "stats": {
+                  "avg": 0.03135858546083628,
+                  "max": 0.125709818,
+                  "min": 0.0031886455,
+                  "p1": 0.008302909550000001,
+                  "p10": 0.01513836646666667,
+                  "p25": 0.020241305,
+                  "p5": 0.01250371065,
+                  "p50": 0.02216141225,
+                  "p75": 0.0377430445,
+                  "p90": 0.06854922740000001,
+                  "p95": 0.08600273279999998,
+                  "p99": 0.09156965455999998,
+                  "std": 0.02097511236633536
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_frontend_worker_last_time_to_first_token_seconds": {
+            "description": "Last observed time to first token per worker (seconds)",
+            "series": [
+              {
+                "labels": {
+                  "dp_rank": "none",
+                  "worker_id": "6328828527013270",
+                  "worker_type": "prefill"
+                },
+                "stats": {
+                  "avg": 59.00366700174912,
+                  "max": 67.652629452,
+                  "min": 3.778175944,
+                  "p1": 3.778175944,
+                  "p10": 27.188259579,
+                  "p25": 67.652629452,
+                  "p5": 11.257050232,
+                  "p50": 67.652629452,
+                  "p75": 67.652629452,
+                  "p90": 67.652629452,
+                  "p95": 67.652629452,
+                  "p99": 67.652629452,
+                  "std": 17.970870569520738
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_request_plane_inflight_requests": {
+            "description": "Currently in-flight requests at AddressedPushRouter",
+            "series": [
+              {
+                "stats": {
+                  "avg": 13.813898704358069,
+                  "max": 16.0,
+                  "min": 0.0,
+                  "p1": 1.0,
+                  "p10": 7.0,
+                  "p25": 13.0,
+                  "p5": 4.0,
+                  "p50": 16.0,
+                  "p75": 16.0,
+                  "p90": 16.0,
+                  "p95": 16.0,
+                  "p99": 16.0,
+                  "std": 3.911852453389006
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_request_plane_queue_seconds": {
+            "description": "Time from generate() entry to send_request() (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 32,
+                  "0.0001": 23,
+                  "0.0005": 32,
+                  "0.001": 32,
+                  "0.005": 32,
+                  "0.01": 32,
+                  "0.05": 32,
+                  "0.1": 32,
+                  "0.5": 32,
+                  "1": 32
+                },
+                "stats": {
+                  "avg": 0.00009644831250000006,
+                  "count": 32,
+                  "count_rate": 0.11342684907327027,
+                  "p10_estimate": 0.00004525929131580561,
+                  "p1_estimate": 0.00003891952530193922,
+                  "p25_estimate": 0.0000558255680055829,
+                  "p50_estimate": 0.00007343602915521171,
+                  "p5_estimate": 0.00004173719908587983,
+                  "p75_estimate": 0.00010478970155859288,
+                  "p90_estimate": 0.00019356129386569236,
+                  "p95_estimate": 0.0002394033725921168,
+                  "p99_estimate": 0.00027607703557325653,
+                  "sum": 0.003086346000000002,
+                  "sum_rate": 0.000010939828185309114
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_request_plane_roundtrip_ttft_seconds": {
+            "description": "Time from send_request() to first response item (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 32,
+                  "0.001": 0,
+                  "0.005": 0,
+                  "0.01": 0,
+                  "0.025": 0,
+                  "0.05": 0,
+                  "0.1": 0,
+                  "0.25": 0,
+                  "0.5": 0,
+                  "1": 1,
+                  "2.5": 3,
+                  "5": 8
+                },
+                "stats": {
+                  "avg": 16.725406259687475,
+                  "count": 32,
+                  "count_rate": 0.11342684907327027,
+                  "p10_estimate": 2.7056868331018546,
+                  "p1_estimate": 1.0220104598666897,
+                  "p25_estimate": 4.915428138981464,
+                  "p50_estimate": 15.672546124918458,
+                  "p5_estimate": 1.808359983272461,
+                  "p75_estimate": 26.700843787334193,
+                  "p90_estimate": 33.317822384783646,
+                  "p95_estimate": 35.523481917266786,
+                  "p99_estimate": 37.28800954325331,
+                  "sum": 535.2130003099992,
+                  "sum_rate": 1.8971101315067012
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_request_plane_send_seconds": {
+            "description": "Time for send_request() to complete (seconds)",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 32,
+                  "0.0001": 0,
+                  "0.0005": 16,
+                  "0.001": 16,
+                  "0.005": 16,
+                  "0.01": 16,
+                  "0.05": 26,
+                  "0.1": 32,
+                  "0.5": 32,
+                  "1": 32
+                },
+                "stats": {
+                  "avg": 0.02390916256250003,
+                  "count": 32,
+                  "count_rate": 0.11342684907327027,
+                  "p10_estimate": 0.0001679940642548126,
+                  "p1_estimate": 0.00010202146743461821,
+                  "p25_estimate": 0.00030090858144230485,
+                  "p50_estimate": 0.005226123954783659,
+                  "p5_estimate": 0.0001226209869110657,
+                  "p75_estimate": 0.03746267432447366,
+                  "p90_estimate": 0.08388044713786477,
+                  "p95_estimate": 0.0889499551378644,
+                  "p99_estimate": 0.0889499551378644,
+                  "sum": 0.765093202000001,
+                  "sum_rate": 0.002711940973444975
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_overhead_block_hashing_ms": {
+            "description": "Time spent computing block hashes in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.001": 0,
+                  "0.002": 0,
+                  "0.004": 0,
+                  "0.008": 0,
+                  "0.016": 0,
+                  "0.032": 0,
+                  "0.064": 0,
+                  "0.128": 0,
+                  "0.256": 0,
+                  "0.512": 0,
+                  "1.024": 0,
+                  "16.384": 0,
+                  "2.048": 0,
+                  "4.096": 0,
+                  "8.192": 0
+                },
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_overhead_indexer_find_matches_ms": {
+            "description": "Time spent in indexer find_matches in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.01": 0,
+                  "0.03": 0,
+                  "0.09": 0,
+                  "0.27": 0,
+                  "0.81": 0,
+                  "143489.07000000004": 0,
+                  "15943.230000000003": 0,
+                  "1771.4700000000003": 0,
+                  "196.83000000000004": 0,
+                  "2.43": 0,
+                  "21.870000000000005": 0,
+                  "430467.2100000001": 0,
+                  "47829.69000000001": 0,
+                  "5314.410000000001": 0,
+                  "590.4900000000001": 0,
+                  "65.61000000000001": 0,
+                  "7.290000000000001": 0
+                },
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_overhead_scheduling_ms": {
+            "description": "Time spent in scheduler worker selection in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.01": 0,
+                  "0.03": 0,
+                  "0.09": 0,
+                  "0.27": 0,
+                  "0.81": 0,
+                  "143489.07000000004": 0,
+                  "15943.230000000003": 0,
+                  "1771.4700000000003": 0,
+                  "196.83000000000004": 0,
+                  "2.43": 0,
+                  "21.870000000000005": 0,
+                  "430467.2100000001": 0,
+                  "47829.69000000001": 0,
+                  "5314.410000000001": 0,
+                  "590.4900000000001": 0,
+                  "65.61000000000001": 0,
+                  "7.290000000000001": 0
+                },
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_overhead_seq_hashing_ms": {
+            "description": "Time spent computing sequence hashes in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.001": 0,
+                  "0.002": 0,
+                  "0.004": 0,
+                  "0.008": 0,
+                  "0.016": 0,
+                  "0.032": 0,
+                  "0.064": 0,
+                  "0.128": 0,
+                  "0.256": 0,
+                  "0.512": 0,
+                  "1.024": 0,
+                  "16.384": 0,
+                  "2.048": 0,
+                  "4.096": 0,
+                  "8.192": 0
+                },
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_overhead_shared_cache_query_ms": {
+            "description": "Time spent querying the shared KV cache in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.01": 0,
+                  "0.03": 0,
+                  "0.09": 0,
+                  "0.27": 0,
+                  "0.81": 0,
+                  "143489.07000000004": 0,
+                  "15943.230000000003": 0,
+                  "1771.4700000000003": 0,
+                  "196.83000000000004": 0,
+                  "2.43": 0,
+                  "21.870000000000005": 0,
+                  "430467.2100000001": 0,
+                  "47829.69000000001": 0,
+                  "5314.410000000001": 0,
+                  "590.4900000000001": 0,
+                  "65.61000000000001": 0,
+                  "7.290000000000001": 0
+                },
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_overhead_total_ms": {
+            "description": "Total routing overhead per request in milliseconds",
+            "series": [
+              {
+                "buckets": {
+                  "+Inf": 0,
+                  "0.01": 0,
+                  "0.03": 0,
+                  "0.09": 0,
+                  "0.27": 0,
+                  "0.81": 0,
+                  "143489.07000000004": 0,
+                  "15943.230000000003": 0,
+                  "1771.4700000000003": 0,
+                  "196.83000000000004": 0,
+                  "2.43": 0,
+                  "21.870000000000005": 0,
+                  "430467.2100000001": 0,
+                  "47829.69000000001": 0,
+                  "5314.410000000001": 0,
+                  "590.4900000000001": 0,
+                  "65.61000000000001": 0,
+                  "7.290000000000001": 0
+                },
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "count": 0
+                }
+              }
+            ],
+            "type": "histogram"
+          },
+          "dynamo_router_shared_cache_errors": {
+            "description": "Total shared cache failures",
+            "series": [
+              {
+                "labels": {
+                  "router_id": "4844683723016822"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_tokio_alive_tasks": {
+            "description": "Number of alive tasks in the runtime",
+            "series": [
+              {
+                "stats": {
+                  "avg": 123.57243816254417,
+                  "max": 148.0,
+                  "min": 56.0,
+                  "p1": 72.0,
+                  "p10": 96.0,
+                  "p25": 120.0,
+                  "p5": 84.0,
+                  "p50": 132.0,
+                  "p75": 132.0,
+                  "p90": 132.0,
+                  "p95": 133.0,
+                  "p99": 143.51999999999998,
+                  "std": 16.18196188330367
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_blocking_idle_threads": {
+            "description": "Number of idle blocking threads",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.38869257950530034,
+                  "max": 11.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 11.0,
+                  "std": 2.0320925897588653
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_blocking_queue_depth": {
+            "description": "Number of tasks in the blocking thread pool queue",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_blocking_threads": {
+            "description": "Number of blocking threads",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.38869257950530034,
+                  "max": 11.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 11.0,
+                  "std": 2.0320925897588653
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_budget_forced_yield": {
+            "description": "Number of times tasks were forced to yield after exhausting budget",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_tokio_global_queue_depth": {
+            "description": "Number of tasks in the runtime global queue",
+            "series": [
+              {
+                "stats": {
+                  "avg": 0.0,
+                  "max": 0.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_worker_busy_ratio": {
+            "description": "Worker busy ratio (0-1) as integer mill ratio; >950 = saturated",
+            "series": [
+              {
+                "labels": {
+                  "worker": "0"
+                },
+                "stats": {
+                  "avg": 95.72202591283863,
+                  "max": 225.0,
+                  "min": 39.0,
+                  "p1": 40.96,
+                  "p10": 58.0,
+                  "p25": 71.0,
+                  "p5": 50.0,
+                  "p50": 91.0,
+                  "p75": 116.0,
+                  "p90": 140.20000000000005,
+                  "p95": 156.0,
+                  "p99": 179.19999999999982,
+                  "std": 32.322235141927955
+                }
+              },
+              {
+                "labels": {
+                  "worker": "1"
+                },
+                "stats": {
+                  "avg": 97.27915194346289,
+                  "max": 263.0,
+                  "min": 13.0,
+                  "p1": 24.160000000000007,
+                  "p10": 57.0,
+                  "p25": 70.0,
+                  "p5": 50.0,
+                  "p50": 92.0,
+                  "p75": 115.0,
+                  "p90": 144.0,
+                  "p95": 167.0,
+                  "p99": 212.07999999999993,
+                  "std": 36.77229206115516
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_worker_local_queue_depth": {
+            "description": "Number of tasks in worker local queue",
+            "series": [
+              {
+                "labels": {
+                  "worker": "0"
+                },
+                "stats": {
+                  "avg": 0.004711425206124852,
+                  "max": 1.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 0.0,
+                  "std": 0.0685182999517136
+                }
+              },
+              {
+                "labels": {
+                  "worker": "1"
+                },
+                "stats": {
+                  "avg": 0.028268551236749116,
+                  "max": 3.0,
+                  "min": 0.0,
+                  "p1": 0.0,
+                  "p10": 0.0,
+                  "p25": 0.0,
+                  "p5": 0.0,
+                  "p50": 0.0,
+                  "p75": 0.0,
+                  "p90": 0.0,
+                  "p95": 0.0,
+                  "p99": 1.5199999999999818,
+                  "std": 0.2507572370762801
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_worker_mean_poll_time_ns": {
+            "description": "Worker mean task poll time (nanoseconds)",
+            "series": [
+              {
+                "labels": {
+                  "worker": "0"
+                },
+                "stats": {
+                  "avg": 96238.03415783275,
+                  "max": 225761.0,
+                  "min": 39511.0,
+                  "p1": 41611.840000000004,
+                  "p10": 58823.0,
+                  "p25": 71541.0,
+                  "p5": 50676.0,
+                  "p50": 91279.0,
+                  "p75": 116728.0,
+                  "p90": 140598.80000000002,
+                  "p95": 156084.0,
+                  "p99": 179701.55999999982,
+                  "std": 32306.51245400916
+                }
+              },
+              {
+                "labels": {
+                  "worker": "1"
+                },
+                "stats": {
+                  "avg": 97797.98822143699,
+                  "max": 263607.0,
+                  "min": 13649.0,
+                  "p1": 24929.600000000006,
+                  "p10": 57658.0,
+                  "p25": 70800.0,
+                  "p5": 50917.0,
+                  "p50": 92245.0,
+                  "p75": 115516.0,
+                  "p90": 144046.0,
+                  "p95": 167788.0,
+                  "p99": 212558.63999999993,
+                  "std": 36743.151107631704
+                }
+              }
+            ],
+            "type": "gauge"
+          },
+          "dynamo_tokio_worker_overflow_count": {
+            "description": "Total number of times worker local queue overflowed",
+            "series": [
+              {
+                "labels": {
+                  "worker": "0"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              },
+              {
+                "labels": {
+                  "worker": "1"
+                },
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_tokio_worker_park_count": {
+            "description": "Total number of times worker has parked",
+            "series": [
+              {
+                "labels": {
+                  "worker": "0"
+                },
+                "stats": {
+                  "rate": 162.39889116065473,
+                  "total": 45816.0
+                }
+              },
+              {
+                "labels": {
+                  "worker": "1"
+                },
+                "stats": {
+                  "rate": 159.41789178344783,
+                  "total": 44975.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_tokio_worker_steal_count": {
+            "description": "Total number of tasks stolen by worker",
+            "series": [
+              {
+                "labels": {
+                  "worker": "0"
+                },
+                "stats": {
+                  "rate": 25.69118131509572,
+                  "total": 7248.0
+                }
+              },
+              {
+                "labels": {
+                  "worker": "1"
+                },
+                "stats": {
+                  "rate": 26.130710355254642,
+                  "total": 7372.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_transport_tcp_bytes_received": {
+            "description": "Total bytes received by TCP request client",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_transport_tcp_bytes_sent": {
+            "description": "Total bytes sent by TCP request client",
+            "series": [
+              {
+                "stats": {
+                  "rate": 3066.533855175231,
+                  "total": 865131.0
+                }
+              }
+            ],
+            "type": "counter"
+          },
+          "dynamo_transport_tcp_errors": {
+            "description": "Total TCP request errors (send failure or timeout)",
+            "series": [
+              {
+                "stats": {
+                  "rate": 0.0,
+                  "total": 0.0
+                }
+              }
+            ],
+            "type": "counter"
+          }
+        }
+      }
+    },
+    "endpoints_configured": [
+      "http://10.100.50.31:8000/metrics"
+    ],
+    "endpoints_successful": [
+      "http://10.100.50.31:8000/metrics"
+    ],
+    "error_summary": [],
+    "start_ns": 1788047657659923819,
+    "warmup_end_ns": 1788047736870545802
+  },
+  "phase": {
+    "end_ns": 1788047736796337548,
+    "phase_index": 0,
+    "phase_kind": "warmup",
+    "phase_name": "warmup",
+    "profiling_index": null,
+    "start_ns": 1788047657659935791,
+    "was_cancelled": false
+  },
+  "schema_version": 1,
+  "warnings": []
+}

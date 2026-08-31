@@ -15,8 +15,8 @@ mkdir -p "$output_dir"
 for scenario in 1024:8192 8192:8192 8192:1024; do
   isl=${scenario%%:*}
   osl=${scenario##*:}
-  for concurrency in 1 4 16; do
-    if (( concurrency == 1 )); then prompts=3; else prompts=$((concurrency * 2)); fi
+  for concurrency in 1 2 4 8 16 32; do
+    if (( concurrency == 1 )); then prompts=2; else prompts=$concurrency; fi
     filename="${label}-isl${isl}-osl${osl}-c${concurrency}.json"
     if [[ -s "$output_dir/$filename" ]]; then
       echo "[$(date -u +%FT%TZ)] skip completed $filename"
@@ -36,6 +36,7 @@ for scenario in 1024:8192 8192:8192 8192:1024; do
       --random-range-ratio 0.0 \
       --ignore-eos \
       --request-rate inf \
+      --temperature 0 \
       --max-concurrency "$concurrency" \
       --num-prompts "$prompts" \
       --seed 42 \

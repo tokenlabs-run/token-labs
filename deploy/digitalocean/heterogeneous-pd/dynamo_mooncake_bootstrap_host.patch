@@ -1,0 +1,23 @@
+--- a/dynamo/vllm/kv_connector_protocols.py
++++ b/dynamo/vllm/kv_connector_protocols.py
+@@ -11,6 +11,7 @@
+ from __future__ import annotations
+ 
+ import copy
++import os
+ import uuid
+ from abc import ABC, abstractmethod
+ from typing import Any, Dict, Optional, Tuple, Type
+@@ -93,6 +94,11 @@ class MooncakeConnectorProtocol(KvConnectorProtocol):
+     def decode_request_kv_transfer_params(
+         self, prefill_response: Any
+     ) -> Optional[Dict[str, Any]]:
+         host, port = self._get_bootstrap_addr(self._vllm_config)
++        # vLLM resolves 127.0.0.1 for external load balancing. That is only
++        # correct when prefill and decode are colocated. Preserve the upstream
++        # default, but allow a prefill worker to advertise a routable address
++        # for cross-node Mooncake P/D.
++        host = os.getenv("DYN_MOONCAKE_BOOTSTRAP_HOST", host)
+         return {
+             "do_remote_decode": False,
+             "do_remote_prefill": True,

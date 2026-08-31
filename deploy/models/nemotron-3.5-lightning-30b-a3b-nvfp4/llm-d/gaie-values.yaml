@@ -15,6 +15,47 @@ inferenceExtension:
     tag: v0.10.0
     pullPolicy: IfNotPresent
   extProcPort: 9002
+  pluginsConfigFile: "pd-config.yaml"
+  pluginsCustomConfig:
+    pd-config.yaml: |
+      apiVersion: inference.networking.x-k8s.io/v1alpha1
+      kind: EndpointPickerConfig
+      plugins:
+      - name: prefill-pods
+        type: label-selector-filter
+        parameters:
+          matchExpressions:
+          - key: llm-d.ai/role
+            operator: In
+            values: [prefill]
+      - name: decode-pods
+        type: label-selector-filter
+        parameters:
+          matchExpressions:
+          - key: llm-d.ai/role
+            operator: In
+            values: [decode]
+      - name: random-picker
+        type: random-picker
+      - name: always-pd
+        type: always-disagg-pd-decider
+      - name: disagg-handler
+        type: disagg-profile-handler
+        parameters:
+          profiles:
+            prefill: prefill
+            decode: decode
+          deciders:
+            prefill: always-pd
+      schedulingProfiles:
+      - name: prefill
+        plugins:
+        - pluginRef: prefill-pods
+        - pluginRef: random-picker
+      - name: decode
+        plugins:
+        - pluginRef: decode-pods
+        - pluginRef: random-picker
   resources:
     requests:
       cpu: 500m

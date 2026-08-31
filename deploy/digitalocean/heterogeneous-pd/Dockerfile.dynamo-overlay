@@ -1,0 +1,12 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+ARG DYNAMO_VERSION=1.4.2
+RUN python3 -m pip install --no-cache-dir "ai-dynamo==${DYNAMO_VERSION}"
+
+COPY dynamo_mooncake_bootstrap_host.patch /tmp/dynamo_mooncake_bootstrap_host.patch
+RUN cd /usr/local/lib/python3.12/dist-packages && \
+    patch -p1 < /tmp/dynamo_mooncake_bootstrap_host.patch && \
+    rm /tmp/dynamo_mooncake_bootstrap_host.patch
+
+ENTRYPOINT []

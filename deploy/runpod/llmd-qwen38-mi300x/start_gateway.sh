@@ -13,6 +13,6 @@ set -euo pipefail
 epp_pid=$!
 
 trap 'kill "$epp_pid" 2>/dev/null || true' EXIT
-exec envoy -c /workspace/llmd-config/envoy.yaml \
+exec /workspace/llm-d-router/bin/envoy -c /workspace/llmd-config/envoy.yaml \
   --log-level info \
   --log-path /workspace/logs/llmd-envoy.log
