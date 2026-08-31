@@ -14,6 +14,83 @@
 # catch-all: every model it owns 500s while it still reports Accepted.
 
 ---
+# Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-llm-d (llm-d) -- from Deployment/llm-d-qwen3-control-aggregated-llm-d-modelservice-decode
+# Selects decode pods directly: Envoy Gateway v1.4.6 cannot use an InferencePool
+# as a backendRef, so this bypasses the EPP. External traffic gets round-robin,
+# not llm-d's KV-cache-aware endpoint picking.
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen3-30b-a3b-instruct-2507-fp8-llm-d
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  selector:
+    llm-d.ai/inference-serving: "true"
+    llm-d.ai/model: "qwen3-30b-control-llm-d"
+    llm-d.ai/role: "decode"
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: qwen3-30b-a3b-instruct-2507-fp8-llm-d
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  endpoints:
+    - fqdn:
+        hostname: qwen3-30b-a3b-instruct-2507-fp8-llm-d.token-labs.svc.cluster.local
+        port: 8000
+---
+apiVersion: aigateway.envoyproxy.io/v1alpha1
+kind: AIServiceBackend
+metadata:
+  name: qwen3-30b-a3b-instruct-2507-fp8-llm-d
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  schema:
+    name: OpenAI
+  backendRef:
+    group: gateway.envoyproxy.io
+    kind: Backend
+    name: qwen3-30b-a3b-instruct-2507-fp8-llm-d
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: nvidia-nemotron-3-5-lightning-30b-a3b-nvfp4-dynamo
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  endpoints:
+    - fqdn:
+        hostname: vllm-agg-gb10-dspark-frontend.token-labs.svc.cluster.local
+        port: 8000
+---
+apiVersion: aigateway.envoyproxy.io/v1alpha1
+kind: AIServiceBackend
+metadata:
+  name: nvidia-nemotron-3-5-lightning-30b-a3b-nvfp4-dynamo
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  schema:
+    name: OpenAI
+  backendRef:
+    group: gateway.envoyproxy.io
+    kind: Backend
+    name: nvidia-nemotron-3-5-lightning-30b-a3b-nvfp4-dynamo
+---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIGatewayRoute
 metadata:
@@ -38,4 +115,19 @@ spec:
       kind: Gateway
       name: token-labs-gateway
   rules:
-    []
+    # Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-llm-d (llm-d) -- from Deployment/llm-d-qwen3-control-aggregated-llm-d-modelservice-decode
+    - matches:
+        - headers:
+            - type: Exact
+              name: x-ai-eg-model
+              value: Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-llm-d
+      backendRefs:
+        - name: qwen3-30b-a3b-instruct-2507-fp8-llm-d
+    # nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo (dynamo) -- from DynamoGraphDeployment/vllm-agg-gb10-dspark
+    - matches:
+        - headers:
+            - type: Exact
+              name: x-ai-eg-model
+              value: nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo
+      backendRefs:
+        - name: nvidia-nemotron-3-5-lightning-30b-a3b-nvfp4-dynamo
