@@ -36,16 +36,6 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: model-aggregator-code
-  namespace: token-labs
-data:
-  aggregator.py: |
-    # loaded from deploy/models/model-aggregator/aggregator.py via kubectl patch
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -76,7 +66,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
         - |
-          pip install fastapi uvicorn httpx kubernetes --quiet
+          pip install fastapi uvicorn httpx --quiet
           uvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app
         ports:
         - containerPort: 8000
@@ -139,10 +129,10 @@ spec:
   rules:
   - matches:
     - path:
-        type: PathPrefix
+        type: Exact
         value: /v1/models
     - path:
-        type: PathPrefix
+        type: Exact
         value: /models
     backendRefs:
     - name: model-aggregator

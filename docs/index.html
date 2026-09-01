@@ -724,15 +724,9 @@ function buildModels(ids, verified, status) {
   return result;
 }
 
-// Everything the gateway advertises, plus every model we have metadata for that
-// it did not advertise -- the latter shown as UNAVAILABLE rather than hidden, so
-// a torn-down model visibly reads as "not serving" instead of silently vanishing.
+// Metadata enriches discovered models; it never adds models to the live list.
 function buildCatalog(liveIds) {
-  const models = buildModels(liveIds, true, 'live');
-  for (const id of Object.keys(MODEL_ENRICHMENT)) {
-    if (!models[id]) models[id] = buildModels([id], false, 'unavailable')[id];
-  }
-  return models;
+  return buildModels(liveIds, true, 'live');
 }
 
 let MODELS = {};
@@ -781,7 +775,10 @@ function renderCatalog(query, filter) {
     return (filter==="all"||m.filter===filter) && (!query||m.displayName.toLowerCase().includes(query.toLowerCase())||m.fullModelName.toLowerCase().includes(query.toLowerCase()));
   });
   if (!entries.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted);">No models found</div>';
+    document.getElementById('stat-models').textContent = _modelsVerified ? Object.keys(MODELS).length : '—';
+    document.getElementById('stat-min-price').textContent = '—';
+    const message = _modelsVerified ? 'No deployed models match this view' : 'Model discovery is temporarily unavailable';
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted);">${message}</div>`;
     return;
   }
   grid.innerHTML = entries.map(([key,m]) => `
@@ -826,7 +823,7 @@ async function fetchModels() {
     const apiKey = getApiKey();
     const headers = {};
     if (apiKey) headers["Authorization"] = "Bearer " + apiKey;
-    const resp = await fetch(`${DEFAULT_API_BASE}/v1/models`, { headers });
+    const resp = await fetch(`${DEFAULT_API_BASE}/v1/models`, { headers, cache: "no-store" });
     if (!resp.ok) { markUnverified(); return false; }
     const data = await resp.json();
     const ids = (data.data || []).map(m => m.id).filter(Boolean);
@@ -838,8 +835,7 @@ async function fetchModels() {
     const newModels = buildCatalog(ids);
     const oldLive = Object.values(MODELS).filter(m => m.verified).map(m => m.fullModelName).sort().join(",");
     const newLive = ids.slice().sort().join(",");
-    // Compare the LIVE set, not every key: the catalog also holds unavailable
-    // models, so its key list barely changes and would mask real transitions.
+    // Re-render when the discovered model set changes.
     if (oldLive === newLive && _modelsVerified) { updateLiveBadge(true); return true; }
 
     MODELS = newModels;
@@ -850,6 +846,7 @@ async function fetchModels() {
       selectedModelKey = ids[0] || Object.keys(MODELS)[0] || null;
     }
     renderCatalog(document.getElementById('catalog-search').value, catalogFilter);
+    if (!selectedModelKey) showCatalog();
     if (selectedModelKey && document.getElementById('detail-view').classList.contains('view-active')) {
       refreshHeader(); refreshOverview(); refreshApiPanel(); refreshPlaygroundSelects(); refreshColHeaders();
     }
@@ -883,11 +880,9 @@ function schedulePoll() {
 async function initModels() {
   const ok = await fetchModels();
   if (!ok) {
-    // Fallback catalog is browsable metadata only — nothing here is confirmed
-    // serving, and the gateway never answered, so the honest state is 'unknown'.
-    MODELS = buildModels(Object.keys(MODEL_ENRICHMENT), false, 'unknown');
+    MODELS = {};
     _modelsVerified = false;
-    selectedModelKey = Object.keys(MODELS)[0] || null;
+    selectedModelKey = null;
   }
   renderCatalog('', catalogFilter);
   schedulePoll();

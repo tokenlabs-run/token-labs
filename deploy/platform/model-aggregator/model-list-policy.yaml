@@ -1,0 +1,20 @@
+# Only model discovery bypasses AI request processing, which otherwise returns
+# its configured route inventory instead of forwarding to the live aggregator.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: model-aggregator-live-list
+  namespace: token-labs
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: model-aggregator-route
+  extProc:
+  - backendRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: envoy-ai-gateway-extproc-backend
+      namespace: token-labs
+    failOpen: false
+    processingMode: {}
