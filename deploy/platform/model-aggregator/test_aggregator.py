@@ -87,6 +87,51 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(a._inflight, 0)
         a.OPENROUTER_CONCURRENCY = old_limit
 
+    async def test_direct_chat_uses_advertised_model_backend(self):
+        old_client = a._http_client
+        old_backends = a._model_backends
+        old_inflight = a._inflight
+        body = json.dumps({
+            'model': 'advertised-model',
+            'messages': [{'role': 'user', 'content': 'ping'}],
+            'max_tokens': 1,
+        }).encode()
+
+        async def receive():
+            return {'type': 'http.request', 'body': body, 'more_body': False}
+
+        def backend(request):
+            self.assertEqual(str(request.url),
+                             'http://backend/v1/chat/completions')
+            self.assertNotIn('authorization', request.headers)
+            return httpx.Response(200, json={
+                'id': 'completion',
+                'choices': [{'message': {'role': 'assistant',
+                                         'content': 'ok'}}],
+            })
+
+        request = a.Request({
+            'type': 'http',
+            'method': 'POST',
+            'path': '/v1/chat/completions',
+            'headers': [(b'authorization', b'Bearer customer-key'),
+                        (b'content-type', b'application/json')],
+        }, receive)
+        try:
+            a._model_backends = {'advertised-model': 'http://backend'}
+            a._inflight = 0
+            async with httpx.AsyncClient(
+                    transport=httpx.MockTransport(backend)) as client:
+                a._http_client = client
+                response = await a.direct_chat_completions(request)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(json.loads(response.body)['id'], 'completion')
+            self.assertEqual(a._inflight, 0)
+        finally:
+            a._http_client = old_client
+            a._model_backends = old_backends
+            a._inflight = old_inflight
+
     def test_provider_bearer_authentication(self):
         old_key = a.OPENROUTER_API_KEY
         a.OPENROUTER_API_KEY = 'test-secret'

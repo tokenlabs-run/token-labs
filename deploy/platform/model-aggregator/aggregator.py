@@ -198,15 +198,8 @@ async def list_openrouter_models():
     return JSONResponse(document, headers=headers)
 
 
-@app.post('/openrouter/v1/chat/completions')
-async def openrouter_chat_completions(request: Request):
-    """Bound OpenRouter queueing and proxy accepted work to the live backend."""
-    if not OPENROUTER_API_KEY:
-        return JSONResponse({'error': {'message': 'Provider credentials unavailable'}},
-                            status_code=503)
-    if not provider_authorized(request.headers.get('authorization')):
-        return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,
-                            headers={'WWW-Authenticate': 'Bearer'})
+async def proxy_chat_completions(request: Request):
+    """Bound queueing and proxy an accepted request to its discovered backend."""
     try:
         payload = await request.json()
     except (ValueError, json.JSONDecodeError):
@@ -255,6 +248,24 @@ async def openrouter_chat_completions(request: Request):
         log.exception('OpenRouter upstream request failed')
         return JSONResponse({'error': {'message': 'Upstream unavailable'}},
                             status_code=502)
+
+
+@app.post('/v1/chat/completions')
+async def direct_chat_completions(request: Request):
+    """Proxy the public Token Labs API using the same live catalog mapping."""
+    return await proxy_chat_completions(request)
+
+
+@app.post('/openrouter/v1/chat/completions')
+async def openrouter_chat_completions(request: Request):
+    """Authenticate OpenRouter, then use the shared live backend mapping."""
+    if not OPENROUTER_API_KEY:
+        return JSONResponse({'error': {'message': 'Provider credentials unavailable'}},
+                            status_code=503)
+    if not provider_authorized(request.headers.get('authorization')):
+        return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,
+                            headers={'WWW-Authenticate': 'Bearer'})
+    return await proxy_chat_completions(request)
 
 
 @app.get('/health')
