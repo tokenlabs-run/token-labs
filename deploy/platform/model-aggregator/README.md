@@ -10,12 +10,14 @@ Service labeled `token-labs/model=true`. Services need an `http` port or port
 or removed backends disappear on the next refresh; duplicate model IDs merge.
 A failed Kubernetes discovery returns 503, never a static or stale fallback.
 
-`GET /openrouter/models` serves the approved OpenRouter schema-2.4 document from
-the `openrouter-model-document` Secret. The Secret must contain a `models.json`
-key generated and validated by `scripts/openrouter/generate_model_document.py`.
-It is optional at deploy time, but the endpoint fails closed with 503 while it
-is absent or malformed. A configured `is_ready: true` is dynamically reduced to
-false unless that exact model ID is present on a live backend.
+`GET /openrouter/models` serves the checked-in OpenRouter schema-2.4 document
+from `models.json`. Kustomize packages it in the versioned
+`openrouter-model-document` ConfigMap and rolls the Deployment when it changes.
+Validate every edit against OpenRouter's current provider schema before deploy.
+The response is served exactly as checked in and does not depend on live model
+discovery. Update `is_ready` explicitly when enabling or disabling OpenRouter
+traffic. Pricing is deliberately omitted until
+commercial terms are approved; never publish placeholder prices.
 
 OpenRouter should use `https://api.tokenlabs.run/openrouter/v1` as its API base.
 Both `/models` and `/chat/completions` under that base require a bearer key from

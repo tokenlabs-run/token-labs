@@ -62,7 +62,7 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
         candidate['spec']['type'] = 'ExternalName'
         self.assertIsNone(a.service_url(candidate))
 
-    def test_provider_document_is_fail_closed_and_live_ready(self):
+    def test_provider_document_is_static_and_fail_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             old_path = a.PROVIDER_DOCUMENT_PATH
             a.PROVIDER_DOCUMENT_PATH = Path(directory) / 'models.json'
@@ -71,9 +71,24 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
                 'schema_version': '2.4', 'id': 'model', 'is_ready': True
             }]}))
             a._model_backends = {}
-            self.assertFalse(a.provider_document()['data'][0]['is_ready'])
-            a._model_backends = {'model': 'http://backend'}
             self.assertTrue(a.provider_document()['data'][0]['is_ready'])
+            self.assertEqual(a.provider_document()['data'][0]['id'], 'model')
+            a.PROVIDER_DOCUMENT_PATH = old_path
+
+    async def test_openrouter_model_list_returns_provider_document(self):
+        with tempfile.TemporaryDirectory() as directory:
+            old_path = a.PROVIDER_DOCUMENT_PATH
+            a.PROVIDER_DOCUMENT_PATH = Path(directory) / 'models.json'
+            a.PROVIDER_DOCUMENT_PATH.write_text(json.dumps({'data': [{
+                'schema_version': '2.4', 'id': 'model', 'is_ready': True
+            }]}))
+            a._model_backends = {'model': 'http://backend'}
+            response = await a.list_openrouter_models()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.headers['cache-control'], 'no-store')
+            body = json.loads(response.body)
+            self.assertEqual(body['data'][0]['id'], 'model')
+            self.assertTrue(body['data'][0]['is_ready'])
             a.PROVIDER_DOCUMENT_PATH = old_path
 
     async def test_admission_rejects_without_queueing(self):

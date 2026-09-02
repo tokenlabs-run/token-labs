@@ -93,21 +93,14 @@ async def refresh_cache():
 
 
 def provider_document():
-    """Load the approved document and derive readiness from live discovery."""
+    """Load the approved static provider document from the mounted ConfigMap."""
     try:
         envelope = json.loads(PROVIDER_DOCUMENT_PATH.read_text())
         documents = envelope['data']
-        if not isinstance(documents, list):
+        if not isinstance(documents, list) or not all(
+                isinstance(document, dict) for document in documents):
             raise ValueError('data must be an array')
-        live = set(_model_backends)
-        result = []
-        for original in documents:
-            document = dict(original)
-            document['is_ready'] = (
-                document.get('is_ready') is True and document.get('id') in live
-            )
-            result.append(document)
-        return {'data': result}
+        return envelope
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):
         log.exception('Approved OpenRouter model document unavailable')
         return None

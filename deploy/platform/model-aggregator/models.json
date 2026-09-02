@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "schema_version": "2.4",
+      "id": "qwen/qwen3-30b-a3b-instruct-2507",
+      "name": "Qwen: Qwen3 30B A3B Instruct 2507",
+      "hugging_face_id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+      "created": 1753705516,
+      "quantization": "fp8",
+      "tokenizer": "Qwen",
+      "description": "Token Labs serves Qwen3-30B-A3B-Instruct-2507-FP8 with SGLang on NVIDIA DGX Spark.",
+      "input_modalities": [
+        {"type": "text", "supported_inputs": {"max_context_length": {"value": 32768, "unit": "token"}}}
+      ],
+      "output_modalities": [
+        {
+          "type": "text",
+          "max_length": {"value": 8192, "unit": "token"},
+          "streaming": true,
+          "supported_parameters": {
+            "temperature": {"type": "range", "min": 0, "max": 2},
+            "top_p": {"type": "range", "min": 0, "max": 1},
+            "max_tokens": {"type": "integer", "min": 1, "max": 8192, "unit": "token"},
+            "stop": {"type": "array", "max_items": 4},
+            "seed": {"type": "integer"}
+          }
+        }
+      ],
+      "capacity": [{"type": "concurrency", "unit": "request", "value": 4}],
+      "is_ready": true,
+      "is_free": false,
+      "openrouter": {"slug": "qwen/qwen3-30b-a3b-instruct-2507"}
+    }
+  ]
+}
