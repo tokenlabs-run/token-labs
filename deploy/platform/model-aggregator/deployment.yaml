@@ -71,6 +71,11 @@ spec:
         ports:
         - containerPort: 8000
           name: http
+        env:
+        - name: OPENROUTER_MODEL_DOCUMENT_PATH
+          value: /etc/openrouter/models.json
+        - name: OPENROUTER_MAX_CONCURRENCY
+          value: "16"
         resources:
           requests:
             cpu: "100m"
@@ -92,10 +97,17 @@ spec:
         volumeMounts:
         - name: code
           mountPath: /app
+        - name: openrouter-model-document
+          mountPath: /etc/openrouter
+          readOnly: true
       volumes:
       - name: code
         configMap:
           name: model-aggregator-code
+      - name: openrouter-model-document
+        secret:
+          secretName: openrouter-model-document
+          optional: true
 
 ---
 apiVersion: v1
@@ -134,6 +146,12 @@ spec:
     - path:
         type: Exact
         value: /models
+    - path:
+        type: Exact
+        value: /openrouter/models
+    - path:
+        type: Exact
+        value: /openrouter/v1/chat/completions
     backendRefs:
     - name: model-aggregator
       port: 8000

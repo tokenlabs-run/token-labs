@@ -1,23 +1,30 @@
 """Discover serving Services and expose only their live OpenAI model IDs."""
 import asyncio
 from contextlib import asynccontextmanager, suppress
+import json
 import logging
 import os
 from pathlib import Path
 import time
 
 import httpx
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse, StreamingResponse
 
 REFRESH_INTERVAL = 28.0
 SA_PATH = Path('/var/run/secrets/kubernetes.io/serviceaccount')
 log = logging.getLogger(__name__)
 _cache = []
+_model_backends = {}
 _last_success = 0.0
 _http_client = None
 _kube_client = None
 _namespace = None
+PROVIDER_DOCUMENT_PATH = Path(os.environ.get(
+    'OPENROUTER_MODEL_DOCUMENT_PATH', '/etc/openrouter/models.json'))
+OPENROUTER_CONCURRENCY = int(os.environ.get('OPENROUTER_MAX_CONCURRENCY', '16'))
+_admission_lock = asyncio.Lock()
+_inflight = 0
 
 
 def service_url(service):
@@ -56,7 +63,7 @@ async def fetch_live_models(url):
 
 
 async def refresh_cache():
-    global _cache, _last_success
+    global _cache, _last_success, _model_backends
     try:
         # Read the projected token each time so Kubernetes token rotation works.
         token = SA_PATH.joinpath('token').read_text().strip()
@@ -68,13 +75,55 @@ async def refresh_cache():
         urls = sorted({url for service in services if (url := service_url(service))})
         results = await asyncio.gather(*(fetch_live_models(url) for url in urls))
         models = {m['id']: m for group in results for m in group}
+        _model_backends = {
+            model['id']: url.removesuffix('/v1/models')
+            for url, group in zip(urls, results)
+            for model in group
+        }
         _cache = [models[key] for key in sorted(models)]
         _last_success = time.monotonic()
     except Exception:
         # Never substitute stale or configured models for failed discovery.
         log.exception('Service discovery failed')
         _cache = []
+        _model_backends = {}
         _last_success = 0.0
+
+
+def provider_document():
+    """Load the approved document and derive readiness from live discovery."""
+    try:
+        envelope = json.loads(PROVIDER_DOCUMENT_PATH.read_text())
+        documents = envelope['data']
+        if not isinstance(documents, list):
+            raise ValueError('data must be an array')
+        live = set(_model_backends)
+        result = []
+        for original in documents:
+            document = dict(original)
+            document['is_ready'] = (
+                document.get('is_ready') is True and document.get('id') in live
+            )
+            result.append(document)
+        return {'data': result}
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):
+        log.exception('Approved OpenRouter model document unavailable')
+        return None
+
+
+async def admit():
+    global _inflight
+    async with _admission_lock:
+        if _inflight >= OPENROUTER_CONCURRENCY:
+            return False
+        _inflight += 1
+        return True
+
+
+async def release():
+    global _inflight
+    async with _admission_lock:
+        _inflight -= 1
 
 
 async def background_refresh():
@@ -115,6 +164,69 @@ async def list_models():
         return JSONResponse({'error': {'message': 'Model discovery unavailable'}},
                             status_code=503, headers=headers)
     return JSONResponse({'object': 'list', 'data': _cache}, headers=headers)
+
+
+@app.get('/openrouter/models')
+async def list_openrouter_models():
+    headers = {'Cache-Control': 'no-store'}
+    document = provider_document()
+    if document is None:
+        return JSONResponse({'error': {'message': 'Provider catalog unavailable'}},
+                            status_code=503, headers=headers)
+    return JSONResponse(document, headers=headers)
+
+
+@app.post('/openrouter/v1/chat/completions')
+async def openrouter_chat_completions(request: Request):
+    """Bound OpenRouter queueing and proxy accepted work to the live backend."""
+    try:
+        payload = await request.json()
+    except (ValueError, json.JSONDecodeError):
+        return JSONResponse({'error': {'message': 'Invalid JSON'}}, status_code=400)
+    model = payload.get('model') if isinstance(payload, dict) else None
+    backend = _model_backends.get(model)
+    if backend is None:
+        return JSONResponse({'error': {'message': 'Model is not ready'}}, status_code=404)
+    if not await admit():
+        return JSONResponse(
+            {'error': {'message': 'Capacity temporarily exhausted; retry later'}},
+            status_code=429,
+            headers={'Retry-After': '1', 'Cache-Control': 'no-store'},
+        )
+    upstream = None
+    slot_owned = True
+    try:
+        upstream = await _http_client.send(
+            _http_client.build_request(
+                'POST', f'{backend}/v1/chat/completions', json=payload,
+                headers={'accept': request.headers.get('accept', 'application/json')}),
+            stream=True,
+        )
+        content_type = upstream.headers.get('content-type', 'application/json')
+        if payload.get('stream'):
+            async def stream_and_release():
+                try:
+                    async for chunk in upstream.aiter_raw():
+                        yield chunk
+                finally:
+                    await upstream.aclose()
+                    await release()
+            slot_owned = False
+            return StreamingResponse(stream_and_release(), status_code=upstream.status_code,
+                                     media_type=content_type)
+        body = await upstream.aread()
+        await upstream.aclose()
+        await release()
+        slot_owned = False
+        return JSONResponse(content=json.loads(body), status_code=upstream.status_code)
+    except Exception:
+        if upstream is not None:
+            await upstream.aclose()
+        if slot_owned:
+            await release()
+        log.exception('OpenRouter upstream request failed')
+        return JSONResponse({'error': {'message': 'Upstream unavailable'}},
+                            status_code=502)
 
 
 @app.get('/health')

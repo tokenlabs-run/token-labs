@@ -62,6 +62,31 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
         candidate['spec']['type'] = 'ExternalName'
         self.assertIsNone(a.service_url(candidate))
 
+    def test_provider_document_is_fail_closed_and_live_ready(self):
+        with tempfile.TemporaryDirectory() as directory:
+            old_path = a.PROVIDER_DOCUMENT_PATH
+            a.PROVIDER_DOCUMENT_PATH = Path(directory) / 'models.json'
+            self.assertIsNone(a.provider_document())
+            a.PROVIDER_DOCUMENT_PATH.write_text(json.dumps({'data': [{
+                'schema_version': '2.4', 'id': 'model', 'is_ready': True
+            }]}))
+            a._model_backends = {}
+            self.assertFalse(a.provider_document()['data'][0]['is_ready'])
+            a._model_backends = {'model': 'http://backend'}
+            self.assertTrue(a.provider_document()['data'][0]['is_ready'])
+            a.PROVIDER_DOCUMENT_PATH = old_path
+
+    async def test_admission_rejects_without_queueing(self):
+        old_limit = a.OPENROUTER_CONCURRENCY
+        a.OPENROUTER_CONCURRENCY = 1
+        a._inflight = 0
+        self.assertTrue(await a.admit())
+        self.assertFalse(await a.admit())
+        self.assertEqual(a._inflight, 1)
+        await a.release()
+        self.assertEqual(a._inflight, 0)
+        a.OPENROUTER_CONCURRENCY = old_limit
+
 
 if __name__ == '__main__':
     unittest.main()
