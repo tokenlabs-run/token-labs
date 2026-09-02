@@ -1,0 +1,65 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "ray-head",
+    "namespace": "dynamo-ray-startup-validation",
+    "labels": {
+      "app": "ray-head"
+    }
+  },
+  "spec": {
+    "nodeSelector": {
+      "kubernetes.io/hostname": "spark-01"
+    },
+    "restartPolicy": "Never",
+    "containers": [
+      {
+        "name": "ray",
+        "image": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+        "command": [
+          "/bin/sh",
+          "-c"
+        ],
+        "args": [
+          "pip install --disable-pip-version-check --no-cache-dir \"ray==2.55.1\" > /tmp/ray-install.log 2>&1 || { cat /tmp/ray-install.log; exit 1; }; ray start --head --port=6379 --num-cpus=2 --include-dashboard=false --block"
+        ],
+        "env": [
+          {
+            "name": "LWS_LEADER_ADDRESS",
+            "value": "ray-head"
+          },
+          {
+            "name": "RAY_USAGE_STATS_ENABLED",
+            "value": "0"
+          }
+        ],
+        "resources": {
+          "requests": {
+            "cpu": "500m",
+            "memory": "1Gi"
+          },
+          "limits": {
+            "cpu": "2",
+            "memory": "3Gi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "name": "shm",
+            "mountPath": "/dev/shm"
+          }
+        ]
+      }
+    ],
+    "volumes": [
+      {
+        "name": "shm",
+        "emptyDir": {
+          "medium": "Memory",
+          "sizeLimit": "512Mi"
+        }
+      }
+    ]
+  }
+}

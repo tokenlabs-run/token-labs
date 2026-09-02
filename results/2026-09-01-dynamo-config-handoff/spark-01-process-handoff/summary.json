@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "baseline": {
+    "request_id": "baseline",
+    "generation": 1,
+    "tokens": 2,
+    "begin": 0.16157871298491955,
+    "end": 0.20564795657992363,
+    "status": 200
+  },
+  "old_request": {
+    "request_id": "old-long",
+    "generation": 1,
+    "tokens": 100,
+    "begin": 0.3816810538992286,
+    "end": 2.4272063449025154,
+    "status": 200
+  },
+  "new_request": {
+    "request_id": "new-short",
+    "generation": 2,
+    "tokens": 4,
+    "begin": 0.4825727650895715,
+    "end": 0.5066166613250971,
+    "status": 200
+  },
+  "cutover": {
+    "at": 0.4822663404047489,
+    "event": "cutover",
+    "old_generation": 1,
+    "generation": 2,
+    "old_active": 1
+  },
+  "retired": {
+    "at": 2.439238028600812,
+    "event": "retired",
+    "generation": 1,
+    "active": 0
+  },
+  "invariants": {
+    "old_stream_completed": true,
+    "new_stream_completed_before_old": true,
+    "no_post_cutover_admission_to_old": true,
+    "old_retired_after_drain": true
+  }
+}

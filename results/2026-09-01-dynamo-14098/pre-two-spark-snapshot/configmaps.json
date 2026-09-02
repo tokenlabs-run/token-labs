@@ -1,0 +1,116 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "data": {
+        "default-plugins.yaml": "apiVersion: inference.networking.x-k8s.io/v1alpha1\nkind: EndpointPickerConfig\nplugins:\n- type: queue-scorer\n- type: kv-cache-utilization-scorer\n- type: prefix-cache-scorer\n- type: metrics-data-source\n  parameters:\n    scheme: \"http\"\n    path: \"/metrics\"\n    insecureSkipVerify: true\n- type: core-metrics-extractor\nschedulingProfiles:\n- name: default\n  plugins:\n  - pluginRef: queue-scorer\n    weight: 2\n  - pluginRef: kv-cache-utilization-scorer\n    weight: 2\n  - pluginRef: prefix-cache-scorer\n    weight: 3\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "gaie-qwen3-control-comparison",
+          "meta.helm.sh/release-namespace": "token-labs"
+        },
+        "creationTimestamp": "2026-08-31T05:00:35Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm"
+        },
+        "name": "gaie-qwen3-control-comparison-epp",
+        "namespace": "token-labs",
+        "resourceVersion": "78878418",
+        "uid": "28e60e95-1495-4ba1-9935-0c6b1c0f27c7"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "data": {
+        "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIDBTCCAe2gAwIBAgIIFPwid52IaA4wDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE\nAxMKa3ViZXJuZXRlczAeFw0yNjAzMjcwMjU4MzZaFw0zNjAzMjQwMzAzMzZaMBUx\nEzARBgNVBAMTCmt1YmVybmV0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK\nAoIBAQDJwmsiabder+oO1msfa0Qs039ZDxXS9RCzToJeo9napeiqC6RMrOVrYAr+\naUUBbq1+ndLfogDQ5+h3WECEGv7bMYRgNEmPMPyBF5ufRQ/ygf50NkGPer3tfPHf\nOwqISbuqjK/JBOu1bNlCucNIYR2F1yclWVM+QC9hX35KoT0p173nb4rAWxcmIy/5\nOdEtBgcjjdHYtHUQ762XlF43NIuG/zxVNZEBPLxcA3hryQOD45CJ6tGnlFUuAuqD\nb3Bh5SUahCmmMuZh6dr8qvPLNPMdiDpCbUGY1Zv8uEfcHOvgN2r7PpmxvVPOEQ7V\nmQPAj7xp/ua/0mtFqSnbFEvm6VjTAgMBAAGjWTBXMA4GA1UdDwEB/wQEAwICpDAP\nBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSclN6UVYKoZtaBSuC2PZgvK+ZrQTAV\nBgNVHREEDjAMggprdWJlcm5ldGVzMA0GCSqGSIb3DQEBCwUAA4IBAQBUT2VPOj4V\nLmvui0bKKjrFet0NXslVr/7G+fHX9ozvyPUolIWkzJd2Yhtw02N6ANBwOjyVTKq7\n9YRxhvNG67WQEErfSVS2+hq0DhLpAeSnS1WanBYrAAAPuFy4QyJvbSn8J8vJa1Uz\nJDjlL/fBej+5G1BxLW3k+qWET2eaZFCJx4MSsVRWaW4SMz9JnJ+4jhV1vaAdr+J0\nJYkhlgBpBqpPGrHwB5L2+MREKbN/KRNZJCIKJlafb6PmHuz3BjohCbZ8yz1ZTkdM\nPbDioeLAqTUhEJbDDPEyoz7VeUuqhbpHYRYm4nvFRXEF6x1nL0gvDp/Silj4IdC2\nfA8WHc+GrfoJ\n-----END CERTIFICATE-----\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+        },
+        "creationTimestamp": "2026-03-27T05:51:48Z",
+        "name": "kube-root-ca.crt",
+        "namespace": "token-labs",
+        "resourceVersion": "34291",
+        "uid": "5ff81dc6-1ebf-4df0-93ff-a6bc1e405167"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "chunk_size: 8\nlocal_cpu: true\nmax_local_cpu_size: 5.0\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"data\":{\"config.yaml\":\"chunk_size: 8\\nlocal_cpu: true\\nmax_local_cpu_size: 5.0\\n\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"lmcache-cpu-offload-config\",\"namespace\":\"token-labs\"}}\n"
+        },
+        "creationTimestamp": "2026-04-16T14:19:42Z",
+        "name": "lmcache-cpu-offload-config",
+        "namespace": "token-labs",
+        "resourceVersion": "11434187",
+        "uid": "616cbc25-4c3d-4fea-b6dd-2f889ce3043d"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "data": {
+        "aggregator.py": "import asyncio\nimport httpx\nfrom fastapi import FastAPI\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\nREFRESH_INTERVAL = 28.0\n\nSTATIC_MODELS = [\n    {\"id\": \"nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-NVFP4\", \"object\": \"model\", \"owned_by\": \"token-labs\", \"probe_url\": \"http://nemotron-nano-nvfp4-vllm.token-labs.svc.cluster.local:8000/v1/models\"},\n    {\"id\": \"Qwen/Qwen3.6-27B-FP8\", \"object\": \"model\", \"owned_by\": \"token-labs\", \"probe_url\": \"http://qwen36-27b-vllm.token-labs.svc.cluster.local:8000/v1/models\"},\n    {\"id\": \"Qwen/Qwen3-0.6B\", \"object\": \"model\", \"owned_by\": \"token-labs\", \"probe_url\": \"http://qwen3-06b-vllm.token-labs.svc.cluster.local:8000/v1/models\"},\n]\n\n_cache: list = [{\"id\": m[\"id\"], \"object\": m[\"object\"], \"owned_by\": m[\"owned_by\"]} for m in STATIC_MODELS]\n_http_client: httpx.AsyncClient | None = None\n\n\nasync def fetch_live_model(model: dict) -> dict | None:\n    try:\n        r = await _http_client.get(model[\"probe_url\"])\n        if r.status_code == 200:\n            data = r.json().get(\"data\", [])\n            if data:\n                return {\"id\": model[\"id\"], \"object\": \"model\", \"owned_by\": model[\"owned_by\"]}\n    except Exception:\n        pass\n    return None\n\n\nasync def refresh_cache():\n    global _cache\n    results = await asyncio.gather(*[fetch_live_model(m) for m in STATIC_MODELS])\n    models = []\n    for i, live in enumerate(results):\n        if live:\n            models.append(live)\n        else:\n            m = STATIC_MODELS[i]\n            models.append({\"id\": m[\"id\"], \"object\": m[\"object\"], \"owned_by\": m[\"owned_by\"]})\n    _cache = models\n\n\nasync def background_refresh():\n    while True:\n        await asyncio.sleep(REFRESH_INTERVAL)\n        await refresh_cache()\n\n\n@app.on_event(\"startup\")\nasync def startup():\n    global _http_client\n    _http_client = httpx.AsyncClient(timeout=5.0)\n    await refresh_cache()\n    asyncio.create_task(background_refresh())\n\n\n@app.on_event(\"shutdown\")\nasync def shutdown():\n    if _http_client:\n        await _http_client.aclose()\n\n\n@app.get(\"/v1/models\")\nasync def list_models():\n    return JSONResponse({\"object\": \"list\", \"data\": _cache})\n\n\n@app.get(\"/health\")\nasync def health():\n    return {\"status\": \"ok\"}\n\n\n@app.get(\"/models\")\nasync def models_compat():\n    return await list_models()\n\n\nif __name__ == \"__main__\":\n    import uvicorn\n    uvicorn.run(app, host=\"0.0.0.0\", port=8000)"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"data\":{\"aggregator.py\":\"import asyncio\\nimport httpx\\nfrom fastapi import FastAPI\\nfrom fastapi.responses import JSONResponse\\n\\napp = FastAPI()\\n\\nREFRESH_INTERVAL = 28.0\\n\\nSTATIC_MODELS = [\\n    {\\\"id\\\": \\\"nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-NVFP4\\\", \\\"object\\\": \\\"model\\\", \\\"owned_by\\\": \\\"token-labs\\\", \\\"probe_url\\\": \\\"http://nemotron-nano-nvfp4-vllm.token-labs.svc.cluster.local:8000/v1/models\\\"},\\n    {\\\"id\\\": \\\"Qwen/Qwen3.6-27B-FP8\\\", \\\"object\\\": \\\"model\\\", \\\"owned_by\\\": \\\"token-labs\\\", \\\"probe_url\\\": \\\"http://qwen36-27b-vllm.token-labs.svc.cluster.local:8000/v1/models\\\"},\\n    {\\\"id\\\": \\\"Qwen/Qwen3-0.6B\\\", \\\"object\\\": \\\"model\\\", \\\"owned_by\\\": \\\"token-labs\\\", \\\"probe_url\\\": \\\"http://qwen3-06b-vllm.token-labs.svc.cluster.local:8000/v1/models\\\"},\\n]\\n\\n_cache: list = [{\\\"id\\\": m[\\\"id\\\"], \\\"object\\\": m[\\\"object\\\"], \\\"owned_by\\\": m[\\\"owned_by\\\"]} for m in STATIC_MODELS]\\n_http_client: httpx.AsyncClient | None = None\\n\\n\\nasync def fetch_live_model(model: dict) -\\u003e dict | None:\\n    try:\\n        r = await _http_client.get(model[\\\"probe_url\\\"])\\n        if r.status_code == 200:\\n            data = r.json().get(\\\"data\\\", [])\\n            if data:\\n                return {\\\"id\\\": model[\\\"id\\\"], \\\"object\\\": \\\"model\\\", \\\"owned_by\\\": model[\\\"owned_by\\\"]}\\n    except Exception:\\n        pass\\n    return None\\n\\n\\nasync def refresh_cache():\\n    global _cache\\n    results = await asyncio.gather(*[fetch_live_model(m) for m in STATIC_MODELS])\\n    models = []\\n    for i, live in enumerate(results):\\n        if live:\\n            models.append(live)\\n        else:\\n            m = STATIC_MODELS[i]\\n            models.append({\\\"id\\\": m[\\\"id\\\"], \\\"object\\\": m[\\\"object\\\"], \\\"owned_by\\\": m[\\\"owned_by\\\"]})\\n    _cache = models\\n\\n\\nasync def background_refresh():\\n    while True:\\n        await asyncio.sleep(REFRESH_INTERVAL)\\n        await refresh_cache()\\n\\n\\n@app.on_event(\\\"startup\\\")\\nasync def startup():\\n    global _http_client\\n    _http_client = httpx.AsyncClient(timeout=5.0)\\n    await refresh_cache()\\n    asyncio.create_task(background_refresh())\\n\\n\\n@app.on_event(\\\"shutdown\\\")\\nasync def shutdown():\\n    if _http_client:\\n        await _http_client.aclose()\\n\\n\\n@app.get(\\\"/v1/models\\\")\\nasync def list_models():\\n    return JSONResponse({\\\"object\\\": \\\"list\\\", \\\"data\\\": _cache})\\n\\n\\n@app.get(\\\"/health\\\")\\nasync def health():\\n    return {\\\"status\\\": \\\"ok\\\"}\\n\\n\\n@app.get(\\\"/models\\\")\\nasync def models_compat():\\n    return await list_models()\\n\\n\\nif __name__ == \\\"__main__\\\":\\n    import uvicorn\\n    uvicorn.run(app, host=\\\"0.0.0.0\\\", port=8000)\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"creationTimestamp\":null,\"name\":\"model-aggregator-code\",\"namespace\":\"token-labs\"}}\n"
+        },
+        "creationTimestamp": "2026-04-14T21:42:50Z",
+        "name": "model-aggregator-code",
+        "namespace": "token-labs",
+        "resourceVersion": "29357345",
+        "uid": "df642801-9aad-44da-af96-aeabecbd37ec"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "receivers:\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n  zipkin:\n    endpoint: 0.0.0.0:9411\n\nprocessors:\n  batch:\n\nexporters:\n  otlp:\n    endpoint: tempo.monitoring:4317\n    tls:\n      insecure: true\n\nservice:\n  pipelines:\n    traces:\n      receivers: [otlp, zipkin]\n      processors: [batch]\n      exporters: [otlp]\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"data\":{\"config.yaml\":\"receivers:\\n  otlp:\\n    protocols:\\n      grpc:\\n        endpoint: 0.0.0.0:4317\\n      http:\\n        endpoint: 0.0.0.0:4318\\n  zipkin:\\n    endpoint: 0.0.0.0:9411\\n\\nprocessors:\\n  batch:\\n\\nexporters:\\n  otlp:\\n    endpoint: tempo.monitoring:4317\\n    tls:\\n      insecure: true\\n\\nservice:\\n  pipelines:\\n    traces:\\n      receivers: [otlp, zipkin]\\n      processors: [batch]\\n      exporters: [otlp]\\n\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"creationTimestamp\":null,\"name\":\"otelcol-config\",\"namespace\":\"token-labs\"}}\n"
+        },
+        "creationTimestamp": "2026-04-15T03:53:01Z",
+        "name": "otelcol-config",
+        "namespace": "token-labs",
+        "resourceVersion": "8155263",
+        "uid": "a46037c7-24d1-4b10-82ab-b267a7603287"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "data": {
+        "speculative-config": "{\n  \"method\": \"dspark\",\n  \"model\": \"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\",\n  \"num_speculative_tokens\": 3\n}",
+        "speculative-config-synthetic": "{\n  \"method\": \"dspark\",\n  \"model\": \"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\",\n  \"num_speculative_tokens\": 3,\n  \"rejection_sample_method\": \"synthetic\",\n  \"synthetic_acceptance_length\": 1.69\n}"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"data\":{\"speculative-config\":\"{\\n  \\\"method\\\": \\\"dspark\\\",\\n  \\\"model\\\": \\\"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\\\",\\n  \\\"num_speculative_tokens\\\": 3\\n}\",\"speculative-config-synthetic\":\"{\\n  \\\"method\\\": \\\"dspark\\\",\\n  \\\"model\\\": \\\"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\\\",\\n  \\\"num_speculative_tokens\\\": 3,\\n  \\\"rejection_sample_method\\\": \\\"synthetic\\\",\\n  \\\"synthetic_acceptance_length\\\": 1.69\\n}\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"vllm-agg-gb10-dspark-config\",\"namespace\":\"token-labs\"}}\n"
+        },
+        "creationTimestamp": "2026-08-31T05:00:44Z",
+        "name": "vllm-agg-gb10-dspark-config",
+        "namespace": "token-labs",
+        "resourceVersion": "78878575",
+        "uid": "166d9a7d-f629-4b52-b98f-2ddd2dceb3e6"
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

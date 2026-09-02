@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen3-30b-a3b-nvfp4-sglang-gb10-exclusive-auto-mrr256-queued",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-01)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang NVFP4 replica on one exclusive GB10 GPU, TP=1, flashinfer_cutlass, max-running-requests=256, queued concurrency",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "model": "NVFP4/Qwen3-30B-A3B-Instruct-2507-FP4",
+  "complete": true,
+  "expected_points": 3,
+  "measured_points": 3,
+  "missing": [],
+  "measured_requests": 2432,
+  "combos": {
+    "ISL512/OSL128": {
+      "sglang-nvfp4-auto": [
+        {
+          "framework": "sglang-nvfp4-auto",
+          "concurrency": 320,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 1283.914396023931,
+          "tput_per_user": 7.931947720700582,
+          "ttft_p50": 7258.646651999999,
+          "ttft_p95": 26779.269502399988,
+          "itl_p50": 135.27375638188977,
+          "req_latency_p50": 24590.389929499997,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 640,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-nvfp4-auto-mrr256-queued/isl512-osl128__sglang-nvfp4-auto-c320/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-nvfp4-auto",
+          "concurrency": 384,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 1337.1983995690787,
+          "tput_per_user": 7.145241492125699,
+          "ttft_p50": 9979.266411499999,
+          "ttft_p95": 29571.2477637,
+          "itl_p50": 145.58082468110234,
+          "req_latency_p50": 24553.3853605,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 768,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-nvfp4-auto-mrr256-queued/isl512-osl128__sglang-nvfp4-auto-c384/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-nvfp4-auto",
+          "concurrency": 512,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 1333.5208778842555,
+          "tput_per_user": 7.116184702907647,
+          "ttft_p50": 28871.816385,
+          "ttft_p95": 35329.215330499996,
+          "itl_p50": 146.5881848582677,
+          "req_latency_p50": 48955.1950315,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 1024,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-nvfp4-auto-mrr256-queued/isl512-osl128__sglang-nvfp4-auto-c512/profile_export_aiperf.json",
+          "pareto": false,
+          "framework_pareto": false
+        }
+      ]
+    }
+  }
+}

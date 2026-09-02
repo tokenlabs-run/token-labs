@@ -1,0 +1,33 @@
+{
+  "experiment": "qwen3-30b-a3b-fp8-trtllm-gb10-baseline",
+  "experiment_class": "single-replica-control",
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "tokenizer": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "tokenizer_trust_remote_code": true,
+  "endpoint_type": "completions",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One TensorRT-LLM 1.3.0rc11 PyTorch-backend FP8 replica, TP=1, no speculative decoding",
+    "image": "nvcr.io/nvidia/tensorrt-llm/release:1.3.0rc11"
+  },
+  "backends": [
+    {
+      "name": "trtllm-fp8-pytorch-baseline",
+      "url": "http://10.109.113.10:8000",
+      "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
+    }
+  ],
+  "workloads": [
+    {"isl": 512, "osl": 128}
+  ],
+  "concurrencies": [1, 4, 8, 16, 32, 64],
+  "sampling": {"waves": 2, "minimum_requests": 8, "warmup_requests": 2},
+  "seed": 42,
+  "extra_inputs": {"ignore_eos": true, "temperature": 0},
+  "use_legacy_max_tokens": true,
+  "ready_timeout_seconds": 600,
+  "request_timeout_seconds": 3600,
+  "point_timeout_seconds": 7200
+}

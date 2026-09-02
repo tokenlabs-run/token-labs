@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen3-30b-a3b-fp8-sglang-gb10-moe-and-serving-tuning-baseline",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang FP8 replica, TP=1, no speculative decoding, generic untuned Triton MoE configuration",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "complete": false,
+  "expected_points": 6,
+  "measured_points": 4,
+  "missing": [
+    "isl512-osl128__sglang-fp8-auto-moe-baseline-c32",
+    "isl512-osl128__sglang-fp8-auto-moe-baseline-c64"
+  ],
+  "measured_requests": 64,
+  "combos": {
+    "ISL512/OSL128": {
+      "sglang-fp8-auto-moe-baseline": [
+        {
+          "framework": "sglang-fp8-auto-moe-baseline",
+          "concurrency": 1,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 50.19163348737502,
+          "tput_per_user": 52.67759757533179,
+          "ttft_p50": 138.76717,
+          "ttft_p95": 141.85048694999998,
+          "itl_p50": 18.976932992125985,
+          "req_latency_p50": 2549.3915549999997,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 8,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/baseline/raw/isl512-osl128__sglang-fp8-auto-moe-baseline-c1/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-fp8-auto-moe-baseline",
+          "concurrency": 4,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 73.58573382271533,
+          "tput_per_user": 20.252965774699785,
+          "ttft_p50": 366.237464,
+          "ttft_p95": 391.67164375,
+          "itl_p50": 51.866697169291335,
+          "req_latency_p50": 6955.2120755,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 8,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/baseline/raw/isl512-osl128__sglang-fp8-auto-moe-baseline-c4/profile_export_aiperf.json",
+          "pareto": false,
+          "framework_pareto": false
+        },
+        {
+          "framework": "sglang-fp8-auto-moe-baseline",
+          "concurrency": 8,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 168.4126127359796,
+          "tput_per_user": 22.74576037550829,
+          "ttft_p50": 531.069713,
+          "ttft_p95": 565.42885575,
+          "itl_p50": 43.53372353937007,
+          "req_latency_p50": 6077.5676895,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 16,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/baseline/raw/isl512-osl128__sglang-fp8-auto-moe-baseline-c8/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-fp8-auto-moe-baseline",
+          "concurrency": 16,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 194.1599929339111,
+          "tput_per_user": 13.330660567825149,
+          "ttft_p50": 1015.713364,
+          "ttft_p95": 1225.5562818499998,
+          "itl_p50": 75.35815749606299,
+          "req_latency_p50": 10541.8859105,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/baseline/raw/isl512-osl128__sglang-fp8-auto-moe-baseline-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

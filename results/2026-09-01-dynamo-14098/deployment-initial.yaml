@@ -1,0 +1,171 @@
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeployment
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"nvidia.com/v1beta1","kind":"DynamoGraphDeployment","metadata":{"annotations":{},"labels":{"app.kubernetes.io/name":"sglang-qwen3-agg-14098","app.kubernetes.io/part-of":"dynamo","token-labs/experiment":"issue-14098-aggregated"},"name":"sglang-qwen3-agg-14098","namespace":"token-labs"},"spec":{"backendFramework":"sglang","components":[{"name":"Frontend","podTemplate":{"metadata":{"labels":{"token-labs/experiment":"issue-14098-aggregated"}},"spec":{"containers":[{"args":["-m","dynamo.frontend","--router-mode","direct","--trust-remote-code"],"command":["python3"],"env":[{"name":"POD_UID","valueFrom":{"fieldRef":{"fieldPath":"metadata.uid"}}},{"name":"PYTHONUNBUFFERED","value":"1"}],"image":"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly:latest","imagePullPolicy":"Always","name":"main","resources":{"limits":{"cpu":"2","memory":"4Gi"},"requests":{"cpu":"1","memory":"2Gi"}}}],"nodeSelector":{"kubernetes.io/hostname":"controller"},"tolerations":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/control-plane","operator":"Exists"}]}},"replicas":1,"type":"frontend"},{"name":"agg","podTemplate":{"metadata":{"labels":{"token-labs/experiment":"issue-14098-aggregated"}},"spec":{"containers":[{"args":["-m","dynamo.sglang","--model-path","Qwen/Qwen3-30B-A3B-Instruct-2507-FP8","--served-model-name","Qwen/Qwen3-30B-A3B-Instruct-2507-FP8","--page-size","16","--tp","1","--trust-remote-code","--disable-piecewise-cuda-graph","--mem-fraction-static","0.60"],"command":["python3"],"env":[{"name":"POD_UID","valueFrom":{"fieldRef":{"fieldPath":"metadata.uid"}}},{"name":"HF_HOME","value":"/model-cache"},{"name":"HF_HUB_CACHE","value":"/model-cache/hub"},{"name":"HF_HUB_OFFLINE","value":"1"},{"name":"PYTHONUNBUFFERED","value":"1"}],"image":"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly:latest","imagePullPolicy":"Always","name":"main","resources":{"limits":{"cpu":"8","memory":"96Gi","nvidia.com/gpu.shared":"1"},"requests":{"cpu":"4","memory":"48Gi","nvidia.com/gpu.shared":"1"}},"securityContext":{"capabilities":{"add":["IPC_LOCK","SYS_RESOURCE"]}},"volumeMounts":[{"mountPath":"/model-cache","name":"model-cache"},{"mountPath":"/dev/shm","name":"dshm"}],"workingDir":"/workspace/examples/backends/sglang"}],"nodeSelector":{"kubernetes.io/hostname":"spark-01"},"tolerations":[{"effect":"NoSchedule","key":"nvidia.com/gpu","operator":"Exists"}],"volumes":[{"hostPath":{"path":"/home/nvidia/.cache/huggingface","type":"Directory"},"name":"model-cache"},{"emptyDir":{"medium":"Memory","sizeLimit":"16Gi"},"name":"dshm"}]}},"replicas":1,"sharedMemorySize":"16Gi","type":"worker"}]}}
+    nvidia.com/current-worker-hash: 4c65f46f
+    nvidia.com/current-worker-hash-v2: aee24d22
+    nvidia.com/dynamo-operator-origin-version: 1.3.1
+  creationTimestamp: "2026-09-01T14:24:00Z"
+  finalizers:
+  - nvidia.com/finalizer
+  generation: 2
+  labels:
+    app.kubernetes.io/name: sglang-qwen3-agg-14098
+    app.kubernetes.io/part-of: dynamo
+    token-labs/experiment: issue-14098-aggregated
+  name: sglang-qwen3-agg-14098
+  namespace: token-labs
+  resourceVersion: "80177078"
+  uid: b980b10c-9484-4667-8c60-89eb768a1562
+spec:
+  backendFramework: sglang
+  components:
+  - minAvailable: 1
+    name: Frontend
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-aggregated
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.frontend
+          - --router-mode
+          - direct
+          - --trust-remote-code
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: PYTHONUNBUFFERED
+            value: "1"
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly:latest
+          imagePullPolicy: Always
+          name: main
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi
+        nodeSelector:
+          kubernetes.io/hostname: controller
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+    replicas: 1
+    type: frontend
+  - minAvailable: 1
+    name: agg
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-aggregated
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.sglang
+          - --model-path
+          - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+          - --served-model-name
+          - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+          - --page-size
+          - "16"
+          - --tp
+          - "1"
+          - --trust-remote-code
+          - --disable-piecewise-cuda-graph
+          - --mem-fraction-static
+          - "0.60"
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_CACHE
+            value: /model-cache/hub
+          - name: HF_HUB_OFFLINE
+            value: "1"
+          - name: PYTHONUNBUFFERED
+            value: "1"
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly:latest
+          imagePullPolicy: Always
+          name: main
+          resources:
+            limits:
+              cpu: "8"
+              memory: 96Gi
+              nvidia.com/gpu.shared: "1"
+            requests:
+              cpu: "4"
+              memory: 48Gi
+              nvidia.com/gpu.shared: "1"
+          securityContext:
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+          volumeMounts:
+          - mountPath: /model-cache
+            name: model-cache
+          - mountPath: /dev/shm
+            name: dshm
+          workingDir: /workspace/examples/backends/sglang
+        nodeSelector:
+          kubernetes.io/hostname: spark-01
+        tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: model-cache
+        - emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
+          name: dshm
+    replicas: 1
+    sharedMemorySize: 16Gi
+    type: worker
+status:
+  components:
+    Frontend:
+      componentKind: PodClique
+      componentNames:
+      - sglang-qwen3-agg-14098-0-frontend
+      readyReplicas: 0
+      replicas: 1
+      runtimeNamespace: token-labs-sglang-qwen3-agg-14098
+      updatedReplicas: 1
+    agg:
+      componentKind: PodClique
+      componentNames:
+      - sglang-qwen3-agg-14098-0-agg
+      readyReplicas: 0
+      replicas: 1
+      runtimeNamespace: token-labs-sglang-qwen3-agg-14098
+      updatedReplicas: 1
+  conditions:
+  - lastTransitionTime: "2026-09-01T14:24:00Z"
+    message: 'Resources not ready: sglang-qwen3-agg-14098: podclique/sglang-qwen3-agg-14098-0-frontend:
+      desired=1, ready=0; podclique/sglang-qwen3-agg-14098-0-agg: desired=1, ready=0'
+    reason: some_resources_are_not_ready
+    status: "False"
+    type: Ready
+  observedGeneration: 2
+  state: pending

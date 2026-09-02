@@ -68,7 +68,7 @@ class Model:
     """One advertised model and the gateway objects that carry traffic to it."""
 
     served_name: str  # what clients put in the request's "model" field
-    framework: str  # "dynamo" | "llm-d"
+    framework: str  # "dynamo" | "llm-d" | "plain"
     slug: str  # DNS-safe name shared by Service/Backend/AIServiceBackend
     backend_host: str  # in-cluster FQDN the Backend points at
     source: str  # workload this was discovered from, for the comment
@@ -196,6 +196,43 @@ def discover_llmd(ns: str) -> list[Model]:
                     },
                 )
             )
+    return models
+
+
+def discover_plain(ns: str) -> list[Model]:
+    """Discover explicitly labeled OpenAI services with serving replicas."""
+    services = kubectl("get", "service", "-n", ns, "-l", "token-labs/model=true", "-o", "json")["items"]
+    deployments = kubectl("get", "deploy", "-n", ns, "-o", "json")["items"]
+    models = []
+    for service in services:
+        selector = service.get("spec", {}).get("selector") or {}
+        if not selector:
+            continue
+        matches = [
+            deployment
+            for deployment in deployments
+            if all(
+                deployment["spec"]["template"]["metadata"].get("labels", {}).get(key) == value
+                for key, value in selector.items()
+            )
+        ]
+        for deployment in matches:
+            if not is_servable(deployment, "plain"):
+                continue
+            for container in deployment["spec"]["template"]["spec"]["containers"]:
+                served = served_name(container.get("args") or [])
+                if not served:
+                    continue
+                service_name = service["metadata"]["name"]
+                models.append(
+                    Model(
+                        served_name=served,
+                        framework="plain",
+                        slug=slug(served),
+                        backend_host=f"{service_name}.{ns}.svc.cluster.local",
+                        source=f"Service/{service_name}",
+                    )
+                )
     return models
 
 
@@ -381,7 +418,11 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    models = discover_dynamo(args.namespace) + discover_llmd(args.namespace)
+    models = (
+        discover_dynamo(args.namespace)
+        + discover_llmd(args.namespace)
+        + discover_plain(args.namespace)
+    )
     models.sort(key=lambda m: m.served_name)
 
     # An empty result is indistinguishable from "everything is torn down", and

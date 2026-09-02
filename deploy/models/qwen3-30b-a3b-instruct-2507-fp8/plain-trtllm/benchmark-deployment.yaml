@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-30b-trtllm-benchmark
+  namespace: token-labs
+  labels: &labels
+    app: qwen3-30b-trtllm-benchmark
+    token-labs/experiment: qwen3-30b-engine-comparison
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: qwen3-30b-trtllm-benchmark}
+  template:
+    metadata:
+      labels: *labels
+    spec:
+      runtimeClassName: nvidia
+      nodeSelector: {kubernetes.io/hostname: spark-02}
+      tolerations:
+        - {key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: trtllm
+          image: nvcr.io/nvidia/tensorrt-llm/release:1.3.0rc11
+          imagePullPolicy: IfNotPresent
+          command: [trtllm-serve]
+          args:
+            - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+            - --backend
+            - pytorch
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+            - --tp_size
+            - "1"
+            - --trust_remote_code
+            - --max_batch_size
+            - "64"
+            - --max_num_tokens
+            - "32768"
+            - --free_gpu_memory_fraction
+            - "0.30"
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef: {name: hf-token, key: HF_TOKEN}
+            - {name: HOME, value: /tmp}
+            - {name: HF_HOME, value: /model-cache}
+            - {name: HF_HUB_CACHE, value: /model-cache/hub}
+            - {name: HF_HUB_OFFLINE, value: "1"}
+            - {name: HF_HUB_DISABLE_XET, value: "1"}
+            - {name: FLASHINFER_DISABLE_VERSION_CHECK, value: "1"}
+            - {name: LD_LIBRARY_PATH, value: '/usr/local/tensorrt/lib:/app/tensorrt_llm/lib:/usr/local/cuda/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64'}
+            - {name: PROMETHEUS_MULTIPROC_DIR, value: /tmp/prometheus_multiproc}
+            - {name: PYTHONUNBUFFERED, value: "1"}
+          ports:
+            - {name: http, containerPort: 8000}
+          resources:
+            requests: {cpu: "8", memory: 32Gi, nvidia.com/gpu: "1"}
+            limits: {cpu: "12", memory: 120Gi, nvidia.com/gpu: "1"}
+          startupProbe:
+            httpGet: {path: /health, port: http}
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            failureThreshold: 180
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - IPC_LOCK
+          volumeMounts:
+            - {name: model-cache, mountPath: /model-cache}
+            - {name: shm, mountPath: /dev/shm}
+      volumes:
+        - name: model-cache
+          hostPath: {path: /home/nvidia/.cache/huggingface, type: Directory}
+        - name: shm
+          emptyDir: {medium: Memory, sizeLimit: 16Gi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: qwen3-30b-trtllm-benchmark, namespace: token-labs}
+spec:
+  selector: {app: qwen3-30b-trtllm-benchmark}
+  ports:
+    - {name: http, port: 8000, targetPort: http}

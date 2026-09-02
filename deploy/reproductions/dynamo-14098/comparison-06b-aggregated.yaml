@@ -1,0 +1,141 @@
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeployment
+metadata:
+  name: sglang-qwen3-agg-14098
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/name: sglang-qwen3-agg-14098
+    app.kubernetes.io/part-of: dynamo
+    token-labs/experiment: issue-14098-aggregated
+spec:
+  backendFramework: sglang
+  components:
+  - name: Frontend
+    replicas: 1
+    type: frontend
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-aggregated
+      spec:
+        nodeSelector:
+          kubernetes.io/hostname: controller
+        tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        containers:
+        - name: main
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:cfe42887399b617c07bc369e088d58906b5c2c274d4654a82d73a46e10b9b2a2
+          imagePullPolicy: IfNotPresent
+          command:
+          - python3
+          args:
+          - -m
+          - dynamo.frontend
+          - --router-mode
+          - kv
+          - --trust-remote-code
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          resources:
+            requests:
+              cpu: '1'
+              memory: 2Gi
+            limits:
+              cpu: '2'
+              memory: 4Gi
+  - name: agg
+    replicas: 1
+    type: worker
+    sharedMemorySize: 2Gi
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-aggregated
+      spec:
+        nodeSelector:
+          kubernetes.io/hostname: spark-01
+        tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+        containers:
+        - name: main
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb
+          imagePullPolicy: IfNotPresent
+          command:
+          - python3
+          args:
+          - -m
+          - dynamo.sglang
+          - --model-path
+          - Qwen/Qwen3-0.6B
+          - --served-model-name
+          - Qwen/Qwen3-0.6B-14098-agg
+          - --page-size
+          - '16'
+          - --tp
+          - '1'
+          - --trust-remote-code
+          - --host
+          - 0.0.0.0
+          - --disable-cuda-graph
+          - --disable-piecewise-cuda-graph
+          - --mem-fraction-static
+          - '0.8'
+          - --max-total-tokens
+          - '2048'
+          - --context-length
+          - '1024'
+          - --max-running-requests
+          - '4'
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_CACHE
+            value: /model-cache/hub
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: MC_FORCE_TCP
+            value: '1'
+          resources:
+            requests:
+              cpu: '2'
+              memory: 4Gi
+              nvidia.com/gpu.shared: '1'
+            limits:
+              cpu: '4'
+              memory: 8Gi
+              nvidia.com/gpu.shared: '1'
+          securityContext:
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+          volumeMounts:
+          - name: model-cache
+            mountPath: /model-cache
+          - name: dshm
+            mountPath: /dev/shm
+          workingDir: /workspace/examples/backends/sglang
+        volumes:
+        - name: model-cache
+          hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi

@@ -1,0 +1,26 @@
+apiVersion: v1
+data:
+  speculative-config: |-
+    {
+      "method": "dspark",
+      "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark",
+      "num_speculative_tokens": 3
+    }
+  speculative-config-synthetic: |-
+    {
+      "method": "dspark",
+      "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark",
+      "num_speculative_tokens": 3,
+      "rejection_sample_method": "synthetic",
+      "synthetic_acceptance_length": 1.69
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"speculative-config":"{\n  \"method\": \"dspark\",\n  \"model\": \"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\",\n  \"num_speculative_tokens\": 3\n}","speculative-config-synthetic":"{\n  \"method\": \"dspark\",\n  \"model\": \"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\",\n  \"num_speculative_tokens\": 3,\n  \"rejection_sample_method\": \"synthetic\",\n  \"synthetic_acceptance_length\": 1.69\n}"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"vllm-agg-gb10-dspark-config","namespace":"token-labs"}}
+  creationTimestamp: "2026-08-31T05:00:44Z"
+  name: vllm-agg-gb10-dspark-config
+  namespace: token-labs
+  resourceVersion: "78878575"
+  uid: 166d9a7d-f629-4b52-b98f-2ddd2dceb3e6

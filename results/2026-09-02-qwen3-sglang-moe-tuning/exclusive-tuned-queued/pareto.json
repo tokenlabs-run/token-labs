@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen3-30b-a3b-fp8-sglang-gb10-exclusive-tuned-moe-queued",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang FP8 replica on one exclusive GB10 GPU, TP=1, no speculative decoding, offline-tuned Triton MoE configuration",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "complete": true,
+  "expected_points": 2,
+  "measured_points": 2,
+  "missing": [],
+  "measured_requests": 448,
+  "combos": {
+    "ISL512/OSL128": {
+      "sglang-fp8-tuned-moe": [
+        {
+          "framework": "sglang-fp8-tuned-moe",
+          "concurrency": 96,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 522.0122702521979,
+          "tput_per_user": 9.636156160984413,
+          "ttft_p50": 3775.1123224999997,
+          "ttft_p95": 17837.10629145,
+          "itl_p50": 106.04873118503937,
+          "req_latency_p50": 15740.251360499999,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 192,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-tuned-queued/raw/isl512-osl128__sglang-fp8-tuned-moe-c96/profile_export_aiperf.json",
+          "pareto": false,
+          "framework_pareto": false
+        },
+        {
+          "framework": "sglang-fp8-tuned-moe",
+          "concurrency": 128,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 522.6354764869537,
+          "tput_per_user": 9.6499640431507,
+          "ttft_p50": 17720.106583999997,
+          "ttft_p95": 19549.40767325,
+          "itl_p50": 105.89302563779526,
+          "req_latency_p50": 31279.4199825,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 256,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-tuned-queued/raw/isl512-osl128__sglang-fp8-tuned-moe-c128/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

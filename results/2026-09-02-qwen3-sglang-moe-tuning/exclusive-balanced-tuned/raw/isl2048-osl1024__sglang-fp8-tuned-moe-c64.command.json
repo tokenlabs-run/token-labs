@@ -1,0 +1,61 @@
+{
+  "backend": {
+    "name": "sglang-fp8-tuned-moe",
+    "url": "http://10.107.220.195:8000",
+    "model": "qwen/qwen3-30b-a3b-instruct-2507-sglang"
+  },
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang FP8 replica on one exclusive GB10 GPU, TP=1, no speculative decoding, offline-tuned Triton MoE configuration",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "workload": {
+    "isl": 2048,
+    "osl": 1024
+  },
+  "concurrency": 64,
+  "requests": 128,
+  "command": [
+    "/home/nvidia/aiperf-venv/bin/aiperf",
+    "profile",
+    "-m",
+    "qwen/qwen3-30b-a3b-instruct-2507-sglang",
+    "--url",
+    "http://10.107.220.195:8000",
+    "--endpoint-type",
+    "completions",
+    "--streaming",
+    "--concurrency",
+    "64",
+    "--request-count",
+    "128",
+    "--num-warmup-requests",
+    "2",
+    "--synthetic-input-tokens-mean",
+    "2048",
+    "--synthetic-input-tokens-stddev",
+    "0",
+    "--output-tokens-mean",
+    "1024",
+    "--output-tokens-stddev",
+    "0",
+    "--num-dataset-entries",
+    "129",
+    "--tokenizer",
+    "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+    "--use-server-token-count",
+    "--random-seed",
+    "42",
+    "--request-timeout-seconds",
+    "3600",
+    "--artifact-dir",
+    "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-balanced-tuned/raw/isl2048-osl1024__sglang-fp8-tuned-moe-c64",
+    "--tokenizer-trust-remote-code",
+    "--use-legacy-max-tokens",
+    "--extra-inputs",
+    "{\"ignore_eos\":true,\"temperature\":0}"
+  ],
+  "started_at": "2026-09-02T14:46:10.958775+00:00"
+}

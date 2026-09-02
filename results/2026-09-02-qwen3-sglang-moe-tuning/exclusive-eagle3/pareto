@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen3-30b-a3b-fp8-sglang-gb10-exclusive-eagle3",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang FP8 replica on one exclusive GB10 GPU, TP=1, EAGLE3 speculative decoding (3 steps, top-k 1, 4 draft tokens), offline-tuned Triton MoE configuration",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "complete": true,
+  "expected_points": 3,
+  "measured_points": 3,
+  "missing": [],
+  "measured_requests": 224,
+  "combos": {
+    "ISL512/OSL128": {
+      "sglang-fp8-eagle3": [
+        {
+          "framework": "sglang-fp8-eagle3",
+          "concurrency": 16,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 190.24958290983832,
+          "tput_per_user": 17.41086364826149,
+          "ttft_p50": 1042.0894005,
+          "ttft_p95": 1923.34426465,
+          "itl_p50": 65.01330165354331,
+          "req_latency_p50": 8910.207881,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-eagle3/isl512-osl128__sglang-fp8-eagle3-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-fp8-eagle3",
+          "concurrency": 32,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 312.65018952084694,
+          "tput_per_user": 13.724682734985823,
+          "ttft_p50": 794.4399755,
+          "ttft_p95": 2114.20253215,
+          "itl_p50": 80.34355726771652,
+          "req_latency_p50": 10759.494521499999,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 64,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-eagle3/isl512-osl128__sglang-fp8-eagle3-c32/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-fp8-eagle3",
+          "concurrency": 64,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 461.5764501306801,
+          "tput_per_user": 10.315244237141027,
+          "ttft_p50": 936.9581999999999,
+          "ttft_p95": 4045.29025365,
+          "itl_p50": 101.28552342519686,
+          "req_latency_p50": 14301.649465999999,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 128,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-eagle3/isl512-osl128__sglang-fp8-eagle3-c64/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

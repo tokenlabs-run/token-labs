@@ -1,0 +1,205 @@
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeployment
+metadata:
+  name: vllm-agg-gb10-dspark
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/name: vllm-agg-gb10-dspark
+    app.kubernetes.io/part-of: dynamo
+    token-labs/scenario: nemotron35-dspark
+spec:
+  backendFramework: vllm
+  components:
+  - minAvailable: 1
+    name: Frontend
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/scenario: nemotron35-dspark
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.frontend
+          - --trust-remote-code
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: DYN_HTTP_BODY_LIMIT_MB
+            value: '200'
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: NCCL_IB_DISABLE
+            value: '1'
+          image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0-nemotron-3.5-lightning-dev.1
+          imagePullPolicy: IfNotPresent
+          name: main
+          resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: '1'
+              memory: 2Gi
+          startupProbe:
+            failureThreshold: 60
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 60
+          volumeMounts:
+          - mountPath: /model-cache
+            name: shared-model-cache
+        nodeSelector:
+          kubernetes.io/hostname: spark-02
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: shared-model-cache
+    replicas: 1
+    type: frontend
+  - minAvailable: 1
+    name: agg
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/scenario: nemotron35-dspark
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.vllm
+          - --model
+          - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+          - --served-model-name
+          - nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo
+          - --trust-remote-code
+          - --moe-backend
+          - marlin
+          - --kv-cache-dtype
+          - fp8
+          - --enable-prefix-caching
+          - --tensor-parallel-size
+          - '1'
+          - --max-model-len
+          - '1048576'
+          - --gpu-memory-utilization
+          - '0.85'
+          - --quantization
+          - modelopt_fp4
+          - --mamba-cache-mode
+          - align
+          - --no-disable-hybrid-kv-cache-manager
+          - --mamba-backend
+          - flashinfer
+          - --mamba-ssm-cache-dtype
+          - float16
+          - --speculative-config=$(SPECULATIVE_CONFIG)
+          - --dyn-reasoning-parser
+          - nemotron_v3
+          - --dyn-tool-call-parser
+          - qwen3_coder
+          - --disaggregation-mode
+          - agg
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_OFFLINE
+            value: '0'
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: TRITON_CACHE_DIR
+            value: /tmp/.triton-cache
+          - name: VLLM_CONFIG_ROOT
+            value: /tmp/vllm-config
+          - name: VLLM_CACHE_ROOT
+            value: /tmp/vllm-cache
+          - name: LIBRARY_PATH
+            value: /usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/local/cuda/compat
+          - name: VLLM_ENGINE_READY_TIMEOUT_S
+            value: '3600'
+          - name: VLLM_OMNI_USE_QUACK_FP8
+            value: '0'
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: spawn
+          - name: VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS
+            value: '1'
+          - name: SPECULATIVE_CONFIG
+            valueFrom:
+              configMapKeyRef:
+                key: speculative-config
+                name: vllm-agg-gb10-dspark-config
+          - name: VLLM_DISABLED_KERNELS
+            value: FlashInferFP8ScaledMMLinearKernel
+          - name: PYTHONHASHSEED
+            value: '0'
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: NCCL_IB_DISABLE
+            value: '1'
+          - name: HF_TOKEN
+            valueFrom:
+              secretKeyRef:
+                key: HF_TOKEN
+                name: hf-token
+          image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0-nemotron-3.5-lightning-dev.1
+          imagePullPolicy: IfNotPresent
+          name: main
+          resources:
+            limits:
+              cpu: '8'
+              memory: 56Gi
+              nvidia.com/gpu.shared: '1'
+            requests:
+              cpu: '4'
+              memory: 32Gi
+              nvidia.com/gpu.shared: '1'
+          securityContext:
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+            runAsUser: 0
+          startupProbe:
+            failureThreshold: 120
+            httpGet:
+              path: /live
+              port: 9090
+            periodSeconds: 30
+            timeoutSeconds: 20
+          volumeMounts:
+          - mountPath: /model-cache
+            name: shared-model-cache
+          - mountPath: /dev/shm
+            name: dshm
+          workingDir: /workspace/
+        nodeSelector:
+          kubernetes.io/hostname: spark-02
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: shared-model-cache
+        - emptyDir:
+            medium: Memory
+            sizeLimit: 40Gi
+          name: dshm
+    replicas: 1
+    sharedMemorySize: 40Gi
+    type: worker

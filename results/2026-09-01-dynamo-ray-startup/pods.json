@@ -1,0 +1,885 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"ray-head\"},\"name\":\"ray-head\",\"namespace\":\"dynamo-ray-startup-validation\"},\"spec\":{\"containers\":[{\"args\":[\"pip install --disable-pip-version-check --no-cache-dir \\\"ray==2.55.1\\\" \\u003e /tmp/ray-install.log 2\\u003e\\u00261 || { cat /tmp/ray-install.log; exit 1; }; ray start --head --port=6379 --num-cpus=2 --include-dashboard=false --block\"],\"command\":[\"/bin/sh\",\"-c\"],\"env\":[{\"name\":\"LWS_LEADER_ADDRESS\",\"value\":\"ray-head\"},{\"name\":\"RAY_USAGE_STATS_ENABLED\",\"value\":\"0\"}],\"image\":\"docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf\",\"name\":\"ray\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"3Gi\"},\"requests\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}},\"volumeMounts\":[{\"mountPath\":\"/dev/shm\",\"name\":\"shm\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"restartPolicy\":\"Never\",\"volumes\":[{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"512Mi\"},\"name\":\"shm\"}]}}\n"
+                },
+                "creationTimestamp": "2026-09-01T16:30:23Z",
+                "labels": {
+                    "app": "ray-head"
+                },
+                "name": "ray-head",
+                "namespace": "dynamo-ray-startup-validation",
+                "resourceVersion": "80262792",
+                "uid": "03121ea3-d5cb-4f9e-92be-db4d284958ed"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "pip install --disable-pip-version-check --no-cache-dir \"ray==2.55.1\" \u003e /tmp/ray-install.log 2\u003e\u00261 || { cat /tmp/ray-install.log; exit 1; }; ray start --head --port=6379 --num-cpus=2 --include-dashboard=false --block"
+                        ],
+                        "command": [
+                            "/bin/sh",
+                            "-c"
+                        ],
+                        "env": [
+                            {
+                                "name": "LWS_LEADER_ADDRESS",
+                                "value": "ray-head"
+                            },
+                            {
+                                "name": "RAY_USAGE_STATS_ENABLED",
+                                "value": "0"
+                            }
+                        ],
+                        "image": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "ray",
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "3Gi"
+                            },
+                            "requests": {
+                                "cpu": "500m",
+                                "memory": "1Gi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-grzw9",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "spark-01",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "spark-01"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Never",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "512Mi"
+                        },
+                        "name": "shm"
+                    },
+                    {
+                        "name": "kube-api-access-grzw9",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:30:24Z",
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:30:23Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:30:24Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:30:24Z",
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:30:23Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "containerd://6909088194f714168ad22fc9a8b99b49cd98897c5046f40bd938cdc9fb0e615c",
+                        "image": "docker.io/library/python:3.11-slim",
+                        "imageID": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "lastState": {},
+                        "name": "ray",
+                        "ready": true,
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-01T16:30:24Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-grzw9",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.76",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.76"
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "10.244.2.161",
+                "podIPs": [
+                    {
+                        "ip": "10.244.2.161"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "startTime": "2026-09-01T16:30:23Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"ray-worker-0\"},\"name\":\"ray-worker-0\",\"namespace\":\"dynamo-ray-startup-validation\"},\"spec\":{\"containers\":[{\"args\":[\"pip install --disable-pip-version-check --no-cache-dir \\\"ray==2.55.1\\\" \\u003e /tmp/ray-install.log 2\\u003e\\u00261 || { cat /tmp/ray-install.log; exit 1; }; export LEADER_HOST=\\\"${LWS_LEADER_ADDRESS}\\\"; i=0; until python3 -c \\\"import os, socket; s=socket.create_connection((os.environ['LEADER_HOST'], 6379), timeout=2); s.close()\\\" 2\\u003e/dev/null; do i=$((i+1)); [ \\\"$i\\\" -ge 150 ] \\u0026\\u0026 { echo \\\"ERROR: Ray head did not become reachable after 150 attempts\\\" \\u003e\\u00262; exit 1; }; echo \\\"Waiting for Ray head at $LEADER_HOST:6379...\\\"; sleep 2; done \\u0026\\u0026 ray start --address=\\\"$LEADER_HOST:6379\\\" --block\"],\"command\":[\"/bin/sh\",\"-c\"],\"env\":[{\"name\":\"LWS_LEADER_ADDRESS\",\"value\":\"ray-head\"},{\"name\":\"RAY_USAGE_STATS_ENABLED\",\"value\":\"0\"}],\"image\":\"docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf\",\"name\":\"ray\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"3Gi\"},\"requests\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}},\"volumeMounts\":[{\"mountPath\":\"/dev/shm\",\"name\":\"shm\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-02\"},\"restartPolicy\":\"Never\",\"volumes\":[{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"512Mi\"},\"name\":\"shm\"}]}}\n"
+                },
+                "creationTimestamp": "2026-09-01T16:29:37Z",
+                "labels": {
+                    "app": "ray-worker-0"
+                },
+                "name": "ray-worker-0",
+                "namespace": "dynamo-ray-startup-validation",
+                "resourceVersion": "80262319",
+                "uid": "dbb377c8-d7f3-42c9-9f6b-b8312c3105b3"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "pip install --disable-pip-version-check --no-cache-dir \"ray==2.55.1\" \u003e /tmp/ray-install.log 2\u003e\u00261 || { cat /tmp/ray-install.log; exit 1; }; export LEADER_HOST=\"${LWS_LEADER_ADDRESS}\"; i=0; until python3 -c \"import os, socket; s=socket.create_connection((os.environ['LEADER_HOST'], 6379), timeout=2); s.close()\" 2\u003e/dev/null; do i=$((i+1)); [ \"$i\" -ge 150 ] \u0026\u0026 { echo \"ERROR: Ray head did not become reachable after 150 attempts\" \u003e\u00262; exit 1; }; echo \"Waiting for Ray head at $LEADER_HOST:6379...\"; sleep 2; done \u0026\u0026 ray start --address=\"$LEADER_HOST:6379\" --block"
+                        ],
+                        "command": [
+                            "/bin/sh",
+                            "-c"
+                        ],
+                        "env": [
+                            {
+                                "name": "LWS_LEADER_ADDRESS",
+                                "value": "ray-head"
+                            },
+                            {
+                                "name": "RAY_USAGE_STATS_ENABLED",
+                                "value": "0"
+                            }
+                        ],
+                        "image": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "ray",
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "3Gi"
+                            },
+                            "requests": {
+                                "cpu": "500m",
+                                "memory": "1Gi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-npdgn",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "spark-02",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "spark-02"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Never",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "512Mi"
+                        },
+                        "name": "shm"
+                    },
+                    {
+                        "name": "kube-api-access-npdgn",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:43Z",
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:37Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:43Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:43Z",
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:37Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "containerd://7c2d134a4d1098903804093f487dcaf773767468780ef9a5ed9bc836a8e833cb",
+                        "image": "sha256:3321d7b4ed6370aae84256217a936f29740cdde6e05632a42d608b68d9715529",
+                        "imageID": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "lastState": {},
+                        "name": "ray",
+                        "ready": true,
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-01T16:29:42Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-npdgn",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.77",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.77"
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "10.244.1.248",
+                "podIPs": [
+                    {
+                        "ip": "10.244.1.248"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "startTime": "2026-09-01T16:29:37Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"ray-worker-1\"},\"name\":\"ray-worker-1\",\"namespace\":\"dynamo-ray-startup-validation\"},\"spec\":{\"containers\":[{\"args\":[\"pip install --disable-pip-version-check --no-cache-dir \\\"ray==2.55.1\\\" \\u003e /tmp/ray-install.log 2\\u003e\\u00261 || { cat /tmp/ray-install.log; exit 1; }; export LEADER_HOST=\\\"${LWS_LEADER_ADDRESS}\\\"; i=0; until python3 -c \\\"import os, socket; s=socket.create_connection((os.environ['LEADER_HOST'], 6379), timeout=2); s.close()\\\" 2\\u003e/dev/null; do i=$((i+1)); [ \\\"$i\\\" -ge 150 ] \\u0026\\u0026 { echo \\\"ERROR: Ray head did not become reachable after 150 attempts\\\" \\u003e\\u00262; exit 1; }; echo \\\"Waiting for Ray head at $LEADER_HOST:6379...\\\"; sleep 2; done \\u0026\\u0026 ray start --address=\\\"$LEADER_HOST:6379\\\" --block\"],\"command\":[\"/bin/sh\",\"-c\"],\"env\":[{\"name\":\"LWS_LEADER_ADDRESS\",\"value\":\"ray-head\"},{\"name\":\"RAY_USAGE_STATS_ENABLED\",\"value\":\"0\"}],\"image\":\"docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf\",\"name\":\"ray\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"3Gi\"},\"requests\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}},\"volumeMounts\":[{\"mountPath\":\"/dev/shm\",\"name\":\"shm\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-02\"},\"restartPolicy\":\"Never\",\"volumes\":[{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"512Mi\"},\"name\":\"shm\"}]}}\n"
+                },
+                "creationTimestamp": "2026-09-01T16:29:37Z",
+                "labels": {
+                    "app": "ray-worker-1"
+                },
+                "name": "ray-worker-1",
+                "namespace": "dynamo-ray-startup-validation",
+                "resourceVersion": "80262320",
+                "uid": "8a5c51aa-e578-4224-8ca4-1940c6b72618"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "pip install --disable-pip-version-check --no-cache-dir \"ray==2.55.1\" \u003e /tmp/ray-install.log 2\u003e\u00261 || { cat /tmp/ray-install.log; exit 1; }; export LEADER_HOST=\"${LWS_LEADER_ADDRESS}\"; i=0; until python3 -c \"import os, socket; s=socket.create_connection((os.environ['LEADER_HOST'], 6379), timeout=2); s.close()\" 2\u003e/dev/null; do i=$((i+1)); [ \"$i\" -ge 150 ] \u0026\u0026 { echo \"ERROR: Ray head did not become reachable after 150 attempts\" \u003e\u00262; exit 1; }; echo \"Waiting for Ray head at $LEADER_HOST:6379...\"; sleep 2; done \u0026\u0026 ray start --address=\"$LEADER_HOST:6379\" --block"
+                        ],
+                        "command": [
+                            "/bin/sh",
+                            "-c"
+                        ],
+                        "env": [
+                            {
+                                "name": "LWS_LEADER_ADDRESS",
+                                "value": "ray-head"
+                            },
+                            {
+                                "name": "RAY_USAGE_STATS_ENABLED",
+                                "value": "0"
+                            }
+                        ],
+                        "image": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "ray",
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "3Gi"
+                            },
+                            "requests": {
+                                "cpu": "500m",
+                                "memory": "1Gi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-j9qt8",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "spark-02",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "spark-02"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Never",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "512Mi"
+                        },
+                        "name": "shm"
+                    },
+                    {
+                        "name": "kube-api-access-j9qt8",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:43Z",
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:38Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:43Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:43Z",
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:37Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "containerd://146b565e99cbcc486a4a7ed88fccc5d9431cf10ec46e7e127b0165e8bf84ba50",
+                        "image": "sha256:3321d7b4ed6370aae84256217a936f29740cdde6e05632a42d608b68d9715529",
+                        "imageID": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "lastState": {},
+                        "name": "ray",
+                        "ready": true,
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-01T16:29:42Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-j9qt8",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.77",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.77"
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "10.244.1.247",
+                "podIPs": [
+                    {
+                        "ip": "10.244.1.247"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "startTime": "2026-09-01T16:29:38Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"ray-worker-2\"},\"name\":\"ray-worker-2\",\"namespace\":\"dynamo-ray-startup-validation\"},\"spec\":{\"containers\":[{\"args\":[\"pip install --disable-pip-version-check --no-cache-dir \\\"ray==2.55.1\\\" \\u003e /tmp/ray-install.log 2\\u003e\\u00261 || { cat /tmp/ray-install.log; exit 1; }; export LEADER_HOST=\\\"${LWS_LEADER_ADDRESS}\\\"; i=0; until python3 -c \\\"import os, socket; s=socket.create_connection((os.environ['LEADER_HOST'], 6379), timeout=2); s.close()\\\" 2\\u003e/dev/null; do i=$((i+1)); [ \\\"$i\\\" -ge 150 ] \\u0026\\u0026 { echo \\\"ERROR: Ray head did not become reachable after 150 attempts\\\" \\u003e\\u00262; exit 1; }; echo \\\"Waiting for Ray head at $LEADER_HOST:6379...\\\"; sleep 2; done \\u0026\\u0026 ray start --address=\\\"$LEADER_HOST:6379\\\" --block\"],\"command\":[\"/bin/sh\",\"-c\"],\"env\":[{\"name\":\"LWS_LEADER_ADDRESS\",\"value\":\"ray-head\"},{\"name\":\"RAY_USAGE_STATS_ENABLED\",\"value\":\"0\"}],\"image\":\"docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf\",\"name\":\"ray\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"3Gi\"},\"requests\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}},\"volumeMounts\":[{\"mountPath\":\"/dev/shm\",\"name\":\"shm\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"restartPolicy\":\"Never\",\"volumes\":[{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"512Mi\"},\"name\":\"shm\"}]}}\n"
+                },
+                "creationTimestamp": "2026-09-01T16:29:38Z",
+                "labels": {
+                    "app": "ray-worker-2"
+                },
+                "name": "ray-worker-2",
+                "namespace": "dynamo-ray-startup-validation",
+                "resourceVersion": "80262271",
+                "uid": "35fd850f-5e57-48f6-8ed4-45a4e5067bb5"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "pip install --disable-pip-version-check --no-cache-dir \"ray==2.55.1\" \u003e /tmp/ray-install.log 2\u003e\u00261 || { cat /tmp/ray-install.log; exit 1; }; export LEADER_HOST=\"${LWS_LEADER_ADDRESS}\"; i=0; until python3 -c \"import os, socket; s=socket.create_connection((os.environ['LEADER_HOST'], 6379), timeout=2); s.close()\" 2\u003e/dev/null; do i=$((i+1)); [ \"$i\" -ge 150 ] \u0026\u0026 { echo \"ERROR: Ray head did not become reachable after 150 attempts\" \u003e\u00262; exit 1; }; echo \"Waiting for Ray head at $LEADER_HOST:6379...\"; sleep 2; done \u0026\u0026 ray start --address=\"$LEADER_HOST:6379\" --block"
+                        ],
+                        "command": [
+                            "/bin/sh",
+                            "-c"
+                        ],
+                        "env": [
+                            {
+                                "name": "LWS_LEADER_ADDRESS",
+                                "value": "ray-head"
+                            },
+                            {
+                                "name": "RAY_USAGE_STATS_ENABLED",
+                                "value": "0"
+                            }
+                        ],
+                        "image": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "ray",
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "3Gi"
+                            },
+                            "requests": {
+                                "cpu": "500m",
+                                "memory": "1Gi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-5r49d",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "spark-01",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "spark-01"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Never",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "512Mi"
+                        },
+                        "name": "shm"
+                    },
+                    {
+                        "name": "kube-api-access-5r49d",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:39Z",
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:38Z",
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:39Z",
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:39Z",
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-09-01T16:29:38Z",
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "containerID": "containerd://cd05aeafd2d5f4cec5c6dc44f0c28e53679031ae27a3a52f0ab390ee2ba3fddb",
+                        "image": "docker.io/library/python:3.11-slim",
+                        "imageID": "docker.io/library/python@sha256:233de06753d30d120b1a3ce359d8d3be8bda78524cd8f520c99883bfe33964cf",
+                        "lastState": {},
+                        "name": "ray",
+                        "ready": true,
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-09-01T16:29:38Z"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shm"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-5r49d",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.76",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.76"
+                    }
+                ],
+                "phase": "Running",
+                "podIP": "10.244.2.149",
+                "podIPs": [
+                    {
+                        "ip": "10.244.2.149"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "startTime": "2026-09-01T16:29:38Z"
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

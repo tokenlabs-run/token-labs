@@ -1,0 +1,803 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sglang-14098-fix-dce302dd7a
+  namespace: token-labs
+data:
+  disagg.py: "# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION\
+    \ & AFFILIATES. All rights reserved.\n# SPDX-License-Identifier: Apache-2.0\n\n\
+    \"\"\"Disaggregation helpers used by the SGLang worker.\n\n* :func:`compute_bootstrap_address`\
+    \ \u2014 resolve the `(host, port)` pair a\n  prefill worker advertises to decode\
+    \ peers from a live `sgl.Engine`.\n  Returns `(None, None)` on any failure so\
+    \ callers can degrade gracefully.\n\n* :func:`get_sglang_worker_group_id` \u2014\
+    \ normalize the SGLang multinode\n  `dist_init_addr` into a runtime-data key that\
+    \ non-leader workers can use\n  to discover the leader endpoint.\n\n* :func:`warmup_prefill_engine`\
+    \ \u2014 drive one request per DP rank through\n  the disagg path with SGLang's\
+    \ `FAKE_BOOTSTRAP_HOST` so the first real\n  request doesn't pay the JIT/CUDA-graph\
+    \ compile cost.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport asyncio\n\
+    import logging\nfrom collections.abc import Mapping\nfrom typing import Any, Optional\n\
+    \nimport sglang as sgl\n\nfrom dynamo.llm import HttpError\nfrom dynamo.sglang.engine_generate\
+    \ import native_generate_payload\n\n# Matches the prior in-tree value. Long enough\
+    \ for the slowest cold-start\n# we've seen (TP8 70B with FlashInfer JIT).\n_PREFILL_WARMUP_TIMEOUT_S\
+    \ = 1800.0\n\nSGLANG_WORKER_GROUP_ID_KEY = \"sglang_worker_group_id\"\n\n\ndef\
+    \ validate_disagg_parallel_sampling(request: Mapping[str, Any]) -> None:\n   \
+    \ \"\"\"Reject parallel samples before creating a single-room KV handoff.\"\"\"\
+    \n    inner_request = request.get(\"request\", request)\n    native_payload =\
+    \ native_generate_payload(inner_request)\n    sampling_options = [\n        inner_request.get(\"\
+    sampling_options\"),\n        request.get(\"sampling_params\"),\n        {\"n\"\
+    : inner_request.get(\"n\")},\n    ]\n    if native_payload is not None:\n    \
+    \    sampling_options.append(native_payload.get(\"sampling_params\"))\n    for\
+    \ options in sampling_options:\n        if options is None:\n            continue\n\
+    \        if not isinstance(options, Mapping):\n            raise HttpError(\n\
+    \                400, \"SGLang disaggregated sampling parameters must be an object.\"\
+    \n            )\n        if options.get(\"n\") not in (None, 1):\n           \
+    \ # Prefill produces one bootstrap room. SGLang expands parallel\n           \
+    \ # decode samples into independent transfers that cannot all finish.\n      \
+    \      raise HttpError(\n                400,\n                \"SGLang disaggregated\
+    \ serving supports only n=1. \"\n                \"Use aggregated serving or send\
+    \ separate n=1 requests.\",\n            )\n\n\ndef _network_address_cls():\n\
+    \    # Deferred to function body so pre-commit test collection can import\n  \
+    \  # `_disagg` without the SGLang network helper available.\n    from sglang.srt.utils.network\
+    \ import NetworkAddress\n\n    return NetworkAddress\n\n\ndef compute_bootstrap_address(\n\
+    \    engine: sgl.Engine,\n) -> tuple[Optional[str], Optional[int]]:\n    \"\"\"\
+    Return `(host, port)` for this prefill worker's bootstrap address.\n\n    Returns\
+    \ `(None, None)` when the engine doesn't advertise a\n    `disaggregation_bootstrap_port`\
+    \ or when address resolution raises.\n    Callers treat `(None, None)` as a soft\
+    \ skip.\n    \"\"\"\n    # Deferred to function body so pre-commit test collection\
+    \ can import\n    # `_disagg` without sglang installed.\n    from sglang.srt.utils.network\
+    \ import NetworkAddress, get_local_ip_auto\n\n    try:\n        inner_tm = engine.tokenizer_manager\n\
+    \        bootstrap_port = getattr(\n            inner_tm.server_args, \"disaggregation_bootstrap_port\"\
+    , None\n        )\n        if bootstrap_port is None:\n            return None,\
+    \ None\n\n        if inner_tm.server_args.dist_init_addr:\n            dist_init\
+    \ = NetworkAddress.parse(inner_tm.server_args.dist_init_addr)\n            resolved\
+    \ = dist_init.resolved()\n            bootstrap_host = (\n                NetworkAddress(resolved.host,\
+    \ bootstrap_port)\n                .to_host_port_str()\n                .rsplit(\"\
+    :\", 1)[0]\n            )\n            logging.info(\n                \"Resolved\
+    \ bootstrap host '%s' -> '%s' (%s)\",\n                dist_init.host,\n     \
+    \           resolved.host,\n                \"IPv6\" if resolved.is_ipv6 else\
+    \ \"IPv4\",\n            )\n        else:\n            # SGLANG_HOST_IP overrides\
+    \ auto-detection (use bracketed [addr]\n            # for IPv6); falls back to\
+    \ a v4-then-v6 probe.\n            local_ip = get_local_ip_auto()\n          \
+    \  local_addr = NetworkAddress(local_ip, bootstrap_port)\n            bootstrap_host\
+    \ = local_addr.to_host_port_str().rsplit(\":\", 1)[0]\n            logging.info(\n\
+    \                \"Using auto-detected local IP: %s (%s)\",\n                local_ip,\n\
+    \                \"IPv6\" if local_addr.is_ipv6 else \"IPv4\",\n            )\n\
+    \        return bootstrap_host, bootstrap_port\n    except Exception as e:\n \
+    \       logging.warning(\"Failed to compute bootstrap address: %s\", e)\n    \
+    \    return None, None\n\n\ndef get_sglang_worker_group_id(server_args) -> Optional[str]:\n\
+    \    \"\"\"Return the shared SGLang multi-node worker group id.\"\"\"\n    nnodes\
+    \ = getattr(server_args, \"nnodes\", 1) or 1\n    if nnodes <= 1:\n        return\
+    \ None\n\n    dist_init_addr = getattr(server_args, \"dist_init_addr\", None)\n\
+    \    if not dist_init_addr:\n        logging.warning(\n            \"SGLang multi-node\
+    \ worker group id requires dist_init_addr; \"\n            \"falling back to local\
+    \ worker id behavior\"\n        )\n        return None\n\n    try:\n        parsed\
+    \ = _network_address_cls().parse(str(dist_init_addr).strip())\n        resolved\
+    \ = parsed.resolved()\n        return f\"dist_init:{resolved.to_tcp()}\"\n   \
+    \ except Exception as e:\n        logging.warning(\n            \"Failed to normalize\
+    \ SGLang dist_init_addr=%r for worker group id: %s\",\n            dist_init_addr,\n\
+    \            e,\n        )\n        return None\n\n\nasync def warmup_prefill_engine(engine:\
+    \ sgl.Engine, bootstrap_port: int) -> None:\n    \"\"\"Warm every prefill DP rank\
+    \ through the disagg path.\n\n    Uses SGLang's `FAKE_BOOTSTRAP_HOST` so JIT/CUDA-graph\
+    \ compile happens\n    before the first real request. Raises on timeout/failure\
+    \ \u2014 an unwarmed\n    prefill silently drops production requests.\n    \"\"\
+    \"\n    from sglang.srt.disaggregation.utils import FAKE_BOOTSTRAP_HOST\n\n  \
+    \  server_args = engine.tokenizer_manager.server_args\n    dp_size = server_args.dp_size\n\
+    \    sampling_params = {\n        \"temperature\": 0.0,\n        \"max_new_tokens\"\
+    : 8,\n        \"ignore_eos\": True,\n    }\n\n    async def _warmup_dp_rank(dp_rank:\
+    \ int) -> None:\n        results = await engine.async_generate(\n            input_ids=[10,\
+    \ 11, 12, 13],\n            sampling_params=sampling_params,\n            stream=True,\n\
+    \            bootstrap_host=FAKE_BOOTSTRAP_HOST,\n            bootstrap_port=bootstrap_port,\n\
+    \            bootstrap_room=dp_rank,\n            routed_dp_rank=dp_rank,\n  \
+    \      )\n        async for _ in results:\n            pass\n\n    async def _do_warmup()\
+    \ -> None:\n        await asyncio.gather(*(_warmup_dp_rank(i) for i in range(dp_size)))\n\
+    \n    logging.info(\"SGLang prefill warmup starting...\")\n    await asyncio.wait_for(_do_warmup(),\
+    \ timeout=_PREFILL_WARMUP_TIMEOUT_S)\n    logging.info(\"SGLang prefill warmup\
+    \ complete\")\n"
+  decode_handler.py: "# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION\
+    \ & AFFILIATES. All rights reserved.\n# SPDX-License-Identifier: Apache-2.0\n\n\
+    import asyncio\nimport logging\nimport time\nfrom typing import Any, AsyncGenerator,\
+    \ AsyncIterator, Dict, List, Mapping, Optional\n\nimport numpy as np\nimport sglang\
+    \ as sgl\nimport torch\nfrom PIL.Image import Image as PILImage\nfrom sglang.srt.utils.video_decoder\
+    \ import VideoDecoderWrapper\n\nfrom dynamo._core import Context\nfrom dynamo.common.backend\
+    \ import logprobs as _shared_logprobs\nfrom dynamo.common.constants import DisaggregationMode\n\
+    from dynamo.common.metadata_upload import MetadataUploader\nfrom dynamo.common.multimodal.image_loader\
+    \ import ImageLoader\nfrom dynamo.common.multimodal.video_loader import VideoLoader\n\
+    from dynamo.common.utils.engine_response import (\n    normalize_finish_reason,\n\
+    \    trailing_stop_prefix_len,\n)\nfrom dynamo.llm import HttpError\nfrom dynamo.llm.exceptions\
+    \ import EngineShutdown\nfrom dynamo.sglang._compat import (\n    filter_supported_async_generate_kwargs,\n\
+    \    require_reasoning_kwargs,\n)\nfrom dynamo.sglang._disagg import validate_disagg_parallel_sampling\n\
+    from dynamo.sglang.args import Config\nfrom dynamo.sglang.engine_generate import\
+    \ (\n    build_native_generate_request,\n    native_generate_payload,\n    native_generate_stream,\n\
+    )\nfrom dynamo.sglang.publisher import DynamoSglangPublisher\nfrom dynamo.sglang.request_handlers.handler_base\
+    \ import BaseWorkerHandler\nfrom dynamo.sglang.request_handlers.llm.mm_disagg_utils\
+    \ import (\n    AUDIO_URL_KEY,\n    IMAGE_URL_KEY,\n    VIDEO_URL_KEY,\n    build_disagg_mm_kwargs,\n\
+    \    extract_media_urls,\n    raise_if_unextracted_multimodal,\n)\n\n_SAMPLING_OPTION_FIELDS\
+    \ = (\n    \"presence_penalty\",\n    \"frequency_penalty\",\n    \"repetition_penalty\"\
+    ,\n    \"temperature\",\n    \"top_p\",\n    \"top_k\",\n    \"min_p\",\n)\nBYPASS_REMOTE_PREFILL_ANNOTATION\
+    \ = \"x-bypass-remote-prefill\"\n\n\ndef _raise_if_conditional_disagg_bypass(request:\
+    \ Dict[str, Any]) -> None:\n    if BYPASS_REMOTE_PREFILL_ANNOTATION not in (request.get(\"\
+    annotations\") or []):\n        return\n    raise HttpError(\n        400,\n \
+    \       f\"Detected request annotation {BYPASS_REMOTE_PREFILL_ANNOTATION!r}, but\
+    \ \"\n        \"SGLang backend does not support conditional disaggregation yet.\
+    \ \"\n        \"Use vLLM or TensorRT-LLM for conditional disaggregation.\",\n\
+    \    )\n\n\nclass FrontendDecodedVideo(np.ndarray, VideoDecoderWrapper):\n   \
+    \ def __new__(\n        cls, video_frames: Any, video_metadata: Dict[str, Any]\n\
+    \    ) -> \"FrontendDecodedVideo\":\n        video = np.ascontiguousarray(video_frames).view(cls)\n\
+    \        duration = float(video_metadata.get(\"duration\") or 0)\n        source_fps\
+    \ = float(video_metadata.get(\"fps\") or 0)\n        # TODO: SGLang does not yet\
+    \ provide a model-independent contract for\n        # pre-sampled video inputs\
+    \ with source frame indices and timestamps. Use the\n        # effective FPS as\
+    \ a best-effort workaround until SGLang video processors can\n        # preserve\
+    \ the supplied sampling metadata and skip redundant temporal sampling.\n     \
+    \   effective_fps = len(video_frames) / duration if duration > 0 else source_fps\n\
+    \        frame_indices = video_metadata.get(\"frames_indices\")\n        if (\n\
+    \            source_fps > 0\n            and frame_indices is not None\n     \
+    \       and len(frame_indices) == len(video_frames)\n            and len(frame_indices)\
+    \ > 1\n        ):\n            span_frames = float(frame_indices[-1]) - float(frame_indices[0])\n\
+    \            if span_frames > 0:\n                effective_fps = (len(video_frames)\
+    \ - 1) * source_fps / span_frames\n        video._avg_fps = effective_fps\n  \
+    \      if video._avg_fps <= 0:\n            raise ValueError(\"Frontend-decoded\
+    \ video metadata must contain a valid fps\")\n        return video\n\n    def\
+    \ __init__(self, video_frames: Any, video_metadata: Dict[str, Any]):\n       \
+    \ pass\n\n    def __array_finalize__(self, source: Any) -> None:\n        if source\
+    \ is not None:\n            self._avg_fps = getattr(source, \"_avg_fps\", 0.0)\n\
+    \n    @property\n    def avg_fps(self) -> float:\n        return self._avg_fps\n\
+    \n    def get_frames_as_tensor(self, indices: list[int]):\n        return torch.from_numpy(np.asarray(self)[indices])\n\
+    \n    def get_frames_at(self, indices: list[int]):\n        return np.asarray(self)[indices]\n\
+    \n    def close(self) -> None:\n        pass\n\n\ndef _as_sglang_video(frames:\
+    \ Any, metadata: Dict[str, Any]) -> FrontendDecodedVideo:\n    \"\"\"Expose transferred\
+    \ frames through SGLang's predecoded video contract.\"\"\"\n    return FrontendDecodedVideo(frames,\
+    \ metadata)\n\n\ndef _nvext_extra_field_requested(request: Dict[str, Any], field:\
+    \ str) -> bool:\n    nvext = request.get(\"nvext\")\n    extra_args = request.get(\"\
+    extra_args\") or {}\n    extra_nvext = extra_args.get(\"nvext\") if isinstance(extra_args,\
+    \ dict) else None\n\n    for source in (nvext, extra_nvext):\n        if not isinstance(source,\
+    \ dict):\n            continue\n        extra_fields = source.get(\"extra_fields\"\
+    )\n        if isinstance(extra_fields, list) and field in extra_fields:\n    \
+    \        return True\n    return False\n\n\ndef _sampling_option_params(values:\
+    \ Dict[str, Any]) -> Dict[str, Any]:\n    \"\"\"Extract sampling options that\
+    \ SGLang accepts as sampling params.\"\"\"\n    params = {field: values.get(field)\
+    \ for field in _SAMPLING_OPTION_FIELDS}\n    if values.get(\"seed\") is not None:\n\
+    \        params[\"sampling_seed\"] = values.get(\"seed\")\n    return params\n\
+    \n\ndef _user_stop_token_ids(request: Dict[str, Any]) -> set[int]:\n    stop_conditions\
+    \ = request.get(\"stop_conditions\")\n    if isinstance(stop_conditions, dict):\n\
+    \        return {\n            token_id\n            for token_id in (stop_conditions.get(\"\
+    stop_token_ids\") or [])\n            if isinstance(token_id, int) and not isinstance(token_id,\
+    \ bool)\n        }\n\n    stop = request.get(\"stop\")\n    if isinstance(stop,\
+    \ list) and all(\n        isinstance(item, int) and not isinstance(item, bool)\
+    \ for item in stop\n    ):\n        return set(stop)\n\n    return {\n       \
+    \ token_id\n        for token_id in (request.get(\"stop_token_ids\") or [])\n\
+    \        if isinstance(token_id, int) and not isinstance(token_id, bool)\n   \
+    \ }\n\n\ndef _suppressed_stop_token_ids(request: Dict[str, Any]) -> set[int]:\n\
+    \    stop_conditions = request.get(\"stop_conditions\") or {}\n    if not isinstance(stop_conditions,\
+    \ dict):\n        return set()\n\n    values = [\n        *(stop_conditions.get(\"\
+    stop_token_ids\") or []),\n        *(stop_conditions.get(\"stop_token_ids_hidden\"\
+    ) or []),\n    ]\n    return {\n        token_id\n        for token_id in values\n\
+    \        if isinstance(token_id, int) and not isinstance(token_id, bool)\n   \
+    \ }\n\n\ndef _stop_strings(request: Dict[str, Any]) -> set[str]:\n    stop_conditions\
+    \ = request.get(\"stop_conditions\")\n    stop = (\n        stop_conditions.get(\"\
+    stop\")\n        if isinstance(stop_conditions, dict)\n        else request.get(\"\
+    stop\")\n    )\n    if isinstance(stop, str):\n        return {stop}\n    if isinstance(stop,\
+    \ list):\n        return {item for item in stop if isinstance(item, str)}\n  \
+    \  return set()\n\n\ndef _remove_suppressed_stop_tokens(\n    output_ids: list[int],\n\
+    \    matched: Any,\n    suppressed_stop_token_ids: set[int] | None,\n) -> tuple[list[int],\
+    \ int]:\n    if not output_ids or not suppressed_stop_token_ids:\n        return\
+    \ output_ids, 0\n\n    if isinstance(matched, int) and not isinstance(matched,\
+    \ bool):\n        matched_ids = [matched]\n    elif isinstance(matched, list)\
+    \ and all(\n        isinstance(item, int) and not isinstance(item, bool) for item\
+    \ in matched\n    ):\n        matched_ids = matched\n    else:\n        return\
+    \ output_ids, 0\n\n    if (\n        matched_ids\n        and all(token_id in\
+    \ suppressed_stop_token_ids for token_id in matched_ids)\n        and len(output_ids)\
+    \ >= len(matched_ids)\n        and output_ids[-len(matched_ids) :] == matched_ids\n\
+    \    ):\n        return output_ids[: -len(matched_ids)], len(matched_ids)\n\n\
+    \    return output_ids, 0\n\n\ndef _split_trailing_suppressed_stop_tokens(\n \
+    \   output_ids: list[int],\n    suppressed_stop_token_ids: set[int] | None,\n\
+    ) -> tuple[list[int], list[int]]:\n    if not output_ids or not suppressed_stop_token_ids:\n\
+    \        return output_ids, []\n\n    split_at = len(output_ids)\n    while split_at\
+    \ > 0 and output_ids[split_at - 1] in suppressed_stop_token_ids:\n        split_at\
+    \ -= 1\n    return output_ids[:split_at], output_ids[split_at:]\n\n\ndef _openai_stop_sampling_params(request:\
+    \ Dict[str, Any]) -> Dict[str, Any]:\n    stop = request.get(\"stop\")\n    if\
+    \ isinstance(stop, str):\n        return {\"stop\": stop}\n    if isinstance(stop,\
+    \ list):\n        if stop and all(\n            isinstance(item, int) and not\
+    \ isinstance(item, bool) for item in stop\n        ):\n            return {\"\
+    stop_token_ids\": stop}\n        if stop and all(isinstance(item, str) for item\
+    \ in stop):\n            return {\"stop\": stop}\n\n    stop_token_ids = [\n \
+    \       token_id\n        for token_id in (request.get(\"stop_token_ids\") or\
+    \ [])\n        if isinstance(token_id, int) and not isinstance(token_id, bool)\n\
+    \    ]\n    if stop_token_ids:\n        return {\"stop_token_ids\": stop_token_ids}\n\
+    \    return {}\n\n\ndef _extract_sglang_stop_reason(\n    finish_reason: Dict[str,\
+    \ Any] | None,\n    user_stop_token_ids: set[int] | None = None,\n) -> Any | None:\n\
+    \    \"\"\"Extract SGLang's matched stop value for Dynamo's stop_reason field.\"\
+    \"\"\n\n    if not finish_reason:\n        return None\n\n    matched = finish_reason.get(\"\
+    matched\")\n    if isinstance(matched, bool):\n        return None\n    if isinstance(matched,\
+    \ str):\n        return matched\n    if isinstance(matched, int):\n        if\
+    \ user_stop_token_ids is not None and matched not in user_stop_token_ids:\n  \
+    \          return None\n        return matched\n    if isinstance(matched, list)\
+    \ and all(\n        isinstance(item, int) and not isinstance(item, bool) for item\
+    \ in matched\n    ):\n        if user_stop_token_ids is not None and any(\n  \
+    \          item not in user_stop_token_ids for item in matched\n        ):\n \
+    \           return None\n        return matched\n\n    return None\n\n\nclass\
+    \ DecodeWorkerHandler(BaseWorkerHandler):\n    \"\"\"Handler for decode workers\
+    \ in both aggregated and disaggregated serving modes.\"\"\"\n\n    def __init__(\n\
+    \        self,\n        engine: sgl.Engine,\n        config: Config,\n       \
+    \ publisher: Optional[DynamoSglangPublisher] = None,\n        generate_endpoint=None,\n\
+    \        shutdown_event: Optional[asyncio.Event] = None,\n        enable_frontend_decoding:\
+    \ bool = False,\n        first_token_source: Any | None = None,\n    ) -> None:\n\
+    \        \"\"\"Initialize decode worker handler.\n\n        Args:\n          \
+    \  engine: The SGLang engine instance.\n            config: SGLang and Dynamo\
+    \ configuration.\n            publisher: Metrics publisher for the worker.\n \
+    \           shutdown_event: Optional event to signal shutdown.\n            generate_endpoint:\
+    \ The endpoint handle for discovery registration.\n            enable_frontend_decoding:\
+    \ If True, multimodal media arrives as\n                ``Decoded`` variants over\
+    \ NIXL RDMA from the Rust frontend\n                and must be read before passing\
+    \ to SGLang.\n                Off by default; the worker keeps the URL-string\
+    \ fast path.\n            first_token_source: Endpoint-scoped prefill-completion\
+    \ source.\n        \"\"\"\n        super().__init__(\n            engine,\n  \
+    \          config,\n            publisher,\n            generate_endpoint,\n \
+    \           shutdown_event,\n        )\n        # Resolve the optional return_routed_experts\
+    \ kwarg once. Gating on the\n        # opt-in flag avoids sending the kwarg on\
+    \ sglang builds whose\n        # Engine.async_generate does not declare it (notably\
+    \ the deepseek_v4\n        # branch). Doing this at init keeps the per-request\
+    \ hot path free of\n        # signature inspection.\n        self._routed_experts_kwargs:\
+    \ Dict[\n            str, Any\n        ] = self._resolve_routed_experts_kwargs(self.engine,\
+    \ self.config.server_args)\n        self._enable_frontend_decoding = enable_frontend_decoding\n\
+    \        self._first_token_source = first_token_source\n        self._image_loader:\
+    \ Optional[ImageLoader] = None\n        self._video_loader: Optional[VideoLoader]\
+    \ = None\n        if self._enable_frontend_decoding:\n            # Lazy-inits\
+    \ a NIXL connector internally for Decoded variants.\n            self._image_loader\
+    \ = ImageLoader(enable_frontend_decoding=True)\n            self._video_loader\
+    \ = VideoLoader(enable_frontend_decoding=True)\n        self._mm_hashes_supported:\
+    \ bool = self._resolve_mm_hashes_supported(self.engine)\n        if self.serving_mode\
+    \ == DisaggregationMode.DECODE:\n            logging.info(\n                \"\
+    Decode worker handler initialized (disaggregated decode mode)\"\n            )\n\
+    \        else:\n            mode = \"frontend-decoded\" if self._enable_frontend_decoding\
+    \ else \"standard\"\n            logging.info(f\"Decode worker handler initialized\
+    \ (aggregated mode, {mode})\")\n\n    @staticmethod\n    def _resolve_routed_experts_kwargs(engine:\
+    \ Any, server_args: Any) -> Dict[str, Any]:\n        \"\"\"Resolve the return_routed_experts\
+    \ kwarg for this engine.\n\n        Returns ``{\"return_routed_experts\": True}``\
+    \ only when the user opted in\n        via ``enable_return_routed_experts=True``\
+    \ AND the engine's\n        ``async_generate`` signature declares the kwarg. Returns\
+    \ ``{}`` for the\n        default-off path and for sglang builds that do not declare\
+    \ the kwarg\n        (e.g. the ``deepseek_v4`` branch).\n        \"\"\"\n    \
+    \    if not getattr(server_args, \"enable_return_routed_experts\", False):\n \
+    \           return {}\n        return filter_supported_async_generate_kwargs(\n\
+    \            engine, {\"return_routed_experts\": True}\n        )\n\n    @staticmethod\n\
+    \    def _resolve_mm_hashes_supported(engine: Any) -> bool:\n        \"\"\"Probe\
+    \ whether engine.async_generate accepts ``mm_hashes``.\n\n        SGLang accepted\
+    \ the kwarg starting with the upstream interop PR; older\n        builds (and\
+    \ forks lacking the patch) raise TypeError if we pass it.\n        Probing the\
+    \ signature once at init keeps the request hot path free of\n        repeated\
+    \ inspection. Returns ``False`` when the kwarg is absent \u2014 the\n        request\
+    \ still completes, MM-aware routing just falls back to the\n        text-prefix\
+    \ overlap signal.\n        \"\"\"\n        probe = filter_supported_async_generate_kwargs(engine,\
+    \ {\"mm_hashes\": None})\n        return \"mm_hashes\" in probe\n\n    @staticmethod\n\
+    \    def _extract_mm_hashes(request: Dict[str, Any]) -> Optional[List[str]]:\n\
+    \        \"\"\"Pull the per-image hashes the Rust frontend forwards via extra_args.\n\
+    \n        Returns ``None`` when the field is absent or malformed; SGLang then\n\
+    \        recomputes the hash internally via ``hash_feature()``.\n        \"\"\"\
+    \n        extra_args = request.get(\"extra_args\")\n        if not isinstance(extra_args,\
+    \ dict):\n            return None\n        mm_hashes = extra_args.get(\"mm_hashes\"\
+    )\n        if not mm_hashes:\n            return None\n        if not isinstance(mm_hashes,\
+    \ list):\n            return None\n        # Fail closed if a non-string slipped\
+    \ into the list \u2014 downstream\n        # SGLang treats mm_hashes as List[str]\
+    \ and a bad element would\n        # crash the worker mid-request. Routing falls\
+    \ back to text-prefix.\n        if not all(isinstance(h, str) for h in mm_hashes):\n\
+    \            logging.warning(\n                \"extra_args.mm_hashes contained\
+    \ non-str entries; \"\n                \"ignoring routing-side hashes and letting\
+    \ SGLang recompute\"\n            )\n            return None\n        return mm_hashes\n\
+    \n    def _metadata_uploader_from_request(\n        self, request: Dict[str, Any]\n\
+    \    ) -> MetadataUploader | None:\n        if not getattr(getattr(self.config,\
+    \ \"dynamo_args\", None), \"enable_rl\", False):\n            return None\n  \
+    \      return MetadataUploader.from_backend_request(request)\n\n    def cleanup(self)\
+    \ -> None:\n        \"\"\"Shutdown the engine and cleanup resources.\"\"\"\n \
+    \       super().cleanup()\n        self.engine.shutdown()\n        logging.info(\"\
+    Engine shutdown\")\n\n    def _build_sampling_params(self, request: Dict[str,\
+    \ Any]) -> Dict[str, Any]:\n        \"\"\"Build sampling params from request format.\n\
+    \n        Args:\n            request: Request dict in either token-based or OpenAI\
+    \ format.\n\n        Returns:\n            Dict of sampling parameters for SGLang\
+    \ engine.\n        \"\"\"\n        if not self.use_sglang_tokenizer:\n       \
+    \     # Token-based request format\n            sampling_opts = request.get(\"\
+    sampling_options\", {})\n            stop_conditions = request.get(\"stop_conditions\"\
+    , {})\n\n            _hidden = stop_conditions.get(\"stop_token_ids_hidden\")\
+    \ or []\n            _plain = stop_conditions.get(\"stop_token_ids\") or []\n\
+    \            _merged = list(set(_hidden).union(_plain))\n            stop_token_ids\
+    \ = _merged if _merged else None\n            param_mapping = {\n            \
+    \    \"n\": sampling_opts.get(\"n\"),\n                \"max_new_tokens\": stop_conditions.get(\"\
+    max_tokens\"),\n                \"min_new_tokens\": stop_conditions.get(\"min_tokens\"\
+    ),\n                \"ignore_eos\": stop_conditions.get(\"ignore_eos\"),\n   \
+    \             \"stop_token_ids\": stop_token_ids,\n                **_sampling_option_params(sampling_opts),\n\
+    \                **self._get_guided_decoding_params(\n                    sampling_opts.get(\"\
+    guided_decoding\")\n                ),\n            }\n        else:\n       \
+    \     # OpenAI request format\n            param_mapping = {\n               \
+    \ \"n\": request.get(\"n\"),\n                \"max_new_tokens\": request.get(\"\
+    max_tokens\"),\n                \"min_new_tokens\": request.get(\"min_tokens\"\
+    ),\n                **_sampling_option_params(request),\n                **_openai_stop_sampling_params(request),\n\
+    \                **self._get_guided_decoding_params(request.get(\"guided_decoding\"\
+    )),\n            }\n\n        # Keep max_new_tokens even when None \u2014 SGLang\
+    \ treats None as \"generate\n        # until EOS/context-length\" whereas omitting\
+    \ it triggers a default of 128.\n        keep_if_none = {\"max_new_tokens\"}\n\
+    \        return {\n            k: v for k, v in param_mapping.items() if v is\
+    \ not None or k in keep_if_none\n        }\n\n    @staticmethod\n    def _build_logprob_kwargs(request:\
+    \ Dict[str, Any]) -> Dict[str, Any]:\n        return _shared_logprobs.build_sglang_logprob_kwargs(\n\
+    \            request.get(\"output_options\", {}) or {},\n            allow_top_logprobs=_shared_logprobs.sglang_top_logprobs_allowed(),\n\
+    \        )\n\n    @staticmethod\n    def _extract_logprobs(\n        meta_info:\
+    \ Dict[str, Any],\n        num_output_tokens_in_chunk: Optional[int] = None,\n\
+    \        return_tokens_as_token_ids: bool = False,\n    ) -> tuple:\n        return\
+    \ _shared_logprobs.extract_from_sglang_meta(\n            meta_info,\n       \
+    \     num_output_tokens_in_chunk=num_output_tokens_in_chunk,\n            return_tokens_as_token_ids=return_tokens_as_token_ids,\n\
+    \        )\n\n    def _native_generate_stream(\n        self,\n        request:\
+    \ Dict[str, Any],\n        native_payload: Mapping[str, Any],\n        input_param:\
+    \ Dict[str, Any],\n        context: Context,\n        priority: int | None,\n\
+    \    ) -> AsyncIterator[Dict[str, Any]]:\n        \"\"\"Build and dispatch one\
+    \ native SGLang request.\"\"\"\n        raise_if_unextracted_multimodal(request)\n\
+    \        input_ids = input_param.get(\"input_ids\")\n        if not isinstance(input_ids,\
+    \ list):\n            raise ValueError(\"native SGLang Generate requires token\
+    \ input\")\n\n        bootstrap_info: dict[str, Any] = {}\n        if self.serving_mode\
+    \ == DisaggregationMode.DECODE:\n            bootstrap_info = request.get(\"bootstrap_info\"\
+    ) or {}\n            if not bootstrap_info:\n                raise RuntimeError(\n\
+    \                    \"bootstrap_info is required for disaggregated decode but\
+    \ was not provided\"\n                )\n\n        routing = request.get(\"routing\"\
+    ) or {}\n        native_request = build_native_generate_request(\n           \
+    \ native_payload,\n            input_ids=input_ids,\n            fallback_rid=context.trace_id\
+    \ or context.id(),\n            priority=self._priority_kwargs(priority).get(\"\
+    priority\"),\n            bootstrap_host=bootstrap_info.get(\"bootstrap_host\"\
+    ),\n            bootstrap_port=bootstrap_info.get(\"bootstrap_port\"),\n     \
+    \       bootstrap_room=bootstrap_info.get(\"bootstrap_room\"),\n            external_trace_header=context.trace_headers()\n\
+    \            if self.enable_trace\n            else None,\n            routed_dp_rank=routing.get(\"\
+    dp_rank\"),\n            lora_path=self._resolve_lora(request),\n        )\n \
+    \       return native_generate_stream(self.engine, native_request)\n\n    async\
+    \ def generate(\n        self, request: Dict[str, Any], context: Context\n   \
+    \ ) -> AsyncGenerator[Dict[str, Any], None]:\n        \"\"\"Generate response\
+    \ in aggregated or disaggregated mode.\n\n        Args:\n            request:\
+    \ Request dict with input and sampling parameters.\n            context: Context\
+    \ object for cancellation handling.\n\n        Yields:\n            Response dicts\
+    \ with token_ids or OpenAI-formatted chunks.\n\n        Raises:\n            RuntimeError:\
+    \ If no bootstrap info received from prefill worker.\n        \"\"\"\n       \
+    \ if self.serving_mode == DisaggregationMode.DECODE:\n            validate_disagg_parallel_sampling(request)\n\
+    \        logging.debug(f\"New Request ID: {context.id()}\")\n        routing =\
+    \ request.get(\"routing\") or {}\n        if self._first_token_source is not None:\n\
+    \            self._first_token_source.bind(context, routing.get(\"dp_rank\"))\n\
+    \        _raise_if_conditional_disagg_bypass(request)\n        trace_id = context.trace_id\n\
+    \        input_param = self._get_input_param(request)\n        priority = (request.get(\"\
+    routing\") or {}).get(\"priority\")\n        native_payload = native_generate_payload(request)\n\
+    \        if native_payload is not None:\n            stream = self._native_generate_stream(\n\
+    \                request,\n                native_payload,\n                input_param,\n\
+    \                context,\n                priority,\n            )\n        \
+    \    async for output in self._process_native_generate_stream(stream, context):\n\
+    \                yield output\n            return\n\n        priority_kwargs =\
+    \ self._priority_kwargs(priority)\n        sampling_params = self._build_sampling_params(request)\n\
+    \        logprob_kwargs = self._build_logprob_kwargs(request)\n        metadata_uploader\
+    \ = self._metadata_uploader_from_request(request)\n\n        output_options =\
+    \ request.get(\"output_options\", {})\n        return_tokens_as_token_ids = bool(\n\
+    \            output_options.get(\"return_tokens_as_token_ids\")\n        )\n \
+    \       user_stop_token_ids = _user_stop_token_ids(request)\n        suppressed_stop_token_ids\
+    \ = _suppressed_stop_token_ids(request)\n\n        lora_path = self._resolve_lora(request)\n\
+    \        if lora_path:\n            logging.debug(f\"Request {context.id()} will\
+    \ use LoRA adapter: {lora_path}\")\n\n        if self.serving_mode == DisaggregationMode.DECODE:\n\
+    \            raise_if_unextracted_multimodal(request)\n\n            # Check if\
+    \ bootstrap_info is pre-computed in the request (from frontend)\n            bootstrap_info\
+    \ = request.get(\"bootstrap_info\")\n\n            if not bootstrap_info:\n  \
+    \              raise RuntimeError(\n                    \"bootstrap_info is required\
+    \ for disaggregated decode but was not provided\"\n                )\n\n     \
+    \       logging.debug(\n                f\"Using bootstrap_info: \"\n        \
+    \        f\"host={bootstrap_info['bootstrap_host']}, \"\n                f\"port={bootstrap_info['bootstrap_port']},\
+    \ \"\n                f\"room={bootstrap_info['bootstrap_room']}\"\n         \
+    \   )\n\n            trace_header = context.trace_headers() if self.enable_trace\
+    \ else None\n\n            # Extract dp_rank from routing info (set by KV router)\n\
+    \            routing = request.get(\"routing\") or {}\n            dp_rank = routing.get(\"\
+    dp_rank\")\n\n            # Decode re-extracts the media so its token layout matches\
+    \ prefill's\n            # and the transferred KV lines up.\n            decode_mm_kwargs\
+    \ = build_disagg_mm_kwargs(request)\n\n            decode = await self.engine.async_generate(\n\
+    \                **input_param,\n                **decode_mm_kwargs,\n       \
+    \         sampling_params=sampling_params,\n                stream=True,\n   \
+    \             **require_reasoning_kwargs(self.engine, request),\n            \
+    \    **self._routed_experts_kwargs,\n                bootstrap_host=bootstrap_info[\"\
+    bootstrap_host\"],\n                bootstrap_port=bootstrap_info[\"bootstrap_port\"\
+    ],\n                bootstrap_room=bootstrap_info[\"bootstrap_room\"],\n     \
+    \           external_trace_header=trace_header,\n                rid=trace_id,\n\
+    \                data_parallel_rank=dp_rank,\n                lora_path=lora_path,\n\
+    \                **logprob_kwargs,\n                **priority_kwargs,\n     \
+    \       )\n            if not self.use_sglang_tokenizer:\n                async\
+    \ for out in self._process_token_stream(\n                    decode,\n      \
+    \              context,\n                    return_tokens_as_token_ids,\n   \
+    \                 user_stop_token_ids=user_stop_token_ids,\n                 \
+    \   suppressed_stop_token_ids=suppressed_stop_token_ids,\n                   \
+    \ metadata_uploader=metadata_uploader,\n                ):\n                 \
+    \   yield out\n            else:\n                async for out in self._process_text_stream(\n\
+    \                    decode,\n                    context,\n                 \
+    \   request=request,\n                    user_stop_token_ids=user_stop_token_ids,\n\
+    \                    metadata_uploader=metadata_uploader,\n                ):\n\
+    \                    yield out\n        else:\n            raise_if_unextracted_multimodal(request)\n\
+    \n            # Extract media URLs for multimodal requests. SGLang's mm_data_processor\n\
+    \            # handles loading/preprocessing, and the scheduler does vision encoding.\n\
+    \            mm_data = request.get(\"multi_modal_data\", {})\n            audio_data\
+    \ = extract_media_urls(mm_data, AUDIO_URL_KEY)\n            image_data: list[str]\
+    \ | list[PILImage] | None\n            video_data: list[str] | list[FrontendDecodedVideo]\
+    \ | None\n            if self._enable_frontend_decoding:\n                # Invariant\
+    \ from __init__: _image_loader is non-None iff\n                # _enable_frontend_decoding\
+    \ is True. Assert narrows the\n                # Optional for the type checker\
+    \ without runtime branching.\n                assert self._image_loader is not\
+    \ None\n                image_items = mm_data.get(IMAGE_URL_KEY) or []\n     \
+    \           if image_items:\n                    image_data = await self._image_loader.load_image_batch(image_items)\n\
+    \                else:\n                    image_data = None\n\n            \
+    \    video_items = mm_data.get(VIDEO_URL_KEY) or []\n                if video_items:\n\
+    \                    assert self._video_loader is not None\n                 \
+    \   decoded_videos = await self._video_loader.load_video_batch(\n            \
+    \            video_items\n                    )\n                    video_data\
+    \ = [\n                        _as_sglang_video(frames, metadata)\n          \
+    \              for frames, metadata in decoded_videos\n                    ]\n\
+    \                else:\n                    video_data = None\n            else:\n\
+    \                image_data = extract_media_urls(mm_data, IMAGE_URL_KEY)\n   \
+    \             video_data = extract_media_urls(mm_data, VIDEO_URL_KEY)\n\n    \
+    \        trace_header = context.trace_headers() if self.enable_trace else None\n\
+    \n            # Extract dp_rank from routing info (set by KV router)\n       \
+    \     routing = request.get(\"routing\") or {}\n            dp_rank = routing.get(\"\
+    dp_rank\")\n\n            mm_hashes_kwargs: Dict[str, Any] = {}\n            if\
+    \ self._mm_hashes_supported:\n                forwarded = self._extract_mm_hashes(request)\n\
+    \                if forwarded is not None:\n                    mm_hashes_kwargs[\"\
+    mm_hashes\"] = forwarded\n\n            agg = await self.engine.async_generate(\n\
+    \                **input_param,\n                image_data=image_data,\n    \
+    \            audio_data=audio_data,\n                video_data=video_data,\n\
+    \                sampling_params=sampling_params,\n                stream=True,\n\
+    \                **require_reasoning_kwargs(self.engine, request),\n         \
+    \       **self._routed_experts_kwargs,\n                **mm_hashes_kwargs,\n\
+    \                external_trace_header=trace_header,\n                rid=trace_id,\n\
+    \                data_parallel_rank=dp_rank,\n                lora_path=lora_path,\n\
+    \                **logprob_kwargs,\n                **priority_kwargs,\n     \
+    \       )\n            if not self.use_sglang_tokenizer:\n                async\
+    \ for out in self._process_token_stream(\n                    agg,\n         \
+    \           context,\n                    return_tokens_as_token_ids,\n      \
+    \              user_stop_token_ids=user_stop_token_ids,\n                    suppressed_stop_token_ids=suppressed_stop_token_ids,\n\
+    \                    metadata_uploader=metadata_uploader,\n                ):\n\
+    \                    yield out\n            else:\n                async for out\
+    \ in self._process_text_stream(\n                    agg,\n                  \
+    \  context,\n                    request=request,\n                    user_stop_token_ids=user_stop_token_ids,\n\
+    \                    metadata_uploader=metadata_uploader,\n                ):\n\
+    \                    yield out\n\n    async def _process_native_generate_stream(\n\
+    \        self,\n        stream_source: AsyncIterator[Dict[str, Any]],\n      \
+    \  context: Context,\n    ) -> AsyncGenerator[Dict[str, Any], None]:\n       \
+    \ \"\"\"Forward opaque SGLang chunks while retaining engine cancellation.\"\"\"\
+    \n        request_id_future: asyncio.Future[str] = asyncio.Future()\n        first_output_seen\
+    \ = False\n        async with self._cancellation_monitor(request_id_future, context):\n\
+    \            async for chunk in stream_source:\n                native_response\
+    \ = chunk[\"engine_data\"][\"sglang_response\"]\n                if not request_id_future.done():\n\
+    \                    sglang_request_id = native_response.get(\"meta_info\", {}).get(\"\
+    id\")\n                    if sglang_request_id:\n                        request_id_future.set_result(sglang_request_id)\n\
+    \                        logging.debug(f\"New SGLang Request ID: {sglang_request_id}\"\
+    )\n                if not first_output_seen and (\n                    native_response.get(\"\
+    output_ids\") or native_response.get(\"text\")\n                ):\n         \
+    \           first_output_seen = True\n                    context.notify_first_token()\n\
+    \                if not context.is_stopped():\n                    yield chunk\n\
+    \n    async def _process_token_stream(\n        self,\n        stream_source:\
+    \ AsyncIterator[Dict[str, Any]],\n        context: Context,\n        return_tokens_as_token_ids:\
+    \ bool = False,\n        user_stop_token_ids: set[int] | None = None,\n      \
+    \  suppressed_stop_token_ids: set[int] | None = None,\n        metadata_uploader:\
+    \ MetadataUploader | None = None,\n    ) -> AsyncGenerator[Dict[str, Any], None]:\n\
+    \        \"\"\"Process token-based stream output.\n\n        With stream_output=True\
+    \ (enforced by Dynamo), SGLang sends disjoint segments\n        containing only\
+    \ new tokens since the last output. We pass these through directly.\n\n      \
+    \  Args:\n            stream_source: Async generator from engine.async_generate.\n\
+    \            context: Context object for cancellation handling.\n\n        Yields:\n\
+    \            Dict with token_ids and optional finish_reason.\n        \"\"\"\n\
+    \        # Use Future pattern for request ID - will be set when first response\
+    \ arrives\n        request_id_future: asyncio.Future[str] = asyncio.Future()\n\
+    \        first_output_seen = False\n        pending_stop_tokens_per_choice: dict[int,\
+    \ list[int]] = {}\n        pending_log_probs_per_choice: dict[int, list[Any]]\
+    \ = {}\n        pending_top_logprobs_per_choice: dict[int, list[Any]] = {}\n \
+    \       completion_tokens_per_choice: dict[int, int] = {}\n        async with\
+    \ self._cancellation_monitor(request_id_future, context):\n            async for\
+    \ res in stream_source:\n                meta_info = res.get(\"meta_info\", {})\n\
+    \                # Extract SGLang request ID from the first response and set the\
+    \ future\n                if not request_id_future.done():\n                 \
+    \   sglang_request_id = meta_info.get(\"id\")\n                    if sglang_request_id:\n\
+    \                        request_id_future.set_result(sglang_request_id)\n   \
+    \                     logging.debug(f\"New SGLang Request ID: {sglang_request_id}\"\
+    )\n\n                # Check cancellation before yielding to allow proper cleanup.\n\
+    \                # This lets SGLang proceed to the second token generation, which\
+    \ will\n                # async context switch and allow the abort monitor to\
+    \ signal cancellation.\n                # The loop should exit by itself when\
+    \ context.is_stopped() returns True.\n                # SGLang omits index for\
+    \ non-n/legacy chunks; treat those as\n                # choice 0 while preserving\
+    \ explicit indices for n>1.\n                output_idx = res.get(\"index\") or\
+    \ 0\n\n                out: dict[str, Any] = {\"index\": output_idx}\n       \
+    \         finish_reason = meta_info[\"finish_reason\"]\n                if finish_reason:\n\
+    \                    shutdown_abort = finish_reason.get(\"type\") == \"abort\"\
+    \n                    if (\n                        shutdown_abort\n         \
+    \               and self.shutdown_event\n                        and self.shutdown_event.is_set()\n\
+    \                    ):\n                        raise EngineShutdown(\n     \
+    \                       \"Engine was shut down during token generation\"\n   \
+    \                     )\n                    out[\"finish_reason\"] = normalize_finish_reason(\n\
+    \                        finish_reason[\"type\"]\n                    )\n    \
+    \                stop_reason = _extract_sglang_stop_reason(\n                \
+    \        finish_reason, user_stop_token_ids\n                    )\n         \
+    \           if stop_reason is not None:\n                        out[\"stop_reason\"\
+    ] = stop_reason\n\n                # With stream_output=True, output_ids contains\
+    \ only new tokens (disjoint)\n                raw_output_ids = list(res.get(\"\
+    output_ids\", []))\n                if raw_output_ids and not first_output_seen:\n\
+    \                    first_output_seen = True\n                    context.notify_first_token()\n\
+    \                log_probs = None\n                top_logprobs = None\n     \
+    \           if metadata_uploader is None:\n                    # Extract logprobs\
+    \ for new tokens if available.\n                    log_probs, top_logprobs =\
+    \ self._extract_logprobs(\n                        meta_info,\n              \
+    \          num_output_tokens_in_chunk=len(raw_output_ids),\n                 \
+    \       return_tokens_as_token_ids=return_tokens_as_token_ids,\n             \
+    \       )\n\n                output_ids = pending_stop_tokens_per_choice.pop(output_idx,\
+    \ [])\n                output_ids.extend(raw_output_ids)\n                if log_probs\
+    \ is not None:\n                    log_probs = pending_log_probs_per_choice.pop(output_idx,\
+    \ []) + list(\n                        log_probs\n                    )\n    \
+    \            if top_logprobs is not None:\n                    top_logprobs =\
+    \ pending_top_logprobs_per_choice.pop(\n                        output_idx, []\n\
+    \                    ) + list(top_logprobs)\n\n                matched = finish_reason.get(\"\
+    matched\") if finish_reason else None\n                output_ids, removed_count\
+    \ = _remove_suppressed_stop_tokens(\n                    output_ids, matched,\
+    \ suppressed_stop_token_ids\n                )\n                if removed_count:\n\
+    \                    if log_probs is not None:\n                        log_probs\
+    \ = log_probs[:-removed_count]\n                    if top_logprobs is not None:\n\
+    \                        top_logprobs = top_logprobs[:-removed_count]\n      \
+    \          elif not finish_reason:\n                    (\n                  \
+    \      output_ids,\n                        pending_stop_tokens,\n           \
+    \         ) = _split_trailing_suppressed_stop_tokens(\n                      \
+    \  output_ids, suppressed_stop_token_ids\n                    )\n            \
+    \        if pending_stop_tokens:\n                        pending_stop_tokens_per_choice[output_idx]\
+    \ = pending_stop_tokens\n                        if log_probs is not None:\n \
+    \                           pending_log_probs_per_choice[output_idx] = log_probs[\n\
+    \                                -len(pending_stop_tokens) :\n               \
+    \             ]\n                            log_probs = log_probs[: -len(pending_stop_tokens)]\n\
+    \                        if top_logprobs is not None:\n                      \
+    \      pending_top_logprobs_per_choice[output_idx] = top_logprobs[\n         \
+    \                       -len(pending_stop_tokens) :\n                        \
+    \    ]\n                            top_logprobs = top_logprobs[: -len(pending_stop_tokens)]\n\
+    \n                # Empty, non-final chunks can happen during scheduler idle ticks.\n\
+    \                # Keep waiting for the next chunk unless cancellation was requested.\n\
+    \                if not output_ids and not finish_reason:\n                  \
+    \  if context.is_stopped():\n                        break\n                 \
+    \   continue\n\n                # Pass through disjoint token segments directly\n\
+    \                out[\"token_ids\"] = output_ids\n\n                if log_probs\
+    \ is not None:\n                    out[\"log_probs\"] = log_probs\n         \
+    \       if top_logprobs is not None:\n                    out[\"top_logprobs\"\
+    ] = top_logprobs\n\n                engine_data: dict[str, Any] = dict(res.get(\"\
+    engine_data\") or {})\n                routed_experts = meta_info.get(\"routed_experts\"\
+    )\n                if routed_experts is not None and metadata_uploader is None:\n\
+    \                    # sglang >= 0.5.11 base64-encodes routed_experts upstream.\
+    \ It rides\n                    # the engine's opaque engine_data passthrough\
+    \ (surfaced by the frontend\n                    # as nvext.routed_experts); disaggregated_params\
+    \ stays KV-transfer only.\n                    engine_data[\"routed_experts\"\
+    ] = routed_experts\n                if finish_reason:\n                    prompt_payload\
+    \ = (\n                        _shared_logprobs.extract_prompt_logprobs_from_sglang_meta(\n\
+    \                            meta_info\n                        )\n          \
+    \          )\n                    if prompt_payload is not None and metadata_uploader\
+    \ is None:\n                        engine_data[\"prompt_logprobs\"] = prompt_payload\n\
+    \                    input_tokens = meta_info.get(\"prompt_tokens\")\n       \
+    \             completion_tokens = meta_info.get(\"completion_tokens\")\n     \
+    \               cached_tokens = meta_info.get(\"cached_tokens\")\n           \
+    \         prefill_prompt_tokens_details = None\n                    if cached_tokens\
+    \ is not None and cached_tokens > 0:\n                        prefill_prompt_tokens_details\
+    \ = {\"cached_tokens\": cached_tokens}\n                    if input_tokens is\
+    \ not None and completion_tokens is not None:\n                        completion_tokens_per_choice[output_idx]\
+    \ = completion_tokens\n                        request_completion_tokens = sum(\n\
+    \                            completion_tokens_per_choice.values()\n         \
+    \               )\n                        completion_usage = {\n            \
+    \                \"prompt_tokens\": input_tokens,\n                          \
+    \  \"completion_tokens\": request_completion_tokens,\n                       \
+    \     \"total_tokens\": input_tokens + request_completion_tokens,\n          \
+    \              }\n                        if prefill_prompt_tokens_details is\
+    \ not None:\n                            completion_usage[\n                 \
+    \               \"prompt_tokens_details\"\n                            ] = prefill_prompt_tokens_details\n\
+    \                        out[\"completion_usage\"] = completion_usage\n      \
+    \              if metadata_uploader is not None:\n                        try:\n\
+    \                            await metadata_uploader.upload_choice(output_idx,\
+    \ meta_info)\n                        finally:\n                            meta_info.clear()\n\
+    \                        if (\n                            shutdown_abort\n  \
+    \                          and self.shutdown_event\n                         \
+    \   and self.shutdown_event.is_set()\n                        ):\n           \
+    \                 raise EngineShutdown(\n                                \"Engine\
+    \ was shut down during token generation\"\n                            )\n   \
+    \             elif metadata_uploader is not None:\n                    meta_info.clear()\n\
+    \                if engine_data:\n                    out[\"engine_data\"] = engine_data\n\
+    \                if not context.is_stopped():\n                    yield out\n\
+    \n    async def _process_text_stream(\n        self,\n        stream_source: AsyncGenerator[Dict[str,\
+    \ Any], None],\n        context: Context,\n        request: Dict[str, Any] | None\
+    \ = None,\n        user_stop_token_ids: set[int] | None = None,\n        metadata_uploader:\
+    \ MetadataUploader | None = None,\n    ) -> AsyncGenerator[Dict[str, Any], None]:\n\
+    \        \"\"\"Process text-based stream output in OpenAI format.\n\n        Args:\n\
+    \            stream_source: Async generator from engine.async_generate.\n    \
+    \        context: Context object for cancellation handling.\n\n        Yields:\n\
+    \            OpenAI-formatted chat completion chunk dicts.\n        \"\"\"\n \
+    \       request = request or {}\n        stop_strings = _stop_strings(request)\n\
+    \        # SGLang text chunks are cumulative per choice. Keep independent text\n\
+    \        # offsets so interleaved n>1 choices do not compute deltas from each\n\
+    \        # other's previous text.\n        text_counts_per_choice: dict[int, int]\
+    \ = {}\n\n        # Use Future pattern for request ID - will be set when first\
+    \ response arrives\n        request_id_future: asyncio.Future[str] = asyncio.Future()\n\
+    \        first_output_seen = False\n        async with self._cancellation_monitor(request_id_future,\
+    \ context):\n            async for res in stream_source:\n                meta_info\
+    \ = res.get(\"meta_info\", {})\n                # Extract SGLang request ID from\
+    \ the first response and set the future\n                if not request_id_future.done():\n\
+    \                    sglang_request_id = meta_info.get(\"id\")\n             \
+    \       if sglang_request_id:\n                        request_id_future.set_result(sglang_request_id)\n\
+    \                        logging.debug(f\"New SGLang Request ID: {sglang_request_id}\"\
+    )\n\n                # Check cancellation before yielding to allow proper cleanup.\n\
+    \                # This lets SGLang proceed to the second token generation, which\
+    \ will\n                # async context switch and allow the abort monitor to\
+    \ signal cancellation.\n                # The loop should exit by itself when\
+    \ context.is_stopped() returns True.\n\n                # Same defaulting as token\
+    \ mode: non-n chunks are choice 0.\n                index = res.get(\"index\"\
+    ) or 0\n\n                text = res.get(\"text\", \"\")\n\n                finish_reason\
+    \ = meta_info[\"finish_reason\"]\n                if finish_reason:\n        \
+    \            # Keep shutdown aborts retryable by the frontend.\n             \
+    \       shutdown_abort = finish_reason.get(\"type\") == \"abort\"\n          \
+    \          if (\n                        shutdown_abort\n                    \
+    \    and self.shutdown_event\n                        and self.shutdown_event.is_set()\n\
+    \                    ):\n                        raise EngineShutdown(\n     \
+    \                       \"Engine was shut down during token generation\"\n   \
+    \                     )\n                    finish_reason_type = normalize_finish_reason(finish_reason[\"\
+    type\"])\n                else:\n                    finish_reason_type = None\n\
+    \                next_count = len(text)\n                count = text_counts_per_choice.get(index,\
+    \ 0)\n                visible_text_len = next_count\n                matched =\
+    \ finish_reason.get(\"matched\") if finish_reason else None\n                if\
+    \ (\n                    isinstance(matched, str)\n                    and matched\
+    \ in stop_strings\n                    and text.endswith(matched)\n          \
+    \      ):\n                    visible_text_len = len(text) - len(matched)\n \
+    \               elif not finish_reason:\n                    visible_text_len\
+    \ -= trailing_stop_prefix_len(text, stop_strings)\n\n                delta = text[count:visible_text_len]\
+    \ if visible_text_len > count else \"\"\n                if res.get(\"output_ids\"\
+    ) and not first_output_seen:\n                    first_output_seen = True\n \
+    \                   context.notify_first_token()\n\n                choice_data\
+    \ = {\n                    \"index\": index,\n                    \"delta\": {\"\
+    role\": \"assistant\", \"content\": delta},\n                    \"finish_reason\"\
+    : finish_reason_type,\n                }\n                stop_reason = _extract_sglang_stop_reason(\n\
+    \                    finish_reason, user_stop_token_ids\n                )\n\n\
+    \                response = {\n                    \"id\": meta_info[\"id\"],\n\
+    \                    \"created\": int(time.time()),\n                    \"choices\"\
+    : [choice_data],\n                    \"model\": self.config.server_args.served_model_name,\n\
+    \                    \"object\": \"chat.completion.chunk\",\n                }\n\
+    \                response_nvext: dict[str, Any] = {}\n                if stop_reason\
+    \ is not None and _nvext_extra_field_requested(\n                    request,\
+    \ \"stop_reason\"\n                ):\n                    response_nvext[\"stop_reason\"\
+    ] = stop_reason\n                routed_experts = meta_info.get(\"routed_experts\"\
+    )\n                if routed_experts is not None and metadata_uploader is None:\n\
+    \                    # sglang >= 0.5.11 base64-encodes routed_experts upstream.\n\
+    \                    response_nvext[\"routed_experts\"] = routed_experts\n   \
+    \             if finish_reason and metadata_uploader is not None:\n          \
+    \          try:\n                        await metadata_uploader.upload_choice(index,\
+    \ meta_info)\n                    finally:\n                        meta_info.clear()\n\
+    \                    if (\n                        shutdown_abort\n          \
+    \              and self.shutdown_event\n                        and self.shutdown_event.is_set()\n\
+    \                    ):\n                        raise EngineShutdown(\n     \
+    \                       \"Engine was shut down during token generation\"\n   \
+    \                     )\n                elif metadata_uploader is not None:\n\
+    \                    meta_info.clear()\n                if response_nvext:\n \
+    \                   response[\"nvext\"] = response_nvext\n                if not\
+    \ context.is_stopped():\n                    yield response\n                text_counts_per_choice[index]\
+    \ = visible_text_len\n"
+  prefill_handler.py: "# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION\
+    \ & AFFILIATES. All rights reserved.\n# SPDX-License-Identifier: Apache-2.0\n\n\
+    import asyncio\nimport logging\nfrom collections.abc import AsyncIterator\nfrom\
+    \ typing import Any, AsyncGenerator, Dict, Optional\n\nimport sglang as sgl\n\n\
+    from dynamo._core import Context\nfrom dynamo.health_check import HEALTH_CHECK_KEY\n\
+    from dynamo.sglang._compat import require_reasoning_kwargs\nfrom dynamo.sglang._disagg\
+    \ import validate_disagg_parallel_sampling\nfrom dynamo.sglang.args import Config\n\
+    from dynamo.sglang.engine_generate import (\n    build_native_generate_request,\n\
+    \    native_generate_payload,\n    native_generate_stream,\n)\nfrom dynamo.sglang.publisher\
+    \ import DynamoSglangPublisher\nfrom dynamo.sglang.request_handlers.handler_base\
+    \ import BaseWorkerHandler\nfrom dynamo.sglang.request_handlers.llm.decode_handler\
+    \ import _sampling_option_params\nfrom dynamo.sglang.request_handlers.llm.mm_disagg_utils\
+    \ import (\n    build_disagg_mm_kwargs,\n    raise_if_unextracted_multimodal,\n\
+    )\n\n# Sentinel value matching u32::MAX from the C/Go prefill-routing ABI.\n#\
+    \ This remains as a compatibility fallback for older callers that still encode\n\
+    # an unresolved data-parallel rank in-band instead of omitting the field.\n_DP_RANK_UNSET\
+    \ = 2**32 - 1\n\n\nclass PrefillWorkerHandler(BaseWorkerHandler):\n    \"\"\"\
+    Handler for prefill workers in disaggregated serving mode.\"\"\"\n\n    def __init__(\n\
+    \        self,\n        engine: sgl.Engine,\n        config: Config,\n       \
+    \ publisher: DynamoSglangPublisher,\n        generate_endpoint=None,\n       \
+    \ shutdown_event: Optional[asyncio.Event] = None,\n    ) -> None:\n        \"\"\
+    \"Initialize prefill worker handler.\n\n        Args:\n            engine: The\
+    \ SGLang engine instance.\n            config: SGLang and Dynamo configuration.\n\
+    \            publisher: The SGLang publisher instance.\n            generate_endpoint:\
+    \ The endpoint handle for discovery registration.\n            shutdown_event:\
+    \ Optional event to signal shutdown.\n        \"\"\"\n        self.engine = engine\n\
+    \        self.bootstrap_host, self.bootstrap_port = self._get_bootstrap_info(self.engine)\n\
+    \        super().__init__(engine, config, publisher, generate_endpoint, shutdown_event)\n\
+    \        self._consume_tasks: set[asyncio.Task[Any]] = set()\n        logging.info(\n\
+    \            f\"Prefill worker handler initialized - bootstrap host: {self.bootstrap_host},\
+    \ bootstrap port: {self.bootstrap_port}\"\n        )\n\n    def cleanup(self)\
+    \ -> None:\n        \"\"\"Shutdown the prefill engine and cleanup resources.\"\
+    \"\"\n        # Cancel all pending consume tasks\n        for task in self._consume_tasks:\n\
+    \            if not task.done():\n                task.cancel()\n        self._consume_tasks.clear()\n\
+    \n        super().cleanup()\n        self.engine.shutdown()\n        logging.info(\"\
+    Prefill engine shutdown\")\n\n    async def generate(\n        self, request:\
+    \ Dict[str, Any], context: Context\n    ) -> AsyncGenerator[Dict[str, Any], None]:\n\
+    \        \"\"\"Generate prefill output and provide bootstrap info for decode worker.\n\
+    \n        Args:\n            request: Request dict with 'request', 'sampling_params',\
+    \ and possibly 'bootstrap_room' keys.\n            context: Context object for\
+    \ cancellation handling.\n\n        Yields:\n            Bootstrap info dict with\
+    \ host, port, and room for decode worker connection.\n        \"\"\"\n       \
+    \ validate_disagg_parallel_sampling(request)\n        logging.debug(f\"New Request\
+    \ ID: {context.id()}\")\n        trace_id = context.trace_id\n\n        if \"\
+    request\" in request:\n            # DisaggPreprocessedRequest format\n      \
+    \      inner_request = request[\"request\"]\n            sampling_params = request.get(\"\
+    sampling_params\", {})\n        else:\n            inner_request = request\n \
+    \           sampling_opts = request.get(\"sampling_options\", {})\n          \
+    \  stop_conditions = request.get(\"stop_conditions\", {})\n            sampling_params\
+    \ = {\n                \"n\": sampling_opts.get(\"n\"),\n                \"max_new_tokens\"\
+    : stop_conditions.get(\"max_tokens\"),\n                **_sampling_option_params(sampling_opts),\n\
+    \                **self._get_guided_decoding_params(\n                    sampling_opts.get(\"\
+    guided_decoding\")\n                ),\n            }\n            sampling_params\
+    \ = {\n                k: v for k, v in sampling_params.items() if v is not None\n\
+    \            }\n        native_payload = native_generate_payload(inner_request)\n\
+    \        if native_payload is None:\n            sampling_params[\"n\"] = 1\n\
+    \            sampling_params[\"max_new_tokens\"] = 1\n\n        # Use provided\
+    \ bootstrap_info if available (e.g., for health checks with FAKE_BOOTSTRAP_HOST)\n\
+    \        # Otherwise use real bootstrap host/port from engine and generate room\
+    \ locally\n        bootstrap_host = self.bootstrap_host\n        bootstrap_port\
+    \ = self.bootstrap_port\n        bootstrap_room = None\n\n        bootstrap_info_from_req\
+    \ = inner_request.get(\"bootstrap_info\")\n        if isinstance(bootstrap_info_from_req,\
+    \ dict):\n            # Allow overriding bootstrap_host for fake-transfer mode\
+    \ (health checks)\n            if \"bootstrap_host\" in bootstrap_info_from_req:\n\
+    \                bootstrap_host = bootstrap_info_from_req[\"bootstrap_host\"]\n\
+    \                logging.debug(\n                    f\"Using request-provided\
+    \ bootstrap_host: {bootstrap_host}\"\n                )\n            if \"bootstrap_port\"\
+    \ in bootstrap_info_from_req:\n                bootstrap_port = bootstrap_info_from_req[\"\
+    bootstrap_port\"]\n                logging.debug(\n                    f\"Using\
+    \ request-provided bootstrap_port: {bootstrap_port}\"\n                )\n   \
+    \         bootstrap_room = bootstrap_info_from_req.get(\"bootstrap_room\")\n \
+    \           if bootstrap_room is not None:\n                logging.debug(f\"\
+    Using router-provided bootstrap_room: {bootstrap_room}\")\n\n        if bootstrap_room\
+    \ is None:\n            bootstrap_room = self._generate_bootstrap_room()\n   \
+    \         logging.debug(f\"Generated bootstrap_room locally: {bootstrap_room}\"\
+    )\n\n        bootstrap_info = {\n            \"bootstrap_host\": bootstrap_host,\n\
+    \            \"bootstrap_port\": bootstrap_port,\n            \"bootstrap_room\"\
+    : bootstrap_room,\n        }\n\n        input_param = self._get_input_param(inner_request)\n\
+    \n        # Prefill encodes the media so the KV it transfers carries the vision\n\
+    \        # context; decode extracts the same URLs to match the token layout.\n\
+    \        raise_if_unextracted_multimodal(inner_request)\n        mm_kwargs = build_disagg_mm_kwargs(inner_request)\n\
+    \n        routing = inner_request.get(\"routing\") or {}\n        priority = routing.get(\"\
+    priority\")\n        dp_rank = routing.get(\"dp_rank\")\n\n        if dp_rank\
+    \ is not None and dp_rank == _DP_RANK_UNSET:\n            dp_rank = None\n\n \
+    \       trace_header = context.trace_headers() if self.enable_trace else None\n\
+    \n        lora_path = self._resolve_lora(inner_request)\n        if lora_path:\n\
+    \            logging.debug(\n                f\"Prefill request {context.id()}\
+    \ will use LoRA adapter: {lora_path}\"\n            )\n\n        priority_kwargs\
+    \ = self._priority_kwargs(priority)\n        if native_payload is not None:\n\
+    \            input_ids = input_param.get(\"input_ids\")\n            if not isinstance(input_ids,\
+    \ list):\n                raise ValueError(\"native SGLang Generate requires token\
+    \ input\")\n            native_request = build_native_generate_request(\n    \
+    \            native_payload,\n                input_ids=input_ids,\n         \
+    \       fallback_rid=trace_id or context.id(),\n                priority=priority_kwargs.get(\"\
+    priority\"),\n                sampling_overrides={\"n\": 1, \"max_new_tokens\"\
+    : 1},\n                bootstrap_host=bootstrap_host,\n                bootstrap_port=bootstrap_port,\n\
+    \                bootstrap_room=bootstrap_room,\n                external_trace_header=trace_header,\n\
+    \                routed_dp_rank=dp_rank,\n                lora_path=lora_path,\n\
+    \            )\n            results = native_generate_stream(self.engine, native_request)\n\
+    \        else:\n            results = await self.engine.async_generate(\n    \
+    \            **input_param,\n                **mm_kwargs,\n                sampling_params=sampling_params,\n\
+    \                stream=True,\n                **require_reasoning_kwargs(self.engine,\
+    \ inner_request),\n                bootstrap_host=bootstrap_host,\n          \
+    \      bootstrap_port=bootstrap_port,\n                bootstrap_room=bootstrap_room,\n\
+    \                external_trace_header=trace_header,\n                rid=trace_id,\n\
+    \                data_parallel_rank=dp_rank,\n                lora_path=lora_path,\n\
+    \                **priority_kwargs,\n            )\n        if inner_request.get(HEALTH_CHECK_KEY):\n\
+    \            # Canary: stream engine output so the Rust canary sees scheduler\
+    \ output.\n            # No _cancellation_monitor \u2014 probe is bounded (max_tokens=1,\
+    \ FAKE_BOOTSTRAP_HOST).\n            async for res in results:\n             \
+    \   yield res\n            return\n\n        # Yield bootstrap_info for PrefillRouter\
+    \ - required for async generator\n        # contract and Rust-side expects disaggregated_params\
+    \ in first output.\n        yield {\n            \"token_ids\": [],\n        \
+    \    \"text\": None,\n            \"finish_reason\": None,\n            \"disaggregated_params\"\
+    : bootstrap_info,\n        }\n\n        task = asyncio.create_task(self._consume_results(results,\
+    \ context))\n        self._consume_tasks.add(task)\n        task.add_done_callback(self._consume_tasks.discard)\n\
+    \n        await task\n\n    async def _consume_results(\n        self, results:\
+    \ AsyncIterator[Any], context: Context\n    ) -> None:\n        \"\"\"Consume\
+    \ async generator results without processing.\n\n        Args:\n            results:\
+    \ Async generator from engine.async_generate.\n            context: Context object\
+    \ for cancellation handling.\n        \"\"\"\n        # Use Future pattern for\
+    \ request ID - will be set when first response arrives\n        request_id_future:\
+    \ asyncio.Future[str] = asyncio.Future()\n        async with self._cancellation_monitor(request_id_future,\
+    \ context):\n            async for res in results:\n                # Extract\
+    \ SGLang request ID from the first response and set the future\n             \
+    \   if not request_id_future.done():\n                    meta_info = res.get(\"\
+    meta_info\", {})\n                    sglang_request_id = meta_info.get(\"id\"\
+    )\n                    if sglang_request_id:\n                        request_id_future.set_result(sglang_request_id)\n\
+    \                        logging.debug(f\"New Prefill Request ID: {sglang_request_id}\"\
+    )\n\n                # Note: No explicit cancellation checks needed here.\n  \
+    \              # When abort_request is called by the cancellation monitor,\n \
+    \               # SGLang will terminate this async generator automatically.\n"

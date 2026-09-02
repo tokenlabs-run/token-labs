@@ -1,0 +1,772 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "gaie-qwen3-control-comparison",
+          "meta.helm.sh/release-namespace": "token-labs"
+        },
+        "creationTimestamp": "2026-08-31T05:00:35Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "gaie-qwen3-control-comparison-epp",
+          "app.kubernetes.io/version": "v1.5.0"
+        },
+        "name": "gaie-qwen3-control-comparison-epp",
+        "namespace": "token-labs",
+        "resourceVersion": "78878425",
+        "uid": "8dd80086-8c9b-4ffa-a223-78bf63cf8d0f"
+      },
+      "spec": {
+        "clusterIP": "10.97.4.127",
+        "clusterIPs": [
+          "10.97.4.127"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "grpc-ext-proc",
+            "port": 9002,
+            "protocol": "TCP",
+            "targetPort": 9002
+          },
+          {
+            "name": "http-metrics",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": 9090
+          }
+        ],
+        "selector": {
+          "inferencepool": "gaie-qwen3-control-comparison-epp"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"model-aggregator\"},\"name\":\"model-aggregator\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":8000}],\"selector\":{\"app\":\"model-aggregator\"},\"type\":\"ClusterIP\"}}\n"
+        },
+        "creationTimestamp": "2026-04-14T21:42:50Z",
+        "labels": {
+          "app": "model-aggregator"
+        },
+        "name": "model-aggregator",
+        "namespace": "token-labs",
+        "resourceVersion": "8029774",
+        "uid": "0c12fd71-15d7-4d8d-82d5-c34a34bcf0e5"
+      },
+      "spec": {
+        "clusterIP": "10.100.90.120",
+        "clusterIPs": [
+          "10.100.90.120"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": 8000
+          }
+        ],
+        "selector": {
+          "app": "model-aggregator"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"otelcol\"},\"name\":\"otelcol\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"otlp-grpc\",\"port\":4317,\"targetPort\":4317},{\"name\":\"otlp-http\",\"port\":4318,\"targetPort\":4318}],\"selector\":{\"app\":\"otelcol\"},\"type\":\"ClusterIP\"}}\n"
+        },
+        "creationTimestamp": "2026-04-15T03:53:07Z",
+        "labels": {
+          "app": "otelcol"
+        },
+        "name": "otelcol",
+        "namespace": "token-labs",
+        "resourceVersion": "8368732",
+        "uid": "60fc9678-1126-4730-ba82-e87602a03611"
+      },
+      "spec": {
+        "clusterIP": "10.106.90.24",
+        "clusterIPs": [
+          "10.106.90.24"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "appProtocol": "grpc",
+            "name": "otlp-grpc",
+            "port": 4317,
+            "protocol": "TCP",
+            "targetPort": 4317
+          },
+          {
+            "name": "otlp-http",
+            "port": 4318,
+            "protocol": "TCP",
+            "targetPort": 4318
+          },
+          {
+            "name": "zipkin",
+            "port": 9411,
+            "protocol": "TCP",
+            "targetPort": 9411
+          }
+        ],
+        "selector": {
+          "app": "otelcol"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/managed-by\":\"gen-aigwroute\"},\"name\":\"qwen3-30b-a3b-instruct-2507-fp8-llm-d\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":8000}],\"selector\":{\"llm-d.ai/inference-serving\":\"true\",\"llm-d.ai/model\":\"qwen3-30b-control-llm-d\",\"llm-d.ai/role\":\"decode\"}}}\n"
+        },
+        "creationTimestamp": "2026-08-31T05:05:51Z",
+        "labels": {
+          "app.kubernetes.io/managed-by": "gen-aigwroute"
+        },
+        "name": "qwen3-30b-a3b-instruct-2507-fp8-llm-d",
+        "namespace": "token-labs",
+        "resourceVersion": "78882244",
+        "uid": "d9d544fd-39c7-47ce-9ddf-36acf80a1115"
+      },
+      "spec": {
+        "clusterIP": "10.107.76.65",
+        "clusterIPs": [
+          "10.107.76.65"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": 8000
+          }
+        ],
+        "selector": {
+          "llm-d.ai/inference-serving": "true",
+          "llm-d.ai/model": "qwen3-30b-control-llm-d",
+          "llm-d.ai/role": "decode"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "creationTimestamp": "2026-09-01T14:24:00Z",
+        "labels": {
+          "app.kubernetes.io/component": "pcs-headless-service",
+          "app.kubernetes.io/managed-by": "grove-operator",
+          "app.kubernetes.io/name": "sglang-qwen3-agg-14098-0",
+          "app.kubernetes.io/part-of": "sglang-qwen3-agg-14098",
+          "grove.io/podcliqueset-replica-index": "0"
+        },
+        "name": "sglang-qwen3-agg-14098-0",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "grove.io/v1alpha1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "PodCliqueSet",
+            "name": "sglang-qwen3-agg-14098",
+            "uid": "9304dce6-955e-480c-b89c-0787fdece2c1"
+          }
+        ],
+        "resourceVersion": "80175577",
+        "uid": "5cc7ba0c-35ea-4e36-959b-a5fb27050580"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "publishNotReadyAddresses": true,
+        "selector": {
+          "app.kubernetes.io/managed-by": "grove-operator",
+          "app.kubernetes.io/part-of": "sglang-qwen3-agg-14098",
+          "grove.io/podcliqueset-replica-index": "0"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "84b11b00594465e988c8fb9dd408544f8ffea89699380457368b43f73f20719a"
+        },
+        "creationTimestamp": "2026-09-01T14:24:00Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/experiment": "issue-14098-aggregated"
+        },
+        "name": "sglang-qwen3-agg-14098-agg",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "sglang-qwen3-agg-14098",
+            "uid": "b980b10c-9484-4667-8c60-89eb768a1562"
+          }
+        ],
+        "resourceVersion": "80175569",
+        "uid": "9343890a-f746-4d7c-b9a4-05ef00bd06e8"
+      },
+      "spec": {
+        "clusterIP": "10.98.241.193",
+        "clusterIPs": [
+          "10.98.241.193"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "system",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": "system"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "agg",
+          "nvidia.com/dynamo-component-type": "worker",
+          "nvidia.com/dynamo-namespace": "token-labs-sglang-qwen3-agg-14098"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "b7b03373f0974a8ec82532163f8e4e8e382956bc6135b039255c2f438710a119"
+        },
+        "creationTimestamp": "2026-09-01T14:24:00Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/experiment": "issue-14098-aggregated"
+        },
+        "name": "sglang-qwen3-agg-14098-frontend",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "sglang-qwen3-agg-14098",
+            "uid": "b980b10c-9484-4667-8c60-89eb768a1562"
+          }
+        ],
+        "resourceVersion": "80175563",
+        "uid": "a1162499-0aef-4c0d-aaa7-23ea9902e6b5"
+      },
+      "spec": {
+        "clusterIP": "10.97.120.100",
+        "clusterIPs": [
+          "10.97.120.100"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "Frontend",
+          "nvidia.com/dynamo-component-type": "frontend",
+          "nvidia.com/dynamo-namespace": "token-labs-sglang-qwen3-agg-14098"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "creationTimestamp": "2026-09-01T14:49:31Z",
+        "labels": {
+          "app.kubernetes.io/component": "pcs-headless-service",
+          "app.kubernetes.io/managed-by": "grove-operator",
+          "app.kubernetes.io/name": "sglang-qwen3-pd-14098-0",
+          "app.kubernetes.io/part-of": "sglang-qwen3-pd-14098",
+          "grove.io/podcliqueset-replica-index": "0"
+        },
+        "name": "sglang-qwen3-pd-14098-0",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "grove.io/v1alpha1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "PodCliqueSet",
+            "name": "sglang-qwen3-pd-14098",
+            "uid": "181675c0-4fc4-4ff7-8f60-8e7e4adcd38a"
+          }
+        ],
+        "resourceVersion": "80192138",
+        "uid": "2581fd5a-3958-4d20-9463-6dc0cf3a0719"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "publishNotReadyAddresses": true,
+        "selector": {
+          "app.kubernetes.io/managed-by": "grove-operator",
+          "app.kubernetes.io/part-of": "sglang-qwen3-pd-14098",
+          "grove.io/podcliqueset-replica-index": "0"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "079612c6158e84d93283ff38dcd7bcd3ea0d272b9f564f0f21507032cab476ac"
+        },
+        "creationTimestamp": "2026-09-01T14:49:31Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/experiment": "issue-14098-disaggregated"
+        },
+        "name": "sglang-qwen3-pd-14098-decode",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "sglang-qwen3-pd-14098",
+            "uid": "b0cb4efa-4c4c-4066-b019-c07ebd33f604"
+          }
+        ],
+        "resourceVersion": "80192132",
+        "uid": "bf904b3e-ef64-42d4-9ac1-0ab0f8f0c727"
+      },
+      "spec": {
+        "clusterIP": "10.108.167.240",
+        "clusterIPs": [
+          "10.108.167.240"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "system",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": "system"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "decode",
+          "nvidia.com/dynamo-component-type": "decode",
+          "nvidia.com/dynamo-namespace": "token-labs-sglang-qwen3-pd-14098"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "7764fbffc5e71339c7faae374b31aceb1789368c4d41232f27438cc6da16f588"
+        },
+        "creationTimestamp": "2026-09-01T14:49:31Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/experiment": "issue-14098-disaggregated"
+        },
+        "name": "sglang-qwen3-pd-14098-frontend",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "sglang-qwen3-pd-14098",
+            "uid": "b0cb4efa-4c4c-4066-b019-c07ebd33f604"
+          }
+        ],
+        "resourceVersion": "80192120",
+        "uid": "17176c7f-edaa-4034-9a52-66ef15b3c95d"
+      },
+      "spec": {
+        "clusterIP": "10.105.166.15",
+        "clusterIPs": [
+          "10.105.166.15"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "Frontend",
+          "nvidia.com/dynamo-component-type": "frontend",
+          "nvidia.com/dynamo-namespace": "token-labs-sglang-qwen3-pd-14098"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "61d1c706c1222229eec1926d18da76b070c31be845d4e1a168bccadb8e222957"
+        },
+        "creationTimestamp": "2026-09-01T14:49:31Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/experiment": "issue-14098-disaggregated"
+        },
+        "name": "sglang-qwen3-pd-14098-prefill",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "sglang-qwen3-pd-14098",
+            "uid": "b0cb4efa-4c4c-4066-b019-c07ebd33f604"
+          }
+        ],
+        "resourceVersion": "80192126",
+        "uid": "3974e7da-9c87-40ef-94e6-fb5302d2fcf0"
+      },
+      "spec": {
+        "clusterIP": "10.99.251.84",
+        "clusterIPs": [
+          "10.99.251.84"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "system",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": "system"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "prefill",
+          "nvidia.com/dynamo-component-type": "prefill",
+          "nvidia.com/dynamo-namespace": "token-labs-sglang-qwen3-pd-14098"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "creationTimestamp": "2026-08-31T05:00:45Z",
+        "labels": {
+          "app.kubernetes.io/component": "pcs-headless-service",
+          "app.kubernetes.io/managed-by": "grove-operator",
+          "app.kubernetes.io/name": "vllm-agg-gb10-dspark-0",
+          "app.kubernetes.io/part-of": "vllm-agg-gb10-dspark",
+          "grove.io/podcliqueset-replica-index": "0"
+        },
+        "name": "vllm-agg-gb10-dspark-0",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "grove.io/v1alpha1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "PodCliqueSet",
+            "name": "vllm-agg-gb10-dspark",
+            "uid": "37bab633-4ab3-4678-84ca-1e7a45a85574"
+          }
+        ],
+        "resourceVersion": "78878619",
+        "uid": "a3f03025-7fdf-4832-aa73-46b94f0706b6"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "clusterIPs": [
+          "None"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "publishNotReadyAddresses": true,
+        "selector": {
+          "app.kubernetes.io/managed-by": "grove-operator",
+          "app.kubernetes.io/part-of": "vllm-agg-gb10-dspark",
+          "grove.io/podcliqueset-replica-index": "0"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "1bd6ff0b910d4e03f9f4419bf4fc1600688254f14fb18ed1d4216dc7eb6fdd49"
+        },
+        "creationTimestamp": "2026-08-31T05:00:45Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/scenario": "nemotron35-dspark"
+        },
+        "name": "vllm-agg-gb10-dspark-agg",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "vllm-agg-gb10-dspark",
+            "uid": "75534b50-8f98-4f83-af88-0897b3d74a23"
+          }
+        ],
+        "resourceVersion": "78878606",
+        "uid": "115b4de3-54e9-483b-b15f-2e47bfe017cb"
+      },
+      "spec": {
+        "clusterIP": "10.111.253.103",
+        "clusterIPs": [
+          "10.111.253.103"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "system",
+            "port": 9090,
+            "protocol": "TCP",
+            "targetPort": "system"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "agg",
+          "nvidia.com/dynamo-component-type": "worker",
+          "nvidia.com/dynamo-namespace": "token-labs-vllm-agg-gb10-dspark"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "nvidia.com/last-applied-generation": "1",
+          "nvidia.com/last-applied-hash": "ab599163d4ce7ae3a523c4d4e14dd2a8cb1728aa18998cf7062599c4d465f356"
+        },
+        "creationTimestamp": "2026-08-31T05:00:44Z",
+        "labels": {
+          "nvidia.com/dynamo-discovery-backend": "kubernetes",
+          "nvidia.com/dynamo-discovery-enabled": "true",
+          "token-labs/scenario": "nemotron35-dspark"
+        },
+        "name": "vllm-agg-gb10-dspark-frontend",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "nvidia.com/v1beta1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DynamoGraphDeployment",
+            "name": "vllm-agg-gb10-dspark",
+            "uid": "75534b50-8f98-4f83-af88-0897b3d74a23"
+          }
+        ],
+        "resourceVersion": "78878600",
+        "uid": "a66d9c3e-0757-468d-8e5e-635936fc332a"
+      },
+      "spec": {
+        "clusterIP": "10.105.170.250",
+        "clusterIPs": [
+          "10.105.170.250"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+          "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP",
+            "targetPort": "http"
+          }
+        ],
+        "selector": {
+          "nvidia.com/dynamo-component": "Frontend",
+          "nvidia.com/dynamo-component-type": "frontend",
+          "nvidia.com/dynamo-namespace": "token-labs-vllm-agg-gb10-dspark"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

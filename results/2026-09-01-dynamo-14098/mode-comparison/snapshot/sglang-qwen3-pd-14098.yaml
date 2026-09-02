@@ -1,0 +1,245 @@
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeployment
+spec:
+  backendFramework: sglang
+  components:
+  - minAvailable: 1
+    name: Frontend
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-disaggregated
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.frontend
+          - --router-mode
+          - kv
+          - --trust-remote-code
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:cfe42887399b617c07bc369e088d58906b5c2c274d4654a82d73a46e10b9b2a2
+          imagePullPolicy: IfNotPresent
+          name: main
+          resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: '1'
+              memory: 2Gi
+        nodeSelector:
+          kubernetes.io/hostname: controller
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+    replicas: 1
+    type: frontend
+  - minAvailable: 1
+    name: prefill
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-disaggregated
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.sglang
+          - --model-path
+          - Qwen/Qwen3-0.6B
+          - --served-model-name
+          - Qwen/Qwen3-0.6B-14098-pd
+          - --page-size
+          - '16'
+          - --tp
+          - '1'
+          - --trust-remote-code
+          - --disaggregation-mode
+          - prefill
+          - --disaggregation-transfer-backend
+          - mooncake
+          - --disaggregation-bootstrap-port
+          - '12345'
+          - --host
+          - 0.0.0.0
+          - --disable-cuda-graph
+          - --disable-piecewise-cuda-graph
+          - --mem-fraction-static
+          - '0.5'
+          - --max-total-tokens
+          - '2048'
+          - --context-length
+          - '1024'
+          - --max-running-requests
+          - '4'
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_CACHE
+            value: /model-cache/hub
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: MC_FORCE_TCP
+            value: '1'
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb
+          imagePullPolicy: IfNotPresent
+          name: main
+          resources:
+            limits:
+              cpu: '4'
+              memory: 8Gi
+              nvidia.com/gpu.shared: '1'
+            requests:
+              cpu: '2'
+              memory: 4Gi
+              nvidia.com/gpu.shared: '1'
+          securityContext:
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+          volumeMounts:
+          - mountPath: /model-cache
+            name: model-cache
+          - mountPath: /dev/shm
+            name: dshm
+          workingDir: /workspace/examples/backends/sglang
+        nodeSelector:
+          kubernetes.io/hostname: spark-01
+        tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: model-cache
+        - emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+          name: dshm
+    replicas: 1
+    sharedMemorySize: 2Gi
+    type: prefill
+  - minAvailable: 1
+    name: decode
+    podTemplate:
+      metadata:
+        labels:
+          token-labs/experiment: issue-14098-disaggregated
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.sglang
+          - --model-path
+          - Qwen/Qwen3-0.6B
+          - --served-model-name
+          - Qwen/Qwen3-0.6B-14098-pd
+          - --page-size
+          - '16'
+          - --tp
+          - '1'
+          - --trust-remote-code
+          - --disaggregation-mode
+          - decode
+          - --disaggregation-transfer-backend
+          - mooncake
+          - --disaggregation-bootstrap-port
+          - '12345'
+          - --host
+          - 0.0.0.0
+          - --disable-cuda-graph
+          - --disable-piecewise-cuda-graph
+          - --mem-fraction-static
+          - '0.5'
+          - --max-total-tokens
+          - '2048'
+          - --context-length
+          - '1024'
+          - --max-running-requests
+          - '4'
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_CACHE
+            value: /model-cache/hub
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: MC_FORCE_TCP
+            value: '1'
+          image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb
+          imagePullPolicy: IfNotPresent
+          name: main
+          resources:
+            limits:
+              cpu: '4'
+              memory: 8Gi
+              nvidia.com/gpu.shared: '1'
+            requests:
+              cpu: '2'
+              memory: 4Gi
+              nvidia.com/gpu.shared: '1'
+          securityContext:
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+          volumeMounts:
+          - mountPath: /model-cache
+            name: model-cache
+          - mountPath: /dev/shm
+            name: dshm
+          workingDir: /workspace/examples/backends/sglang
+        nodeSelector:
+          kubernetes.io/hostname: spark-01
+        tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: model-cache
+        - emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+          name: dshm
+    replicas: 1
+    sharedMemorySize: 2Gi
+    type: decode
+metadata:
+  name: sglang-qwen3-pd-14098
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/name: sglang-qwen3-pd-14098
+    app.kubernetes.io/part-of: dynamo
+    token-labs/experiment: issue-14098-disaggregated

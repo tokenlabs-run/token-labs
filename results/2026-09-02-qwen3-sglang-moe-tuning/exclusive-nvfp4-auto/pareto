@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen3-30b-a3b-fp8-sglang-gb10-exclusive-nvfp4-auto",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang NVFP4 replica on one exclusive GB10 GPU, TP=1, NVFP4 auto/FlashInfer CUTLASS, no speculative decoding, ModelOpt NVFP4 with FP8 KV cache",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "model": "NVFP4/Qwen3-30B-A3B-Instruct-2507-FP4",
+  "complete": true,
+  "expected_points": 3,
+  "measured_points": 3,
+  "missing": [],
+  "measured_requests": 224,
+  "combos": {
+    "ISL512/OSL128": {
+      "sglang-nvfp4-auto": [
+        {
+          "framework": "sglang-nvfp4-auto",
+          "concurrency": 16,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 377.92793176418036,
+          "tput_per_user": 26.919808383805552,
+          "ttft_p50": 764.9427395,
+          "ttft_p95": 869.7197410499999,
+          "itl_p50": 37.03908132677165,
+          "req_latency_p50": 5414.9397275,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-nvfp4-auto/isl512-osl128__sglang-nvfp4-auto-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-nvfp4-auto",
+          "concurrency": 32,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 575.8902824766742,
+          "tput_per_user": 21.272709515543458,
+          "ttft_p50": 1085.3881815,
+          "ttft_p95": 1589.88722525,
+          "itl_p50": 47.58696936614174,
+          "req_latency_p50": 7105.6992105,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 64,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-nvfp4-auto/isl512-osl128__sglang-nvfp4-auto-c32/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-nvfp4-auto",
+          "concurrency": 64,
+          "req_isl": 512,
+          "req_osl": 128,
+          "tput_total": 816.0322992182415,
+          "tput_per_user": 15.7282963481162,
+          "ttft_p50": 1708.1508724999999,
+          "ttft_p95": 2995.0778174,
+          "itl_p50": 65.7741372992126,
+          "req_latency_p50": 10028.3360445,
+          "isl": 512.0,
+          "osl": 128.0,
+          "requests": 128,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-nvfp4-auto/isl512-osl128__sglang-nvfp4-auto-c64/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

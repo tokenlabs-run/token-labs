@@ -1,0 +1,4486 @@
+{
+  "schema_version": "1.1",
+  "aiperf_version": "0.12.0",
+  "benchmark_id": "fc71ad72b000",
+  "summary": {
+    "endpoints_configured": [
+      "http://10.96.28.158:8000/metrics"
+    ],
+    "endpoints_successful": [
+      "http://10.96.28.158:8000/metrics"
+    ],
+    "start_time": "2026-09-01T20:43:38.334982",
+    "end_time": "2026-09-01T20:54:26.880796",
+    "endpoint_info": {
+      "http://10.96.28.158:8000/metrics": {
+        "total_fetches": 2439,
+        "first_fetch_ns": 1788295253686997733,
+        "last_fetch_ns": 1788296066966404036,
+        "avg_fetch_latency_ms": 37.556434223042224,
+        "unique_updates": 2439,
+        "first_update_ns": 1788295253686997733,
+        "last_update_ns": 1788296066966404036,
+        "duration_seconds": 813.279406303,
+        "avg_update_interval_ms": 333.58466214232976,
+        "median_update_interval_ms": 333.218799
+      }
+    },
+    "phase_time_ranges": {
+      "profiling": {
+        "start_ns": 1788295418334982074,
+        "end_ns": 1788296066880796319
+      },
+      "warmup": {
+        "start_ns": 1788295256217749542,
+        "end_ns": 1788295418357306013
+      }
+    }
+  },
+  "metrics_phase": "profiling",
+  "metrics": {
+    "dynamo_component_router_input_sequence_tokens": {
+      "type": "histogram",
+      "description": "Input sequence length in tokens observed at the router",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "870": 0,
+            "1800": 0,
+            "3600": 0,
+            "7400": 0,
+            "15000": 0,
+            "31000": 0,
+            "63000": 0,
+            "130000": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_inter_token_latency_seconds": {
+      "type": "histogram",
+      "description": "Average inter-token latency observed at the router",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.0019": 0,
+            "0.0035": 0,
+            "0.0067": 0,
+            "0.013": 0,
+            "0.024": 0,
+            "0.045": 0,
+            "0.084": 0,
+            "0.16": 0,
+            "0.3": 0,
+            "0.56": 0,
+            "1.1": 0,
+            "2": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_kv_hit_rate": {
+      "type": "histogram",
+      "description": "Predicted KV cache hit rate at routing time (0.0-1.0)",
+      "unit": "ratio",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.15000000000000002": 0,
+            "0.2": 0,
+            "0.25": 0,
+            "0.30000000000000004": 0,
+            "0.35000000000000003": 0,
+            "0.4": 0,
+            "0.45": 0,
+            "0.5": 0,
+            "0.55": 0,
+            "0.6000000000000001": 0,
+            "0.65": 0,
+            "0.7000000000000001": 0,
+            "0.75": 0,
+            "0.8": 0,
+            "0.8500000000000001": 0,
+            "0.9": 0,
+            "0.9500000000000001": 0,
+            "1": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_kv_transfer_estimated_latency_seconds": {
+      "type": "histogram",
+      "description": "Upper-bound estimation of KV cache transfer latency in disaggregated serving (prefill_complete to first_token)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.0019": 0,
+            "0.0037": 0,
+            "0.0072": 0,
+            "0.014": 0,
+            "0.027": 0,
+            "0.052": 0,
+            "0.1": 0,
+            "0.19": 0,
+            "0.37": 0,
+            "0.72": 0,
+            "1.4": 0,
+            "2.7": 0,
+            "5.2": 0,
+            "10": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_output_sequence_tokens": {
+      "type": "histogram",
+      "description": "Output sequence length in tokens observed at the router",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "880": 0,
+            "1800": 0,
+            "3700": 0,
+            "7600": 0,
+            "16000": 0,
+            "32000": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_requests": {
+      "type": "counter",
+      "description": "Total number of requests processed by the router",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_shared_cache_beyond_blocks": {
+      "type": "histogram",
+      "description": "Shared cache blocks beyond device overlap for the selected worker",
+      "unit": "blocks",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "1": 0,
+            "2": 0,
+            "4": 0,
+            "8": 0,
+            "16": 0,
+            "32": 0,
+            "64": 0,
+            "128": 0,
+            "256": 0,
+            "512": 0,
+            "1024": 0,
+            "2048": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_shared_cache_hit_rate": {
+      "type": "histogram",
+      "description": "Fraction of request blocks found in the shared KV cache (0.0-1.0)",
+      "unit": "ratio",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.15000000000000002": 0,
+            "0.2": 0,
+            "0.25": 0,
+            "0.30000000000000004": 0,
+            "0.35000000000000003": 0,
+            "0.4": 0,
+            "0.45": 0,
+            "0.5": 0,
+            "0.55": 0,
+            "0.6000000000000001": 0,
+            "0.65": 0,
+            "0.7000000000000001": 0,
+            "0.75": 0,
+            "0.8": 0,
+            "0.8500000000000001": 0,
+            "0.9": 0,
+            "0.9500000000000001": 0,
+            "1": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_time_to_first_token_seconds": {
+      "type": "histogram",
+      "description": "Time to first token observed at the router",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.0022": 0,
+            "0.0047": 0,
+            "0.01": 0,
+            "0.022": 0,
+            "0.047": 0,
+            "0.1": 0,
+            "0.22": 0,
+            "0.47": 0,
+            "1": 0,
+            "2.2": 0,
+            "4.7": 0,
+            "10": 0,
+            "22": 0,
+            "48": 0,
+            "100": 0,
+            "220": 0,
+            "480": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_active_requests": {
+      "type": "gauge",
+      "description": "Number of requests currently being handled by the frontend, from HTTP handler entry to response completion",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.9984599589322382,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.03922319600277583,
+            "p1": 1.0,
+            "p5": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_cached_tokens": {
+      "type": "histogram",
+      "description": "Number of cached tokens (prefix cache hits) per request",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "870": 0,
+            "1800": 0,
+            "3600": 0,
+            "7400": 0,
+            "15000": 0,
+            "31000": 0,
+            "63000": 0,
+            "130000": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_detokenize_token_count": {
+      "type": "counter",
+      "description": "Total tokens detokenized",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 134266880.0,
+            "rate": 207007.39537766835
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_detokenize_total_us": {
+      "type": "counter",
+      "description": "Cumulative detokenization time (microseconds)",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 1188280715.0,
+            "rate": 1832044.4758205705
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_disconnected_clients": {
+      "type": "gauge",
+      "description": "Number of disconnected clients",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_event_loop_delay_seconds": {
+      "type": "histogram",
+      "description": "Event loop delay canary: drift from 10ms sleep (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 58212,
+            "sum": 66.43648893999985,
+            "avg": 0.001141285112004395,
+            "count_rate": 89.74897234317822,
+            "sum_rate": 0.10242916595296352,
+            "p1_estimate": 0.0,
+            "p5_estimate": 0.00012575546033550395,
+            "p10_estimate": 0.00032797528941908634,
+            "p25_estimate": 0.001,
+            "p50_estimate": 0.001,
+            "p75_estimate": 0.0016602596616703868,
+            "p90_estimate": 0.0024573248616977725,
+            "p95_estimate": 0.0027230132617069003,
+            "p99_estimate": 0.002935563981714204
+          },
+          "buckets": {
+            "0": 0,
+            "0.001": 14393,
+            "0.005": 58212,
+            "0.01": 58212,
+            "0.025": 58212,
+            "0.05": 58212,
+            "0.1": 58212,
+            "0.25": 58212,
+            "0.5": 58212,
+            "1": 58212,
+            "+Inf": 58212
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_event_loop_stall": {
+      "type": "counter",
+      "description": "Number of event loop stalls (delay > 5ms)",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_inflight_requests": {
+      "type": "gauge",
+      "description": "Number of inflight requests",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.9984599589322382,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.03922319600277583,
+            "p1": 1.0,
+            "p5": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_input_sequence_tokens": {
+      "type": "histogram",
+      "description": "Input sequence length in tokens",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 4096.0,
+            "avg": 1024.0,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 6.315051719880059,
+            "p1_estimate": 870.0,
+            "p5_estimate": 870.0,
+            "p10_estimate": 870.0,
+            "p25_estimate": 870.0,
+            "p50_estimate": 980.78125,
+            "p75_estimate": 1149.6875,
+            "p90_estimate": 1254.3125,
+            "p95_estimate": 1289.1875,
+            "p99_estimate": 1317.0874999999999
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "870": 0,
+            "1800": 4,
+            "3600": 4,
+            "7400": 4,
+            "15000": 4,
+            "31000": 4,
+            "63000": 4,
+            "130000": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_inter_token_latency_seconds": {
+      "type": "histogram",
+      "description": "Inter-token latency in seconds",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 32764,
+            "sum": 647.6064734290067,
+            "avg": 0.019765793963771417,
+            "count_rate": 50.514246716345276,
+            "sum_rate": 0.9984541928303975,
+            "p1_estimate": 0.01689595491346034,
+            "p5_estimate": 0.017130025428323675,
+            "p10_estimate": 0.01742261357190284,
+            "p25_estimate": 0.018300378002640342,
+            "p50_estimate": 0.019763318720536174,
+            "p75_estimate": 0.02122625943843201,
+            "p90_estimate": 0.02210402386916951,
+            "p95_estimate": 0.022396612012748673,
+            "p99_estimate": 0.02263068252761201
+          },
+          "buckets": {
+            "0": 0,
+            "0.0019": 0,
+            "0.0035": 0,
+            "0.0067": 0,
+            "0.013": 0,
+            "0.024": 32760,
+            "0.045": 32764,
+            "0.084": 32764,
+            "0.16": 32764,
+            "0.3": 32764,
+            "0.56": 32764,
+            "1.1": 32764,
+            "2": 32764,
+            "+Inf": 32764
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_lora_churn_loads_total": {
+      "type": "gauge",
+      "description": "Total LoRA loads (new placements) this tick",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_lora_churn_unloads_total": {
+      "type": "gauge",
+      "description": "Total LoRA unloads (removed placements) this tick",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_lora_overflow_count": {
+      "type": "gauge",
+      "description": "MCF solver overflow count (unplaceable replicas)",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_context_length": {
+      "type": "gauge",
+      "description": "Maximum context length in tokens for a worker serving the model",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 32768.0,
+            "min": 32768.0,
+            "max": 32768.0,
+            "std": 0.0,
+            "p1": 32768.0,
+            "p5": 32768.0,
+            "p10": 32768.0,
+            "p25": 32768.0,
+            "p50": 32768.0,
+            "p75": 32768.0,
+            "p90": 32768.0,
+            "p95": 32768.0,
+            "p99": 32768.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_kv_cache_block_size": {
+      "type": "gauge",
+      "description": "KV cache block size in tokens for a worker serving the model",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 16.0,
+            "min": 16.0,
+            "max": 16.0,
+            "std": 0.0,
+            "p1": 16.0,
+            "p5": 16.0,
+            "p10": 16.0,
+            "p25": 16.0,
+            "p50": 16.0,
+            "p75": 16.0,
+            "p90": 16.0,
+            "p95": 16.0,
+            "p99": 16.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_max_num_batched_tokens": {
+      "type": "gauge",
+      "description": "Maximum number of batched tokens for a worker serving the model",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 2048.0,
+            "min": 2048.0,
+            "max": 2048.0,
+            "std": 0.0,
+            "p1": 2048.0,
+            "p5": 2048.0,
+            "p10": 2048.0,
+            "p25": 2048.0,
+            "p50": 2048.0,
+            "p75": 2048.0,
+            "p90": 2048.0,
+            "p95": 2048.0,
+            "p99": 2048.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_max_num_seqs": {
+      "type": "gauge",
+      "description": "Maximum number of sequences for a worker serving the model",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 64.0,
+            "min": 64.0,
+            "max": 64.0,
+            "std": 0.0,
+            "p1": 64.0,
+            "p5": 64.0,
+            "p10": 64.0,
+            "p25": 64.0,
+            "p50": 64.0,
+            "p75": 64.0,
+            "p90": 64.0,
+            "p95": 64.0,
+            "p99": 64.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_migration_limit": {
+      "type": "gauge",
+      "description": "Maximum number of request migrations allowed for the model",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_total_kv_blocks": {
+      "type": "gauge",
+      "description": "Total KV cache blocks available for a worker serving the model",
+      "unit": "blocks",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 37685.0,
+            "min": 37685.0,
+            "max": 37685.0,
+            "std": 0.0,
+            "p1": 37685.0,
+            "p5": 37685.0,
+            "p10": 37685.0,
+            "p25": 37685.0,
+            "p50": 37685.0,
+            "p75": 37685.0,
+            "p90": 37685.0,
+            "p95": 37685.0,
+            "p99": 37685.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_output_sequence_tokens": {
+      "type": "histogram",
+      "description": "Output sequence length in tokens",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 32768.0,
+            "avg": 8192.0,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 50.52041375904047,
+            "p1_estimate": 7600.0,
+            "p5_estimate": 7600.0,
+            "p10_estimate": 7600.0,
+            "p25_estimate": 7600.0,
+            "p50_estimate": 8044.0,
+            "p75_estimate": 9013.0,
+            "p90_estimate": 9958.0,
+            "p95_estimate": 10273.0,
+            "p99_estimate": 10525.0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "880": 0,
+            "1800": 0,
+            "3700": 0,
+            "7600": 0,
+            "16000": 4,
+            "32000": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_output_tokens": {
+      "type": "counter",
+      "description": "Total number of output tokens generated (updates in real-time)",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "total": 32768.0,
+            "rate": 50.52041375904047
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_queued_requests": {
+      "type": "gauge",
+      "description": "Number of requests in HTTP processing queue",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_request_duration_seconds": {
+      "type": "histogram",
+      "description": "Duration of LLM requests",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 648.2862517650001,
+            "avg": 162.07156294125002,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 0.9995022483357326,
+            "p1_estimate": 162.072589314585,
+            "p5_estimate": 162.072589314585,
+            "p10_estimate": 162.072589314585,
+            "p25_estimate": 162.072589314585,
+            "p50_estimate": 162.072589314585,
+            "p75_estimate": 162.072589314585,
+            "p90_estimate": 162.072589314585,
+            "p95_estimate": 162.072589314585,
+            "p99_estimate": 162.072589314585
+          },
+          "buckets": {
+            "0": 0,
+            "2": 0,
+            "4": 0,
+            "8": 0,
+            "16": 0,
+            "32": 0,
+            "64": 0,
+            "130": 0,
+            "260": 4,
+            "510": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_requests": {
+      "type": "counter",
+      "description": "Total number of LLM requests processed",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "endpoint": "completions",
+            "error_type": "",
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo",
+            "request_type": "stream",
+            "status": "success"
+          },
+          "stats": {
+            "total": 4.0,
+            "rate": 0.00616704269519537
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_requests_started": {
+      "type": "counter",
+      "description": "Total number of LLM requests accepted by the frontend handler",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "endpoint": "completions",
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo",
+            "request_type": "stream"
+          },
+          "stats": {
+            "total": 4.0,
+            "rate": 0.00616704269519537
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_stage_duration_seconds": {
+      "type": "histogram",
+      "description": "Pipeline stage duration (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "stage": "route"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 0.000028463999999999997,
+            "avg": 7.115999999999999e-6,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 4.388467581901025e-8,
+            "p1_estimate": 4.973411586701729e-6,
+            "p5_estimate": 5.148316763297506e-6,
+            "p10_estimate": 5.366948234042228e-6,
+            "p25_estimate": 6.022842646276392e-6,
+            "p50_estimate": 7.115999999999999e-6,
+            "p75_estimate": 8.209157353723607e-6,
+            "p90_estimate": 8.865051765957771e-6,
+            "p95_estimate": 9.083683236702492e-6,
+            "p99_estimate": 9.25858841329827e-6
+          },
+          "buckets": {
+            "0.0001": 4,
+            "0.0005": 4,
+            "0.001": 4,
+            "0.005": 4,
+            "0.01": 4,
+            "0.05": 4,
+            "0.1": 4,
+            "0.5": 4,
+            "1": 4,
+            "2.5": 4,
+            "5": 4,
+            "+Inf": 4
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "stage": "transport_roundtrip"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 0.670530203000002,
+            "avg": 0.1676325507500005,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 0.0010337970975797578,
+            "p1_estimate": 0.16111925550799067,
+            "p5_estimate": 0.16165095307876698,
+            "p10_estimate": 0.16231557504223737,
+            "p25_estimate": 0.16430944093264854,
+            "p50_estimate": 0.1676325507500005,
+            "p75_estimate": 0.17095566056735245,
+            "p90_estimate": 0.17294952645776362,
+            "p95_estimate": 0.17361414842123402,
+            "p99_estimate": 0.17414584599201033
+          },
+          "buckets": {
+            "0.0001": 0,
+            "0.0005": 0,
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.5": 4,
+            "1": 4,
+            "2.5": 4,
+            "5": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_stage_requests": {
+      "type": "gauge",
+      "description": "Number of requests currently in the given pipeline stage",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "phase": "",
+            "stage": "preprocess"
+          },
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_template_seconds": {
+      "type": "histogram",
+      "description": "Template application time in preprocessor (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.00001": 0,
+            "0.00005": 0,
+            "0.0001": 0,
+            "0.0005": 0,
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.05": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_time_to_first_token_seconds": {
+      "type": "histogram",
+      "description": "Time to first token in seconds",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 0.6793184110000006,
+            "avg": 0.16982960275000014,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 0.00104734641106732,
+            "p1_estimate": 0.14466559855151956,
+            "p5_estimate": 0.14671980297588533,
+            "p10_estimate": 0.14928755850634254,
+            "p25_estimate": 0.15699082509771414,
+            "p50_estimate": 0.16982960275000014,
+            "p75_estimate": 0.18266838040228614,
+            "p90_estimate": 0.19037164699365774,
+            "p95_estimate": 0.19293940252411496,
+            "p99_estimate": 0.19499360694848072
+          },
+          "buckets": {
+            "0": 0,
+            "0.0022": 0,
+            "0.0047": 0,
+            "0.01": 0,
+            "0.022": 0,
+            "0.047": 0,
+            "0.1": 0,
+            "0.22": 4,
+            "0.47": 4,
+            "1": 4,
+            "2.2": 4,
+            "4.7": 4,
+            "10": 4,
+            "22": 4,
+            "48": 4,
+            "100": 4,
+            "220": 4,
+            "480": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenize_seconds": {
+      "type": "histogram",
+      "description": "Tokenization time in preprocessor (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.0001": 0,
+            "0.0005": 0,
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.5": 0,
+            "1": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenizer_cache_hits": {
+      "type": "counter",
+      "description": "Cumulative L1 tokenizer prefix-cache hits",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenizer_cache_misses": {
+      "type": "counter",
+      "description": "Cumulative L1 tokenizer prefix-cache misses",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenizer_latency_ms": {
+      "type": "histogram",
+      "description": "Tokenizer latency in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "operation": "detokenize"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 0.03578200830078125,
+            "avg": 0.008945502075195313,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 0.00005516729322768828,
+            "p1_estimate": 0.008945502075195313,
+            "p5_estimate": 0.008945502075195313,
+            "p10_estimate": 0.008945502075195313,
+            "p25_estimate": 0.008945502075195313,
+            "p50_estimate": 0.008945502075195313,
+            "p75_estimate": 0.008945502075195313,
+            "p90_estimate": 0.008945502075195313,
+            "p95_estimate": 0.008945502075195313,
+            "p99_estimate": 0.008945502075195313
+          },
+          "buckets": {
+            "0.5": 4,
+            "1": 4,
+            "2": 4,
+            "4": 4,
+            "8": 4,
+            "16": 4,
+            "32": 4,
+            "64": 4,
+            "128": 4,
+            "256": 4,
+            "512": 4,
+            "+Inf": 4
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "operation": "tokenize"
+          },
+          "stats": {
+            "count": 4,
+            "sum": 8.044009999999998,
+            "avg": 2.0110024999999996,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 0.012401938277644626,
+            "p1_estimate": 1.4020947666623003,
+            "p5_estimate": 1.4620947666623003,
+            "p10_estimate": 1.5370947666623005,
+            "p25_estimate": 1.7620947666623004,
+            "p50_estimate": 1.94354738333115,
+            "p75_estimate": 2.2031653708344248,
+            "p90_estimate": 2.5688630383363895,
+            "p95_estimate": 2.690762260837044,
+            "p99_estimate": 2.7882816388375677
+          },
+          "buckets": {
+            "0.5": 0,
+            "1": 0,
+            "2": 2,
+            "4": 4,
+            "8": 4,
+            "16": 4,
+            "32": 4,
+            "64": 4,
+            "128": 4,
+            "256": 4,
+            "512": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_worker_last_input_sequence_tokens": {
+      "type": "gauge",
+      "description": "Last observed input sequence tokens per worker",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dp_rank": "none",
+            "worker_id": "7150976462601319",
+            "worker_type": "decode"
+          },
+          "stats": {
+            "avg": 1024.0015400410678,
+            "min": 1024.0,
+            "max": 1027.0,
+            "std": 0.06797148816441653,
+            "p1": 1024.0,
+            "p5": 1024.0,
+            "p10": 1024.0,
+            "p25": 1024.0,
+            "p50": 1024.0,
+            "p75": 1024.0,
+            "p90": 1024.0,
+            "p95": 1024.0,
+            "p99": 1024.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_worker_last_inter_token_latency_seconds": {
+      "type": "gauge",
+      "description": "Last observed inter-token latency per worker (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dp_rank": "none",
+            "worker_id": "7150976462601319",
+            "worker_type": "decode"
+          },
+          "stats": {
+            "avg": 0.019831590411704313,
+            "min": 0.016775308,
+            "max": 0.023647911,
+            "std": 0.0011296845857113812,
+            "p1": 0.01757129161,
+            "p5": 0.01806639565,
+            "p10": 0.0183396176,
+            "p25": 0.018921766,
+            "p50": 0.019833393999999997,
+            "p75": 0.02068326875,
+            "p90": 0.0212780311,
+            "p95": 0.02167459455,
+            "p99": 0.022303183549999998
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_worker_last_time_to_first_token_seconds": {
+      "type": "gauge",
+      "description": "Last observed time to first token per worker (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dp_rank": "none",
+            "worker_id": "7150976462601319",
+            "worker_type": "decode"
+          },
+          "stats": {
+            "avg": 0.16983470211242302,
+            "min": 0.166806556,
+            "max": 0.185101,
+            "std": 0.002469562270769127,
+            "p1": 0.166806556,
+            "p5": 0.166806556,
+            "p10": 0.166806556,
+            "p25": 0.168050323,
+            "p50": 0.168050323,
+            "p75": 0.1721203835,
+            "p90": 0.172451531,
+            "p95": 0.172451531,
+            "p99": 0.172451531
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_inflight_requests": {
+      "type": "gauge",
+      "description": "Currently in-flight requests at AddressedPushRouter",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.9984599589322382,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.03922319600277583,
+            "p1": 1.0,
+            "p5": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_queue_seconds": {
+      "type": "histogram",
+      "description": "Time from generate() entry to send_request() (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 4,
+            "sum": 0.00013939299999999997,
+            "avg": 0.00003484824999999999,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 2.1491064560284202e-7,
+            "p1_estimate": 0.00001954782163897997,
+            "p5_estimate": 0.000020796836199063238,
+            "p10_estimate": 0.000022358104399167322,
+            "p25_estimate": 0.000027041908999479573,
+            "p50_estimate": 0.00003484824999999999,
+            "p75_estimate": 0.000042654591000520416,
+            "p90_estimate": 0.000047338395600832664,
+            "p95_estimate": 0.000048899663800936744,
+            "p99_estimate": 0.000050148678361020014
+          },
+          "buckets": {
+            "0.0001": 4,
+            "0.0005": 4,
+            "0.001": 4,
+            "0.005": 4,
+            "0.01": 4,
+            "0.05": 4,
+            "0.1": 4,
+            "0.5": 4,
+            "1": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_roundtrip_ttft_seconds": {
+      "type": "histogram",
+      "description": "Time from send_request() to first response item (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 4,
+            "sum": 0.6703858660000002,
+            "avg": 0.16759646650000004,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 0.0010335745644693807,
+            "p1_estimate": 0.13678074070292803,
+            "p5_estimate": 0.13929631015575025,
+            "p10_estimate": 0.142440771971778,
+            "p25_estimate": 0.15187415741986127,
+            "p50_estimate": 0.16759646650000004,
+            "p75_estimate": 0.18331877558013882,
+            "p90_estimate": 0.1927521610282221,
+            "p95_estimate": 0.19589662284424986,
+            "p99_estimate": 0.19841219229707205
+          },
+          "buckets": {
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.025": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.25": 4,
+            "0.5": 4,
+            "1": 4,
+            "2.5": 4,
+            "5": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_send_seconds": {
+      "type": "histogram",
+      "description": "Time for send_request() to complete (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 4,
+            "sum": 0.0011986669999999998,
+            "avg": 0.00029966674999999996,
+            "count_rate": 0.00616704269519537,
+            "sum_rate": 1.8480576415804369e-6,
+            "p1_estimate": 0.00022565795252685973,
+            "p5_estimate": 0.000231699487014463,
+            "p10_estimate": 0.00023925140512396712,
+            "p25_estimate": 0.00026190715945247946,
+            "p50_estimate": 0.00029966674999999996,
+            "p75_estimate": 0.00033742634054752046,
+            "p90_estimate": 0.0003600820948760328,
+            "p95_estimate": 0.0003676340129855369,
+            "p99_estimate": 0.0003736755474731402
+          },
+          "buckets": {
+            "0.0001": 0,
+            "0.0005": 4,
+            "0.001": 4,
+            "0.005": 4,
+            "0.01": 4,
+            "0.05": 4,
+            "0.1": 4,
+            "0.5": 4,
+            "1": 4,
+            "+Inf": 4
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_block_hashing_ms": {
+      "type": "histogram",
+      "description": "Time spent computing block hashes in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.001": 0,
+            "0.002": 0,
+            "0.004": 0,
+            "0.008": 0,
+            "0.016": 0,
+            "0.032": 0,
+            "0.064": 0,
+            "0.128": 0,
+            "0.256": 0,
+            "0.512": 0,
+            "1.024": 0,
+            "2.048": 0,
+            "4.096": 0,
+            "8.192": 0,
+            "16.384": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_indexer_find_matches_ms": {
+      "type": "histogram",
+      "description": "Time spent in indexer find_matches in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_scheduling_ms": {
+      "type": "histogram",
+      "description": "Time spent in scheduler worker selection in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_seq_hashing_ms": {
+      "type": "histogram",
+      "description": "Time spent computing sequence hashes in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.001": 0,
+            "0.002": 0,
+            "0.004": 0,
+            "0.008": 0,
+            "0.016": 0,
+            "0.032": 0,
+            "0.064": 0,
+            "0.128": 0,
+            "0.256": 0,
+            "0.512": 0,
+            "1.024": 0,
+            "2.048": 0,
+            "4.096": 0,
+            "8.192": 0,
+            "16.384": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_shared_cache_query_ms": {
+      "type": "histogram",
+      "description": "Time spent querying the shared KV cache in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_total_ms": {
+      "type": "histogram",
+      "description": "Total routing overhead per request in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_shared_cache_errors": {
+      "type": "counter",
+      "description": "Total shared cache query errors",
+      "unit": "errors",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_alive_tasks": {
+      "type": "gauge",
+      "description": "Number of alive tasks in the runtime",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 30.999486652977414,
+            "min": 30.0,
+            "max": 31.0,
+            "std": 0.022657162721472182,
+            "p1": 31.0,
+            "p5": 31.0,
+            "p10": 31.0,
+            "p25": 31.0,
+            "p50": 31.0,
+            "p75": 31.0,
+            "p90": 31.0,
+            "p95": 31.0,
+            "p99": 31.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_blocking_idle_threads": {
+      "type": "gauge",
+      "description": "Number of idle blocking threads",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_blocking_queue_depth": {
+      "type": "gauge",
+      "description": "Number of tasks in the blocking thread pool queue",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_blocking_threads": {
+      "type": "gauge",
+      "description": "Number of blocking threads",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_budget_forced_yield": {
+      "type": "counter",
+      "description": "Number of times tasks were forced to yield after exhausting budget",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_global_queue_depth": {
+      "type": "gauge",
+      "description": "Number of tasks in the runtime global queue",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_busy_ratio": {
+      "type": "gauge",
+      "description": "Worker busy ratio (0-1) as integer mill ratio; >950 = saturated",
+      "unit": "ratio",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "avg": 94.32084188911705,
+            "min": 34.0,
+            "max": 222.0,
+            "std": 29.37998642566948,
+            "p1": 51.0,
+            "p5": 59.0,
+            "p10": 64.0,
+            "p25": 74.0,
+            "p50": 87.0,
+            "p75": 107.25,
+            "p90": 136.0,
+            "p95": 159.0,
+            "p99": 186.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "avg": 92.82802874743327,
+            "min": 48.0,
+            "max": 230.0,
+            "std": 26.45665301521594,
+            "p1": 52.0,
+            "p5": 62.0,
+            "p10": 66.0,
+            "p25": 74.0,
+            "p50": 88.0,
+            "p75": 104.0,
+            "p90": 131.0,
+            "p95": 145.0,
+            "p99": 174.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_local_queue_depth": {
+      "type": "gauge",
+      "description": "Number of tasks in worker local queue",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "avg": 0.028234086242299793,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.16568347688568522,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 1.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "avg": 0.015400410677618069,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.12317071904320717,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_mean_poll_time_ns": {
+      "type": "gauge",
+      "description": "Worker mean task poll time (nanoseconds)",
+      "unit": "nanoseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "avg": 94827.69353182752,
+            "min": 34243.0,
+            "max": 222299.0,
+            "std": 29380.499317854174,
+            "p1": 51945.0,
+            "p5": 59327.05,
+            "p10": 64268.4,
+            "p25": 74802.0,
+            "p50": 87832.0,
+            "p75": 107996.5,
+            "p90": 136396.0,
+            "p95": 159584.59999999995,
+            "p99": 186314.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "avg": 93350.62422997947,
+            "min": 48277.0,
+            "max": 230129.0,
+            "std": 26473.91213183106,
+            "p1": 52534.0,
+            "p5": 62098.0,
+            "p10": 66185.0,
+            "p25": 74983.0,
+            "p50": 88169.0,
+            "p75": 104817.0,
+            "p90": 131807.0,
+            "p95": 145278.0,
+            "p99": 174270.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_overflow_count": {
+      "type": "counter",
+      "description": "Total number of times worker local queue overflowed",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_park_count": {
+      "type": "counter",
+      "description": "Total number of times worker has parked",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "total": 83185.0,
+            "rate": 128.25136164995672
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "total": 82034.0,
+            "rate": 126.47679511441424
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_steal_count": {
+      "type": "counter",
+      "description": "Total number of tasks stolen by worker",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "total": 411.0,
+            "rate": 0.6336636369313243
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "total": 376.0,
+            "rate": 0.5797020133483648
+          }
+        }
+      ]
+    },
+    "dynamo_transport_tcp_bytes_received": {
+      "type": "counter",
+      "description": "Total bytes received by TCP request client",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_transport_tcp_bytes_sent": {
+      "type": "counter",
+      "description": "Total bytes sent by TCP request client",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 25294.0,
+            "rate": 38.997294483067925
+          }
+        }
+      ]
+    },
+    "dynamo_transport_tcp_errors": {
+      "type": "counter",
+      "description": "Total TCP request errors (send failure or timeout)",
+      "unit": "errors",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    }
+  },
+  "warmup_metrics": {
+    "dynamo_component_router_input_sequence_tokens": {
+      "type": "histogram",
+      "description": "Input sequence length in tokens observed at the router",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "870": 0,
+            "1800": 0,
+            "3600": 0,
+            "7400": 0,
+            "15000": 0,
+            "31000": 0,
+            "63000": 0,
+            "130000": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_inter_token_latency_seconds": {
+      "type": "histogram",
+      "description": "Average inter-token latency observed at the router",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.0019": 0,
+            "0.0035": 0,
+            "0.0067": 0,
+            "0.013": 0,
+            "0.024": 0,
+            "0.045": 0,
+            "0.084": 0,
+            "0.16": 0,
+            "0.3": 0,
+            "0.56": 0,
+            "1.1": 0,
+            "2": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_kv_hit_rate": {
+      "type": "histogram",
+      "description": "Predicted KV cache hit rate at routing time (0.0-1.0)",
+      "unit": "ratio",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.15000000000000002": 0,
+            "0.2": 0,
+            "0.25": 0,
+            "0.30000000000000004": 0,
+            "0.35000000000000003": 0,
+            "0.4": 0,
+            "0.45": 0,
+            "0.5": 0,
+            "0.55": 0,
+            "0.6000000000000001": 0,
+            "0.65": 0,
+            "0.7000000000000001": 0,
+            "0.75": 0,
+            "0.8": 0,
+            "0.8500000000000001": 0,
+            "0.9": 0,
+            "0.9500000000000001": 0,
+            "1": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_kv_transfer_estimated_latency_seconds": {
+      "type": "histogram",
+      "description": "Upper-bound estimation of KV cache transfer latency in disaggregated serving (prefill_complete to first_token)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.0019": 0,
+            "0.0037": 0,
+            "0.0072": 0,
+            "0.014": 0,
+            "0.027": 0,
+            "0.052": 0,
+            "0.1": 0,
+            "0.19": 0,
+            "0.37": 0,
+            "0.72": 0,
+            "1.4": 0,
+            "2.7": 0,
+            "5.2": 0,
+            "10": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_output_sequence_tokens": {
+      "type": "histogram",
+      "description": "Output sequence length in tokens observed at the router",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "880": 0,
+            "1800": 0,
+            "3700": 0,
+            "7600": 0,
+            "16000": 0,
+            "32000": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_requests": {
+      "type": "counter",
+      "description": "Total number of requests processed by the router",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_shared_cache_beyond_blocks": {
+      "type": "histogram",
+      "description": "Shared cache blocks beyond device overlap for the selected worker",
+      "unit": "blocks",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "1": 0,
+            "2": 0,
+            "4": 0,
+            "8": 0,
+            "16": 0,
+            "32": 0,
+            "64": 0,
+            "128": 0,
+            "256": 0,
+            "512": 0,
+            "1024": 0,
+            "2048": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_shared_cache_hit_rate": {
+      "type": "histogram",
+      "description": "Fraction of request blocks found in the shared KV cache (0.0-1.0)",
+      "unit": "ratio",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.15000000000000002": 0,
+            "0.2": 0,
+            "0.25": 0,
+            "0.30000000000000004": 0,
+            "0.35000000000000003": 0,
+            "0.4": 0,
+            "0.45": 0,
+            "0.5": 0,
+            "0.55": 0,
+            "0.6000000000000001": 0,
+            "0.65": 0,
+            "0.7000000000000001": 0,
+            "0.75": 0,
+            "0.8": 0,
+            "0.8500000000000001": 0,
+            "0.9": 0,
+            "0.9500000000000001": 0,
+            "1": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_component_router_time_to_first_token_seconds": {
+      "type": "histogram",
+      "description": "Time to first token observed at the router",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dynamo_component": "backend",
+            "dynamo_namespace": "token_labs_qwen3_30b_control_dynamo_agg",
+            "router_id": "1546519708886363",
+            "worker_id": "57e8d2de2e55b"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "0.0022": 0,
+            "0.0047": 0,
+            "0.01": 0,
+            "0.022": 0,
+            "0.047": 0,
+            "0.1": 0,
+            "0.22": 0,
+            "0.47": 0,
+            "1": 0,
+            "2.2": 0,
+            "4.7": 0,
+            "10": 0,
+            "22": 0,
+            "48": 0,
+            "100": 0,
+            "220": 0,
+            "480": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_active_requests": {
+      "type": "gauge",
+      "description": "Number of requests currently being handled by the frontend, from HTTP handler entry to response completion",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.9918367346938776,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.0900732142419504,
+            "p1": 1.0,
+            "p5": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_cached_tokens": {
+      "type": "histogram",
+      "description": "Number of cached tokens (prefix cache hits) per request",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "870": 0,
+            "1800": 0,
+            "3600": 0,
+            "7400": 0,
+            "15000": 0,
+            "31000": 0,
+            "63000": 0,
+            "130000": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_detokenize_token_count": {
+      "type": "counter",
+      "description": "Total tokens detokenized",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 33566720.0,
+            "rate": 203841.96975525332
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_detokenize_total_us": {
+      "type": "counter",
+      "description": "Cumulative detokenization time (microseconds)",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 330198972.0,
+            "rate": 2005212.5695820067
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_disconnected_clients": {
+      "type": "gauge",
+      "description": "Number of disconnected clients",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_event_loop_delay_seconds": {
+      "type": "histogram",
+      "description": "Event loop delay canary: drift from 10ms sleep (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 14774,
+            "sum": 16.921815824000056,
+            "avg": 0.001145378084743472,
+            "count_rate": 89.71866363958446,
+            "sum_rate": 0.10276179112525104,
+            "p1_estimate": 0.0,
+            "p5_estimate": 0.0001225412662118961,
+            "p10_estimate": 0.0003271534545775471,
+            "p25_estimate": 0.001,
+            "p50_estimate": 0.001,
+            "p75_estimate": 0.0016893012929404061,
+            "p90_estimate": 0.0024832640303105247,
+            "p95_estimate": 0.0027479182761005632,
+            "p99_estimate": 0.002959641672732596
+          },
+          "buckets": {
+            "0": 0,
+            "0.001": 3610,
+            "0.005": 14774,
+            "0.01": 14774,
+            "0.025": 14774,
+            "0.05": 14774,
+            "0.1": 14774,
+            "0.25": 14774,
+            "0.5": 14774,
+            "1": 14774,
+            "+Inf": 14774
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_event_loop_stall": {
+      "type": "counter",
+      "description": "Number of event loop stalls (delay > 5ms)",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_inflight_requests": {
+      "type": "gauge",
+      "description": "Number of inflight requests",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.9918367346938776,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.0900732142419504,
+            "p1": 1.0,
+            "p5": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_input_sequence_tokens": {
+      "type": "histogram",
+      "description": "Input sequence length in tokens",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 1027.0,
+            "avg": 1027.0,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 6.236704180171466,
+            "p1_estimate": 1027.0,
+            "p5_estimate": 1027.0,
+            "p10_estimate": 1027.0,
+            "p25_estimate": 1027.0,
+            "p50_estimate": 1027.0,
+            "p75_estimate": 1027.0,
+            "p90_estimate": 1027.0,
+            "p95_estimate": 1027.0,
+            "p99_estimate": 1027.0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "870": 0,
+            "1800": 1,
+            "3600": 1,
+            "7400": 1,
+            "15000": 1,
+            "31000": 1,
+            "63000": 1,
+            "130000": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_inter_token_latency_seconds": {
+      "type": "histogram",
+      "description": "Inter-token latency in seconds",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 8191,
+            "sum": 161.88457233999912,
+            "avg": 0.019763712897082057,
+            "count_rate": 49.741814936499004,
+            "sum_rate": 0.9830829493847543,
+            "p1_estimate": 0.01691864238745777,
+            "p5_estimate": 0.01715110223998989,
+            "p10_estimate": 0.017441677055655042,
+            "p25_estimate": 0.018313401502650505,
+            "p50_estimate": 0.019766275580976274,
+            "p75_estimate": 0.021219149659302043,
+            "p90_estimate": 0.022090874106297502,
+            "p95_estimate": 0.022381448921962657,
+            "p99_estimate": 0.02261390877449478
+          },
+          "buckets": {
+            "0": 0,
+            "0.0019": 0,
+            "0.0035": 0,
+            "0.0067": 0,
+            "0.013": 0,
+            "0.024": 8189,
+            "0.045": 8191,
+            "0.084": 8191,
+            "0.16": 8191,
+            "0.3": 8191,
+            "0.56": 8191,
+            "1.1": 8191,
+            "2": 8191,
+            "+Inf": 8191
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_lora_churn_loads_total": {
+      "type": "gauge",
+      "description": "Total LoRA loads (new placements) this tick",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_lora_churn_unloads_total": {
+      "type": "gauge",
+      "description": "Total LoRA unloads (removed placements) this tick",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_lora_overflow_count": {
+      "type": "gauge",
+      "description": "MCF solver overflow count (unplaceable replicas)",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_context_length": {
+      "type": "gauge",
+      "description": "Maximum context length in tokens for a worker serving the model",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 32768.0,
+            "min": 32768.0,
+            "max": 32768.0,
+            "std": 0.0,
+            "p1": 32768.0,
+            "p5": 32768.0,
+            "p10": 32768.0,
+            "p25": 32768.0,
+            "p50": 32768.0,
+            "p75": 32768.0,
+            "p90": 32768.0,
+            "p95": 32768.0,
+            "p99": 32768.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_kv_cache_block_size": {
+      "type": "gauge",
+      "description": "KV cache block size in tokens for a worker serving the model",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 16.0,
+            "min": 16.0,
+            "max": 16.0,
+            "std": 0.0,
+            "p1": 16.0,
+            "p5": 16.0,
+            "p10": 16.0,
+            "p25": 16.0,
+            "p50": 16.0,
+            "p75": 16.0,
+            "p90": 16.0,
+            "p95": 16.0,
+            "p99": 16.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_max_num_batched_tokens": {
+      "type": "gauge",
+      "description": "Maximum number of batched tokens for a worker serving the model",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 2048.0,
+            "min": 2048.0,
+            "max": 2048.0,
+            "std": 0.0,
+            "p1": 2048.0,
+            "p5": 2048.0,
+            "p10": 2048.0,
+            "p25": 2048.0,
+            "p50": 2048.0,
+            "p75": 2048.0,
+            "p90": 2048.0,
+            "p95": 2048.0,
+            "p99": 2048.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_max_num_seqs": {
+      "type": "gauge",
+      "description": "Maximum number of sequences for a worker serving the model",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 64.0,
+            "min": 64.0,
+            "max": 64.0,
+            "std": 0.0,
+            "p1": 64.0,
+            "p5": 64.0,
+            "p10": 64.0,
+            "p25": 64.0,
+            "p50": 64.0,
+            "p75": 64.0,
+            "p90": 64.0,
+            "p95": 64.0,
+            "p99": 64.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_migration_limit": {
+      "type": "gauge",
+      "description": "Maximum number of request migrations allowed for the model",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_model_total_kv_blocks": {
+      "type": "gauge",
+      "description": "Total KV cache blocks available for a worker serving the model",
+      "unit": "blocks",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 37685.0,
+            "min": 37685.0,
+            "max": 37685.0,
+            "std": 0.0,
+            "p1": 37685.0,
+            "p5": 37685.0,
+            "p10": 37685.0,
+            "p25": 37685.0,
+            "p50": 37685.0,
+            "p75": 37685.0,
+            "p90": 37685.0,
+            "p95": 37685.0,
+            "p99": 37685.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_output_sequence_tokens": {
+      "type": "histogram",
+      "description": "Output sequence length in tokens",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 8192.0,
+            "avg": 8192.0,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 49.747887676693914,
+            "p1_estimate": 8192.0,
+            "p5_estimate": 8192.0,
+            "p10_estimate": 8192.0,
+            "p25_estimate": 8192.0,
+            "p50_estimate": 8192.0,
+            "p75_estimate": 8192.0,
+            "p90_estimate": 8192.0,
+            "p95_estimate": 8192.0,
+            "p99_estimate": 8192.0
+          },
+          "buckets": {
+            "0": 0,
+            "100": 0,
+            "210": 0,
+            "430": 0,
+            "880": 0,
+            "1800": 0,
+            "3700": 0,
+            "7600": 0,
+            "16000": 1,
+            "32000": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_output_tokens": {
+      "type": "counter",
+      "description": "Total number of output tokens generated (updates in real-time)",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "total": 8192.0,
+            "rate": 49.747887676693914
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_queued_requests": {
+      "type": "gauge",
+      "description": "Number of requests in HTTP processing queue",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_request_duration_seconds": {
+      "type": "histogram",
+      "description": "Duration of LLM requests",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 162.06977140499998,
+            "avg": 162.06977140499998,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 0.9842076151908445,
+            "p1_estimate": 162.06977140499998,
+            "p5_estimate": 162.06977140499998,
+            "p10_estimate": 162.06977140499998,
+            "p25_estimate": 162.06977140499998,
+            "p50_estimate": 162.06977140499998,
+            "p75_estimate": 162.06977140499998,
+            "p90_estimate": 162.06977140499998,
+            "p95_estimate": 162.06977140499998,
+            "p99_estimate": 162.06977140499998
+          },
+          "buckets": {
+            "0": 0,
+            "2": 0,
+            "4": 0,
+            "8": 0,
+            "16": 0,
+            "32": 0,
+            "64": 0,
+            "130": 0,
+            "260": 1,
+            "510": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_requests": {
+      "type": "counter",
+      "description": "Total number of LLM requests processed",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "endpoint": "completions",
+            "error_type": "",
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo",
+            "request_type": "stream",
+            "status": "success"
+          },
+          "stats": {
+            "total": 1.0,
+            "rate": 0.006072740194908925
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_requests_started": {
+      "type": "counter",
+      "description": "Total number of LLM requests accepted by the frontend handler",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "endpoint": "completions",
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo",
+            "request_type": "stream"
+          },
+          "stats": {
+            "total": 1.0,
+            "rate": 0.006072740194908925
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_stage_duration_seconds": {
+      "type": "histogram",
+      "description": "Pipeline stage duration (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "stage": "route"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 5.232e-6,
+            "avg": 5.232e-6,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 3.17725766997635e-8,
+            "p1_estimate": 5.232e-6,
+            "p5_estimate": 5.232e-6,
+            "p10_estimate": 5.232e-6,
+            "p25_estimate": 5.232e-6,
+            "p50_estimate": 5.232e-6,
+            "p75_estimate": 5.232e-6,
+            "p90_estimate": 5.232e-6,
+            "p95_estimate": 5.232e-6,
+            "p99_estimate": 5.232e-6
+          },
+          "buckets": {
+            "0.0001": 1,
+            "0.0005": 1,
+            "0.001": 1,
+            "0.005": 1,
+            "0.01": 1,
+            "0.05": 1,
+            "0.1": 1,
+            "0.5": 1,
+            "1": 1,
+            "2.5": 1,
+            "5": 1,
+            "+Inf": 1
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "stage": "transport_roundtrip"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 0.18352319599999944,
+            "avg": 0.18352319599999944,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 0.0011144886890473455,
+            "p1_estimate": 0.1835231959999995,
+            "p5_estimate": 0.1835231959999995,
+            "p10_estimate": 0.1835231959999995,
+            "p25_estimate": 0.1835231959999995,
+            "p50_estimate": 0.1835231959999995,
+            "p75_estimate": 0.1835231959999995,
+            "p90_estimate": 0.1835231959999995,
+            "p95_estimate": 0.1835231959999995,
+            "p99_estimate": 0.1835231959999995
+          },
+          "buckets": {
+            "0.0001": 0,
+            "0.0005": 0,
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.5": 1,
+            "1": 1,
+            "2.5": 1,
+            "5": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_stage_requests": {
+      "type": "gauge",
+      "description": "Number of requests currently in the given pipeline stage",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "phase": "",
+            "stage": "preprocess"
+          },
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_template_seconds": {
+      "type": "histogram",
+      "description": "Template application time in preprocessor (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.00001": 0,
+            "0.00005": 0,
+            "0.0001": 0,
+            "0.0005": 0,
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.05": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_time_to_first_token_seconds": {
+      "type": "histogram",
+      "description": "Time to first token in seconds",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 0.18510099999999952,
+            "avg": 0.18510099999999952,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 0.001124070282817834,
+            "p1_estimate": 0.18510099999999952,
+            "p5_estimate": 0.18510099999999952,
+            "p10_estimate": 0.18510099999999952,
+            "p25_estimate": 0.18510099999999952,
+            "p50_estimate": 0.18510099999999952,
+            "p75_estimate": 0.18510099999999952,
+            "p90_estimate": 0.18510099999999952,
+            "p95_estimate": 0.18510099999999952,
+            "p99_estimate": 0.18510099999999952
+          },
+          "buckets": {
+            "0": 0,
+            "0.0022": 0,
+            "0.0047": 0,
+            "0.01": 0,
+            "0.022": 0,
+            "0.047": 0,
+            "0.1": 0,
+            "0.22": 1,
+            "0.47": 1,
+            "1": 1,
+            "2.2": 1,
+            "4.7": 1,
+            "10": 1,
+            "22": 1,
+            "48": 1,
+            "100": 1,
+            "220": 1,
+            "480": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenize_seconds": {
+      "type": "histogram",
+      "description": "Tokenization time in preprocessor (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.0001": 0,
+            "0.0005": 0,
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.5": 0,
+            "1": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenizer_cache_hits": {
+      "type": "counter",
+      "description": "Cumulative L1 tokenizer prefix-cache hits",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenizer_cache_misses": {
+      "type": "counter",
+      "description": "Cumulative L1 tokenizer prefix-cache misses",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_tokenizer_latency_ms": {
+      "type": "histogram",
+      "description": "Tokenizer latency in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "operation": "detokenize"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 0.009794042724609375,
+            "avg": 0.009794042724609375,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 0.00005947667692439068,
+            "p1_estimate": 0.009794042724609375,
+            "p5_estimate": 0.009794042724609375,
+            "p10_estimate": 0.009794042724609375,
+            "p25_estimate": 0.009794042724609375,
+            "p50_estimate": 0.009794042724609375,
+            "p75_estimate": 0.009794042724609375,
+            "p90_estimate": 0.009794042724609375,
+            "p95_estimate": 0.009794042724609375,
+            "p99_estimate": 0.009794042724609375
+          },
+          "buckets": {
+            "0.5": 1,
+            "1": 1,
+            "2": 1,
+            "4": 1,
+            "8": 1,
+            "16": 1,
+            "32": 1,
+            "64": 1,
+            "128": 1,
+            "256": 1,
+            "512": 1,
+            "+Inf": 1
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "operation": "tokenize"
+          },
+          "stats": {
+            "count": 1,
+            "sum": 1.3638509999999997,
+            "avg": 1.3638509999999997,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 0.00828231278756673,
+            "p1_estimate": 1.3638509999999997,
+            "p5_estimate": 1.3638509999999997,
+            "p10_estimate": 1.3638509999999997,
+            "p25_estimate": 1.3638509999999997,
+            "p50_estimate": 1.3638509999999997,
+            "p75_estimate": 1.3638509999999997,
+            "p90_estimate": 1.3638509999999997,
+            "p95_estimate": 1.3638509999999997,
+            "p99_estimate": 1.3638509999999997
+          },
+          "buckets": {
+            "0.5": 0,
+            "1": 0,
+            "2": 1,
+            "4": 1,
+            "8": 1,
+            "16": 1,
+            "32": 1,
+            "64": 1,
+            "128": 1,
+            "256": 1,
+            "512": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_worker_last_input_sequence_tokens": {
+      "type": "gauge",
+      "description": "Last observed input sequence tokens per worker",
+      "unit": "tokens",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dp_rank": "none",
+            "worker_id": "7150976462601319",
+            "worker_type": "decode"
+          },
+          "stats": {
+            "avg": 1023.3306122448979,
+            "min": 128.0,
+            "max": 1027.0,
+            "std": 57.37624614159837,
+            "p1": 1027.0,
+            "p5": 1027.0,
+            "p10": 1027.0,
+            "p25": 1027.0,
+            "p50": 1027.0,
+            "p75": 1027.0,
+            "p90": 1027.0,
+            "p95": 1027.0,
+            "p99": 1027.0
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_worker_last_inter_token_latency_seconds": {
+      "type": "gauge",
+      "description": "Last observed inter-token latency per worker (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dp_rank": "none",
+            "worker_id": "7150976462601319",
+            "worker_type": "decode"
+          },
+          "stats": {
+            "avg": 0.01985035989591837,
+            "min": 0.016777876,
+            "max": 0.022833029,
+            "std": 0.0012735194534765628,
+            "p1": 0.017168322609999998,
+            "p5": 0.017751977250000002,
+            "p10": 0.0181773744,
+            "p25": 0.018923234,
+            "p50": 0.019835461,
+            "p75": 0.020831628999999997,
+            "p90": 0.0215315669,
+            "p95": 0.0219576548,
+            "p99": 0.02242487903
+          }
+        }
+      ]
+    },
+    "dynamo_frontend_worker_last_time_to_first_token_seconds": {
+      "type": "gauge",
+      "description": "Last observed time to first token per worker (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "dp_rank": "none",
+            "worker_id": "7150976462601319",
+            "worker_type": "decode"
+          },
+          "stats": {
+            "avg": 0.1847052016040816,
+            "min": 0.088130393,
+            "max": 0.185101,
+            "std": 0.006188887003039152,
+            "p1": 0.185101,
+            "p5": 0.185101,
+            "p10": 0.185101,
+            "p25": 0.185101,
+            "p50": 0.185101,
+            "p75": 0.185101,
+            "p90": 0.185101,
+            "p95": 0.185101,
+            "p99": 0.185101
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_inflight_requests": {
+      "type": "gauge",
+      "description": "Currently in-flight requests at AddressedPushRouter",
+      "unit": "requests",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.9918367346938776,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.0900732142419504,
+            "p1": 1.0,
+            "p5": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "p95": 1.0,
+            "p99": 1.0
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_queue_seconds": {
+      "type": "histogram",
+      "description": "Time from generate() entry to send_request() (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 1,
+            "sum": 0.000026976000000000007,
+            "avg": 0.000026976000000000007,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 1.6381823949786321e-7,
+            "p1_estimate": 0.000026976000000000007,
+            "p5_estimate": 0.000026976000000000007,
+            "p10_estimate": 0.000026976000000000007,
+            "p25_estimate": 0.000026976000000000007,
+            "p50_estimate": 0.000026976000000000007,
+            "p75_estimate": 0.000026976000000000007,
+            "p90_estimate": 0.000026976000000000007,
+            "p95_estimate": 0.000026976000000000007,
+            "p99_estimate": 0.000026976000000000007
+          },
+          "buckets": {
+            "0.0001": 1,
+            "0.0005": 1,
+            "0.001": 1,
+            "0.005": 1,
+            "0.01": 1,
+            "0.05": 1,
+            "0.1": 1,
+            "0.5": 1,
+            "1": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_roundtrip_ttft_seconds": {
+      "type": "histogram",
+      "description": "Time from send_request() to first response item (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 1,
+            "sum": 0.18349268400000085,
+            "avg": 0.18349268400000085,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 0.0011143033975985269,
+            "p1_estimate": 0.18349268400000085,
+            "p5_estimate": 0.18349268400000085,
+            "p10_estimate": 0.18349268400000085,
+            "p25_estimate": 0.18349268400000085,
+            "p50_estimate": 0.18349268400000085,
+            "p75_estimate": 0.18349268400000085,
+            "p90_estimate": 0.18349268400000085,
+            "p95_estimate": 0.18349268400000085,
+            "p99_estimate": 0.18349268400000085
+          },
+          "buckets": {
+            "0.001": 0,
+            "0.005": 0,
+            "0.01": 0,
+            "0.025": 0,
+            "0.05": 0,
+            "0.1": 0,
+            "0.25": 1,
+            "0.5": 1,
+            "1": 1,
+            "2.5": 1,
+            "5": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_request_plane_send_seconds": {
+      "type": "histogram",
+      "description": "Time for send_request() to complete (seconds)",
+      "unit": "seconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "count": 1,
+            "sum": 0.000345955,
+            "avg": 0.000345955,
+            "count_rate": 0.006072740194908925,
+            "sum_rate": 2.1008948341297174e-6,
+            "p1_estimate": 0.000345955,
+            "p5_estimate": 0.000345955,
+            "p10_estimate": 0.000345955,
+            "p25_estimate": 0.000345955,
+            "p50_estimate": 0.000345955,
+            "p75_estimate": 0.000345955,
+            "p90_estimate": 0.000345955,
+            "p95_estimate": 0.000345955,
+            "p99_estimate": 0.000345955
+          },
+          "buckets": {
+            "0.0001": 0,
+            "0.0005": 1,
+            "0.001": 1,
+            "0.005": 1,
+            "0.01": 1,
+            "0.05": 1,
+            "0.1": 1,
+            "0.5": 1,
+            "1": 1,
+            "+Inf": 1
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_block_hashing_ms": {
+      "type": "histogram",
+      "description": "Time spent computing block hashes in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.001": 0,
+            "0.002": 0,
+            "0.004": 0,
+            "0.008": 0,
+            "0.016": 0,
+            "0.032": 0,
+            "0.064": 0,
+            "0.128": 0,
+            "0.256": 0,
+            "0.512": 0,
+            "1.024": 0,
+            "2.048": 0,
+            "4.096": 0,
+            "8.192": 0,
+            "16.384": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_indexer_find_matches_ms": {
+      "type": "histogram",
+      "description": "Time spent in indexer find_matches in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_scheduling_ms": {
+      "type": "histogram",
+      "description": "Time spent in scheduler worker selection in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_seq_hashing_ms": {
+      "type": "histogram",
+      "description": "Time spent computing sequence hashes in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.001": 0,
+            "0.002": 0,
+            "0.004": 0,
+            "0.008": 0,
+            "0.016": 0,
+            "0.032": 0,
+            "0.064": 0,
+            "0.128": 0,
+            "0.256": 0,
+            "0.512": 0,
+            "1.024": 0,
+            "2.048": 0,
+            "4.096": 0,
+            "8.192": 0,
+            "16.384": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_shared_cache_query_ms": {
+      "type": "histogram",
+      "description": "Time spent querying the shared KV cache in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_overhead_total_ms": {
+      "type": "histogram",
+      "description": "Total routing overhead per request in milliseconds",
+      "unit": "milliseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "count": 0
+          },
+          "buckets": {
+            "0.01": 0,
+            "0.03": 0,
+            "0.09": 0,
+            "0.27": 0,
+            "0.81": 0,
+            "2.43": 0,
+            "7.290000000000001": 0,
+            "21.870000000000005": 0,
+            "65.61000000000001": 0,
+            "196.83000000000004": 0,
+            "590.4900000000001": 0,
+            "1771.4700000000003": 0,
+            "5314.410000000001": 0,
+            "15943.230000000003": 0,
+            "47829.69000000001": 0,
+            "143489.07000000004": 0,
+            "430467.2100000001": 0,
+            "+Inf": 0
+          }
+        }
+      ]
+    },
+    "dynamo_router_shared_cache_errors": {
+      "type": "counter",
+      "description": "Total shared cache query errors",
+      "unit": "errors",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "router_id": "1546519708886363"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_alive_tasks": {
+      "type": "gauge",
+      "description": "Number of alive tasks in the runtime",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 29.963265306122448,
+            "min": 24.0,
+            "max": 30.0,
+            "std": 0.4685154195806957,
+            "p1": 30.0,
+            "p5": 30.0,
+            "p10": 30.0,
+            "p25": 30.0,
+            "p50": 30.0,
+            "p75": 30.0,
+            "p90": 30.0,
+            "p95": 30.0,
+            "p99": 30.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_blocking_idle_threads": {
+      "type": "gauge",
+      "description": "Number of idle blocking threads",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_blocking_queue_depth": {
+      "type": "gauge",
+      "description": "Number of tasks in the blocking thread pool queue",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_blocking_threads": {
+      "type": "gauge",
+      "description": "Number of blocking threads",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_budget_forced_yield": {
+      "type": "counter",
+      "description": "Number of times tasks were forced to yield after exhausting budget",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_global_queue_depth": {
+      "type": "gauge",
+      "description": "Number of tasks in the runtime global queue",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "avg": 0.0,
+            "min": 0.0,
+            "max": 0.0,
+            "std": 0.0,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_busy_ratio": {
+      "type": "gauge",
+      "description": "Worker busy ratio (0-1) as integer mill ratio; >950 = saturated",
+      "unit": "ratio",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "avg": 95.42244897959183,
+            "min": 24.0,
+            "max": 184.0,
+            "std": 26.911258887887975,
+            "p1": 54.0,
+            "p5": 61.45,
+            "p10": 68.0,
+            "p25": 77.0,
+            "p50": 91.0,
+            "p75": 106.0,
+            "p90": 132.0,
+            "p95": 159.0,
+            "p99": 179.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "avg": 97.00204081632653,
+            "min": 14.0,
+            "max": 193.0,
+            "std": 27.12370351463953,
+            "p1": 22.0,
+            "p5": 60.0,
+            "p10": 67.0,
+            "p25": 81.0,
+            "p50": 93.0,
+            "p75": 110.0,
+            "p90": 135.0,
+            "p95": 144.0,
+            "p99": 178.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_local_queue_depth": {
+      "type": "gauge",
+      "description": "Number of tasks in worker local queue",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "avg": 0.018367346938775512,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.13441301516333384,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 1.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "avg": 0.006122448979591836,
+            "min": 0.0,
+            "max": 1.0,
+            "std": 0.0780859032634493,
+            "p1": 0.0,
+            "p5": 0.0,
+            "p10": 0.0,
+            "p25": 0.0,
+            "p50": 0.0,
+            "p75": 0.0,
+            "p90": 0.0,
+            "p95": 0.0,
+            "p99": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_mean_poll_time_ns": {
+      "type": "gauge",
+      "description": "Worker mean task poll time (nanoseconds)",
+      "unit": "nanoseconds",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "avg": 95918.81836734693,
+            "min": 24014.0,
+            "max": 184376.0,
+            "std": 26938.92157578563,
+            "p1": 54333.0,
+            "p5": 61852.65,
+            "p10": 68917.40000000001,
+            "p25": 77760.0,
+            "p50": 91671.0,
+            "p75": 106229.75,
+            "p90": 132548.0,
+            "p95": 159517.0,
+            "p99": 179895.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "avg": 97540.76122448979,
+            "min": 14664.0,
+            "max": 193284.0,
+            "std": 27107.20238707248,
+            "p1": 22931.0,
+            "p5": 60960.0,
+            "p10": 67726.0,
+            "p25": 81665.0,
+            "p50": 93089.5,
+            "p75": 110768.0,
+            "p90": 135275.90000000002,
+            "p95": 144539.0,
+            "p99": 178028.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_overflow_count": {
+      "type": "counter",
+      "description": "Total number of times worker local queue overflowed",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_park_count": {
+      "type": "counter",
+      "description": "Total number of times worker has parked",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "total": 18805.0,
+            "rate": 114.19787936526234
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "total": 22714.0,
+            "rate": 137.93622078716132
+          }
+        }
+      ]
+    },
+    "dynamo_tokio_worker_steal_count": {
+      "type": "counter",
+      "description": "Total number of tasks stolen by worker",
+      "unit": "count",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "0"
+          },
+          "stats": {
+            "total": 86.0,
+            "rate": 0.5222556567621676
+          }
+        },
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "labels": {
+            "worker": "1"
+          },
+          "stats": {
+            "total": 94.0,
+            "rate": 0.570837578321439
+          }
+        }
+      ]
+    },
+    "dynamo_transport_tcp_bytes_received": {
+      "type": "counter",
+      "description": "Total bytes received by TCP request client",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    },
+    "dynamo_transport_tcp_bytes_sent": {
+      "type": "counter",
+      "description": "Total bytes sent by TCP request client",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 6304.0,
+            "rate": 38.282554188705866
+          }
+        }
+      ]
+    },
+    "dynamo_transport_tcp_errors": {
+      "type": "counter",
+      "description": "Total TCP request errors (send failure or timeout)",
+      "unit": "errors",
+      "series": [
+        {
+          "endpoint_url": "http://10.96.28.158:8000/metrics",
+          "stats": {
+            "total": 0.0,
+            "rate": 0.0
+          }
+        }
+      ]
+    }
+  },
+  "input_config": {
+    "models": {
+      "items": [
+        {
+          "name": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo"
+        }
+      ]
+    },
+    "endpoint": {
+      "urls": [
+        "http://10.96.28.158:8000"
+      ],
+      "type": "completions",
+      "timeout": 7200.0,
+      "streaming": true,
+      "use_legacy_max_tokens": true,
+      "use_server_token_count": true,
+      "extra": {
+        "ignore_eos": true,
+        "temperature": 0
+      }
+    },
+    "datasets": [
+      {
+        "name": "main",
+        "type": "synthetic",
+        "entries": 5,
+        "random_seed": 42,
+        "prompts": {
+          "isl": {
+            "mean": 1024.0,
+            "stddev": 0.0
+          },
+          "osl": {
+            "mean": 8192.0,
+            "stddev": 0.0
+          }
+        }
+      }
+    ],
+    "phases": [
+      {
+        "name": "warmup",
+        "kind": "warmup",
+        "type": "concurrency",
+        "exclude_from_results": true,
+        "requests": 1,
+        "concurrency": 1
+      },
+      {
+        "name": "profiling",
+        "kind": "profiling",
+        "type": "concurrency",
+        "requests": 4,
+        "concurrency": 1
+      }
+    ],
+    "artifacts": {
+      "dir": "/home/nvidia/src/github.com/tokenlabs-run/token-labs/results/2026-09-01-qwen3-spark-pareto/raw/isl1024-osl8192__dynamo-c1",
+      "auto_plot": false,
+      "plot_required": false
+    },
+    "tokenizer": {
+      "name": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
+    },
+    "gpu_telemetry": {
+      "enabled": true
+    },
+    "server_metrics": {
+      "enabled": true,
+      "urls": [],
+      "formats": [
+        "json",
+        "csv"
+      ]
+    },
+    "network_latency": {
+      "enabled": false
+    },
+    "otel": {},
+    "mlflow": {},
+    "wandb": {},
+    "runtime": {
+      "ui": "none"
+    }
+  }
+}

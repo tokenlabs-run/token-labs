@@ -1,0 +1,33 @@
+{
+  "experiment": "qwen3-30b-a3b-fp8-sglang-gb10-exclusive-tuned-moe",
+  "experiment_class": "single-replica-control",
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "tokenizer": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "tokenizer_trust_remote_code": true,
+  "endpoint_type": "completions",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang FP8 replica on one exclusive GB10 GPU, TP=1, no speculative decoding, offline-tuned Triton MoE configuration",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "backends": [
+    {
+      "name": "sglang-fp8-tuned-moe",
+      "url": "http://10.107.220.195:8000",
+      "model": "qwen/qwen3-30b-a3b-instruct-2507-sglang"
+    }
+  ],
+  "workloads": [
+    {"isl": 512, "osl": 128}
+  ],
+  "concurrencies": [16, 32, 64],
+  "sampling": {"waves": 2, "minimum_requests": 8, "warmup_requests": 2},
+  "seed": 42,
+  "extra_inputs": {"ignore_eos": true, "temperature": 0},
+  "use_legacy_max_tokens": true,
+  "ready_timeout_seconds": 600,
+  "request_timeout_seconds": 3600,
+  "point_timeout_seconds": 7200
+}

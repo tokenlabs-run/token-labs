@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen3-30b-a3b-fp8-sglang-gb10-exclusive-balanced-tuned-moe",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark spark-02)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "topology": "One SGLang FP8 replica on one exclusive GB10 GPU, TP=1, no speculative decoding, offline-tuned Triton MoE configuration",
+    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb"
+  },
+  "model": "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+  "complete": true,
+  "expected_points": 3,
+  "measured_points": 3,
+  "missing": [],
+  "measured_requests": 224,
+  "combos": {
+    "ISL2048/OSL1024": {
+      "sglang-fp8-tuned-moe": [
+        {
+          "framework": "sglang-fp8-tuned-moe",
+          "concurrency": 16,
+          "req_isl": 2048,
+          "req_osl": 1024,
+          "tput_total": 218.84054432728817,
+          "tput_per_user": 14.13200938330381,
+          "ttft_p50": 2505.990164,
+          "ttft_p95": 3875.7808477999997,
+          "itl_p50": 70.74664844086021,
+          "req_latency_p50": 74856.771727,
+          "isl": 2048.0,
+          "osl": 1024.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-balanced-tuned/raw/isl2048-osl1024__sglang-fp8-tuned-moe-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-fp8-tuned-moe",
+          "concurrency": 32,
+          "req_isl": 2048,
+          "req_osl": 1024,
+          "tput_total": 298.07791782741026,
+          "tput_per_user": 9.695949702993282,
+          "ttft_p50": 4623.9058915,
+          "ttft_p95": 7611.162206399999,
+          "itl_p50": 102.91598210312804,
+          "req_latency_p50": 109904.156342,
+          "isl": 2048.0,
+          "osl": 1024.0,
+          "requests": 64,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-balanced-tuned/raw/isl2048-osl1024__sglang-fp8-tuned-moe-c32/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "sglang-fp8-tuned-moe",
+          "concurrency": 64,
+          "req_isl": 2048,
+          "req_osl": 1024,
+          "tput_total": 388.95874112390493,
+          "tput_per_user": 6.38876167022204,
+          "ttft_p50": 8217.320786999999,
+          "ttft_p95": 14861.982327149999,
+          "itl_p50": 156.81623552688168,
+          "req_latency_p50": 168423.712046,
+          "isl": 2048.0,
+          "osl": 1024.0,
+          "requests": 128,
+          "errors": 0,
+          "source": "results/2026-09-02-qwen3-sglang-moe-tuning/exclusive-balanced-tuned/raw/isl2048-osl1024__sglang-fp8-tuned-moe-c64/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

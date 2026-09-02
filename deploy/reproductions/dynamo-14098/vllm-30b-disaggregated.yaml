@@ -1,0 +1,329 @@
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeployment
+metadata:
+  name: vllm-qwen3-pd-14098
+  namespace: token-labs
+  labels:
+    token-labs/experiment: vllm-14098-disaggregated
+spec:
+  backendFramework: vllm
+  components:
+  - name: Frontend
+    type: frontend
+    replicas: 1
+    podTemplate:
+      spec:
+        nodeSelector:
+          kubernetes.io/hostname: spark-02
+        containers:
+        - name: main
+          image: nvcr.io/nvidia/ai-dynamo/vllm-runtime@sha256:a5f95c0e8d0a8c116e6c8a213157ee4338fe066022f8db19b41e37a0ce0c9fe4
+          imagePullPolicy: IfNotPresent
+          command:
+          - python3
+          args:
+          - -m
+          - dynamo.frontend
+          - --trust-remote-code
+          - --router-mode
+          - kv
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: DYN_HTTP_BODY_LIMIT_MB
+            value: '200'
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: NCCL_IB_DISABLE
+            value: '1'
+          resources:
+            requests:
+              cpu: '1'
+              memory: 2Gi
+            limits:
+              cpu: '2'
+              memory: 4Gi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 60
+            failureThreshold: 60
+          volumeMounts:
+          - name: shared-model-cache
+            mountPath: /model-cache
+        volumes:
+        - name: shared-model-cache
+          hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+      metadata:
+        labels:
+          token-labs/experiment: vllm-14098-disaggregated
+  - name: prefill
+    type: prefill
+    replicas: 1
+    sharedMemorySize: 8Gi
+    podTemplate:
+      spec:
+        volumes:
+        - name: shared-model-cache
+          hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+        containers:
+        - name: main
+          image: nvcr.io/nvidia/ai-dynamo/vllm-runtime@sha256:a5f95c0e8d0a8c116e6c8a213157ee4338fe066022f8db19b41e37a0ce0c9fe4
+          imagePullPolicy: IfNotPresent
+          workingDir: /workspace/
+          command:
+          - python3
+          args:
+          - -m
+          - dynamo.vllm
+          - --model
+          - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+          - --served-model-name
+          - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-14098-vllm-pd
+          - --trust-remote-code
+          - --tensor-parallel-size
+          - '1'
+          - --max-model-len
+          - '4096'
+          - --max-num-seqs
+          - '8'
+          - --max-num-batched-tokens
+          - '4096'
+          - --gpu-memory-utilization
+          - '0.55'
+          - --enforce-eager
+          - --enable-prefix-caching
+          - --kv-transfer-config
+          - '{"kv_connector":"NixlConnector","kv_role":"kv_producer"}'
+          - --disaggregation-mode
+          - prefill
+          - --moe-backend
+          - marlin
+          - --linear-backend
+          - marlin
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: TRITON_CACHE_DIR
+            value: /tmp/.triton-cache
+          - name: VLLM_CONFIG_ROOT
+            value: /tmp/vllm-config
+          - name: VLLM_CACHE_ROOT
+            value: /tmp/vllm-cache
+          - name: VLLM_OMNI_USE_QUACK_FP8
+            value: '0'
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: spawn
+          - name: NIXL_LOG_LEVEL
+            value: INFO
+          - name: PYTHONHASHSEED
+            value: '0'
+          - name: NCCL_IB_DISABLE
+            value: '1'
+          - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+            value: 192.168.100.10
+          - name: VLLM_NIXL_SIDE_CHANNEL_PORT
+            value: '5600'
+          - name: UCX_TLS
+            value: tcp,cuda_copy
+          - name: UCX_NET_DEVICES
+            value: enp1s0f0np0
+          - name: VLLM_DISABLED_KERNELS
+            value: FlashInferFP8ScaledMMLinearKernel
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: VLLM_USE_DEEP_GEMM
+            value: '0'
+          - name: UCX_RCACHE_MAX_UNRELEASED
+            value: '1024'
+          - name: VLLM_TEST_FORCE_FP8_MARLIN
+            value: '1'
+          resources:
+            requests:
+              cpu: '4'
+              memory: 40Gi
+              nvidia.com/gpu.shared: '1'
+            limits:
+              cpu: '8'
+              memory: 80Gi
+              nvidia.com/gpu.shared: '1'
+          securityContext:
+            runAsUser: 0
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+          startupProbe:
+            httpGet:
+              path: /live
+              port: 9090
+            periodSeconds: 30
+            timeoutSeconds: 20
+            failureThreshold: 120
+          volumeMounts:
+          - name: shared-model-cache
+            mountPath: /model-cache
+          - name: dshm
+            mountPath: /dev/shm
+        nodeSelector:
+          kubernetes.io/hostname: spark-01
+        hostNetwork: true
+        dnsPolicy: ClusterFirstWithHostNet
+        enableServiceLinks: false
+      metadata:
+        labels:
+          token-labs/experiment: vllm-14098-disaggregated
+  - name: decode
+    type: decode
+    replicas: 1
+    sharedMemorySize: 8Gi
+    podTemplate:
+      spec:
+        volumes:
+        - name: shared-model-cache
+          hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+        containers:
+        - name: main
+          image: nvcr.io/nvidia/ai-dynamo/vllm-runtime@sha256:a5f95c0e8d0a8c116e6c8a213157ee4338fe066022f8db19b41e37a0ce0c9fe4
+          imagePullPolicy: IfNotPresent
+          workingDir: /workspace/
+          command:
+          - python3
+          args:
+          - -m
+          - dynamo.vllm
+          - --model
+          - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+          - --served-model-name
+          - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-14098-vllm-pd
+          - --trust-remote-code
+          - --tensor-parallel-size
+          - '1'
+          - --max-model-len
+          - '4096'
+          - --max-num-seqs
+          - '8'
+          - --max-num-batched-tokens
+          - '4096'
+          - --gpu-memory-utilization
+          - '0.55'
+          - --enforce-eager
+          - --enable-prefix-caching
+          - --kv-transfer-config
+          - '{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
+          - --disaggregation-mode
+          - decode
+          - --moe-backend
+          - marlin
+          - --linear-backend
+          - marlin
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_OFFLINE
+            value: '1'
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: TRITON_CACHE_DIR
+            value: /tmp/.triton-cache
+          - name: VLLM_CONFIG_ROOT
+            value: /tmp/vllm-config
+          - name: VLLM_CACHE_ROOT
+            value: /tmp/vllm-cache
+          - name: VLLM_OMNI_USE_QUACK_FP8
+            value: '0'
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: spawn
+          - name: NIXL_LOG_LEVEL
+            value: INFO
+          - name: PYTHONHASHSEED
+            value: '0'
+          - name: NCCL_IB_DISABLE
+            value: '1'
+          - name: VLLM_NIXL_SIDE_CHANNEL_HOST
+            value: 192.168.100.11
+          - name: VLLM_NIXL_SIDE_CHANNEL_PORT
+            value: '5600'
+          - name: UCX_TLS
+            value: tcp,cuda_copy
+          - name: UCX_NET_DEVICES
+            value: enp1s0f0np0
+          - name: VLLM_DISABLED_KERNELS
+            value: FlashInferFP8ScaledMMLinearKernel
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: VLLM_USE_DEEP_GEMM
+            value: '0'
+          - name: UCX_RCACHE_MAX_UNRELEASED
+            value: '1024'
+          - name: VLLM_TEST_FORCE_FP8_MARLIN
+            value: '1'
+          resources:
+            requests:
+              cpu: '4'
+              memory: 40Gi
+              nvidia.com/gpu.shared: '1'
+            limits:
+              cpu: '8'
+              memory: 80Gi
+              nvidia.com/gpu.shared: '1'
+          securityContext:
+            runAsUser: 0
+            capabilities:
+              add:
+              - IPC_LOCK
+              - SYS_RESOURCE
+          startupProbe:
+            httpGet:
+              path: /live
+              port: 9090
+            periodSeconds: 30
+            timeoutSeconds: 20
+            failureThreshold: 120
+          volumeMounts:
+          - name: shared-model-cache
+            mountPath: /model-cache
+          - name: dshm
+            mountPath: /dev/shm
+        nodeSelector:
+          kubernetes.io/hostname: spark-02
+        hostNetwork: true
+        dnsPolicy: ClusterFirstWithHostNet
+        enableServiceLinks: false
+      metadata:
+        labels:
+          token-labs/experiment: vllm-14098-disaggregated

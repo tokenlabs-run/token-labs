@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-30b-sglang-benchmark
+  namespace: token-labs
+  labels: &labels
+    app: qwen3-30b-sglang-benchmark
+    token-labs/experiment: qwen3-30b-engine-comparison
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: qwen3-30b-sglang-benchmark}
+  template:
+    metadata:
+      labels: *labels
+    spec:
+      nodeSelector: {kubernetes.io/hostname: spark-02}
+      tolerations:
+      - {key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}
+      terminationGracePeriodSeconds: 120
+      containers:
+      - name: sglang
+        image: nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb
+        imagePullPolicy: IfNotPresent
+        command: [python3]
+        args:
+        - -m
+        - sglang.launch_server
+        - --model-path
+        - NVFP4/Qwen3-30B-A3B-Instruct-2507-FP4
+        - --served-model-name
+        - qwen/qwen3-30b-a3b-instruct-2507-nvfp4
+        - --tp
+        - "1"
+        - --context-length
+        - "32768"
+        - --max-running-requests
+        - "64"
+        - --mem-fraction-static
+        - "0.70"
+        - --page-size
+        - "16"
+        - --disable-radix-cache
+        - --quantization
+        - modelopt_fp4
+        - --fp4-gemm-backend
+        - auto
+        - --trust-remote-code
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+        env:
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef: {name: hf-token, key: HF_TOKEN}
+        - {name: HOME, value: /tmp}
+        - {name: HF_HOME, value: /model-cache}
+        - {name: HF_HUB_CACHE, value: /model-cache/hub}
+        - {name: HF_HUB_OFFLINE, value: "1"}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        ports:
+        - {name: http, containerPort: 8000}
+        resources:
+          requests: {cpu: "4", memory: 32Gi, nvidia.com/gpu: "1"}
+          limits: {cpu: "8", memory: 112Gi, nvidia.com/gpu: "1"}
+        startupProbe:
+          httpGet: {path: /v1/models, port: http}
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 180
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet: {path: /health, port: http}
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 5
+        securityContext:
+          capabilities: {add: [IPC_LOCK, SYS_RESOURCE]}
+        volumeMounts:
+        - {name: model-cache, mountPath: /model-cache}
+        - {name: shm, mountPath: /dev/shm}
+      volumes:
+      - name: model-cache
+        hostPath: {path: /home/nvidia/.cache/huggingface, type: Directory}
+      - name: shm
+        emptyDir: {medium: Memory, sizeLimit: 16Gi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: qwen3-30b-sglang-benchmark, namespace: token-labs}
+spec:
+  selector: {app: qwen3-30b-sglang-benchmark}
+  ports:
+  - {name: http, port: 8000, targetPort: http}

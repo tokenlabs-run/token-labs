@@ -1,0 +1,1154 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "nvidia.com/v1beta1",
+      "kind": "DynamoGraphDeployment",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"nvidia.com/v1beta1\",\"kind\":\"DynamoGraphDeployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"sglang-qwen3-agg-14098\",\"app.kubernetes.io/part-of\":\"dynamo\",\"token-labs/experiment\":\"issue-14098-aggregated\"},\"name\":\"sglang-qwen3-agg-14098\",\"namespace\":\"token-labs\"},\"spec\":{\"backendFramework\":\"sglang\",\"components\":[{\"name\":\"Frontend\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/experiment\":\"issue-14098-aggregated\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.frontend\",\"--router-mode\",\"kv\",\"--trust-remote-code\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"}],\"image\":\"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:cfe42887399b617c07bc369e088d58906b5c2c274d4654a82d73a46e10b9b2a2\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"4Gi\"},\"requests\":{\"cpu\":\"1\",\"memory\":\"2Gi\"}}}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"controller\"},\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"node-role.kubernetes.io/control-plane\",\"operator\":\"Exists\"}]}},\"replicas\":1,\"type\":\"frontend\"},{\"name\":\"agg\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/experiment\":\"issue-14098-aggregated\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.sglang\",\"--model-path\",\"Qwen/Qwen3-30B-A3B-Instruct-2507-FP8\",\"--served-model-name\",\"Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-14098-agg\",\"--page-size\",\"16\",\"--tp\",\"1\",\"--trust-remote-code\",\"--host\",\"0.0.0.0\",\"--disable-cuda-graph\",\"--disable-piecewise-cuda-graph\",\"--mem-fraction-static\",\"0.8\",\"--max-total-tokens\",\"2048\",\"--context-length\",\"1024\",\"--max-running-requests\",\"4\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"HF_HUB_CACHE\",\"value\":\"/model-cache/hub\"},{\"name\":\"HF_HUB_OFFLINE\",\"value\":\"1\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"MC_FORCE_TCP\",\"value\":\"1\"}],\"image\":\"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"6\",\"memory\":\"48Gi\",\"nvidia.com/gpu.shared\":\"1\"},\"requests\":{\"cpu\":\"4\",\"memory\":\"40Gi\",\"nvidia.com/gpu.shared\":\"1\"}},\"securityContext\":{\"capabilities\":{\"add\":[\"IPC_LOCK\",\"SYS_RESOURCE\"]}},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"},{\"mountPath\":\"/dev/shm\",\"name\":\"dshm\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/_disagg.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"disagg.py\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/decode_handler.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"decode_handler.py\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/prefill_handler.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"prefill_handler.py\"}],\"workingDir\":\"/workspace/examples/backends/sglang\"}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"nvidia.com/gpu\",\"operator\":\"Exists\"}],\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"model-cache\"},{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"2Gi\"},\"name\":\"dshm\"},{\"configMap\":{\"name\":\"sglang-14098-fix-dce302dd7a\"},\"name\":\"issue14098-fix\"}]}},\"replicas\":1,\"sharedMemorySize\":\"2Gi\",\"type\":\"worker\"}]}}\n",
+          "nvidia.com/current-worker-hash": "495925f0",
+          "nvidia.com/current-worker-hash-v2": "1ede1742",
+          "nvidia.com/dynamo-operator-origin-version": "1.3.1"
+        },
+        "creationTimestamp": "2026-09-01T14:24:00Z",
+        "finalizers": [
+          "nvidia.com/finalizer"
+        ],
+        "generation": 8,
+        "labels": {
+          "app.kubernetes.io/name": "sglang-qwen3-agg-14098",
+          "app.kubernetes.io/part-of": "dynamo",
+          "token-labs/experiment": "issue-14098-aggregated"
+        },
+        "name": "sglang-qwen3-agg-14098",
+        "namespace": "token-labs",
+        "resourceVersion": "80236181",
+        "uid": "b980b10c-9484-4667-8c60-89eb768a1562"
+      },
+      "spec": {
+        "backendFramework": "sglang",
+        "components": [
+          {
+            "minAvailable": 1,
+            "name": "Frontend",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/experiment": "issue-14098-aggregated"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.frontend",
+                      "--router-mode",
+                      "kv",
+                      "--trust-remote-code"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "PYTHONUNBUFFERED",
+                        "value": "1"
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:cfe42887399b617c07bc369e088d58906b5c2c274d4654a82d73a46e10b9b2a2",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "2",
+                        "memory": "4Gi"
+                      },
+                      "requests": {
+                        "cpu": "1",
+                        "memory": "2Gi"
+                      }
+                    }
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "controller"
+                },
+                "tolerations": [
+                  {
+                    "effect": "NoSchedule",
+                    "key": "node-role.kubernetes.io/control-plane",
+                    "operator": "Exists"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "type": "frontend"
+          },
+          {
+            "minAvailable": 1,
+            "name": "agg",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/experiment": "issue-14098-aggregated"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.sglang",
+                      "--model-path",
+                      "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8",
+                      "--served-model-name",
+                      "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-14098-agg",
+                      "--page-size",
+                      "16",
+                      "--tp",
+                      "1",
+                      "--trust-remote-code",
+                      "--host",
+                      "0.0.0.0",
+                      "--disable-cuda-graph",
+                      "--disable-piecewise-cuda-graph",
+                      "--mem-fraction-static",
+                      "0.8",
+                      "--max-total-tokens",
+                      "2048",
+                      "--context-length",
+                      "1024",
+                      "--max-running-requests",
+                      "4"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "HF_HOME",
+                        "value": "/model-cache"
+                      },
+                      {
+                        "name": "HF_HUB_CACHE",
+                        "value": "/model-cache/hub"
+                      },
+                      {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "1"
+                      },
+                      {
+                        "name": "PYTHONUNBUFFERED",
+                        "value": "1"
+                      },
+                      {
+                        "name": "MC_FORCE_TCP",
+                        "value": "1"
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "6",
+                        "memory": "48Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      },
+                      "requests": {
+                        "cpu": "4",
+                        "memory": "40Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      }
+                    },
+                    "securityContext": {
+                      "capabilities": {
+                        "add": [
+                          "IPC_LOCK",
+                          "SYS_RESOURCE"
+                        ]
+                      }
+                    },
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/model-cache",
+                        "name": "model-cache"
+                      },
+                      {
+                        "mountPath": "/dev/shm",
+                        "name": "dshm"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/_disagg.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "disagg.py"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/decode_handler.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "decode_handler.py"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/prefill_handler.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "prefill_handler.py"
+                      }
+                    ],
+                    "workingDir": "/workspace/examples/backends/sglang"
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "spark-01"
+                },
+                "tolerations": [
+                  {
+                    "effect": "NoSchedule",
+                    "key": "nvidia.com/gpu",
+                    "operator": "Exists"
+                  }
+                ],
+                "volumes": [
+                  {
+                    "hostPath": {
+                      "path": "/home/nvidia/.cache/huggingface",
+                      "type": "Directory"
+                    },
+                    "name": "model-cache"
+                  },
+                  {
+                    "emptyDir": {
+                      "medium": "Memory",
+                      "sizeLimit": "2Gi"
+                    },
+                    "name": "dshm"
+                  },
+                  {
+                    "configMap": {
+                      "name": "sglang-14098-fix-dce302dd7a"
+                    },
+                    "name": "issue14098-fix"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "sharedMemorySize": "2Gi",
+            "type": "worker"
+          }
+        ]
+      },
+      "status": {
+        "components": {
+          "Frontend": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "sglang-qwen3-agg-14098-0-frontend"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-sglang-qwen3-agg-14098",
+            "updatedReplicas": 1
+          },
+          "agg": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "sglang-qwen3-agg-14098-0-agg"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-sglang-qwen3-agg-14098",
+            "updatedReplicas": 1
+          }
+        },
+        "conditions": [
+          {
+            "lastTransitionTime": "2026-09-01T15:52:06Z",
+            "message": "All resources are ready",
+            "reason": "all_resources_are_ready",
+            "status": "True",
+            "type": "Ready"
+          }
+        ],
+        "observedGeneration": 8,
+        "state": "successful"
+      }
+    },
+    {
+      "apiVersion": "nvidia.com/v1beta1",
+      "kind": "DynamoGraphDeployment",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"nvidia.com/v1beta1\",\"kind\":\"DynamoGraphDeployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"sglang-qwen3-pd-14098\",\"app.kubernetes.io/part-of\":\"dynamo\",\"token-labs/experiment\":\"issue-14098-disaggregated\"},\"name\":\"sglang-qwen3-pd-14098\",\"namespace\":\"token-labs\"},\"spec\":{\"backendFramework\":\"sglang\",\"components\":[{\"name\":\"Frontend\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/experiment\":\"issue-14098-disaggregated\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.frontend\",\"--router-mode\",\"kv\",\"--trust-remote-code\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"}],\"image\":\"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:cfe42887399b617c07bc369e088d58906b5c2c274d4654a82d73a46e10b9b2a2\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"4Gi\"},\"requests\":{\"cpu\":\"1\",\"memory\":\"2Gi\"}}}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"controller\"},\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"node-role.kubernetes.io/control-plane\",\"operator\":\"Exists\"}]}},\"replicas\":1,\"type\":\"frontend\"},{\"name\":\"prefill\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/experiment\":\"issue-14098-disaggregated\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.sglang\",\"--model-path\",\"Qwen/Qwen3-0.6B\",\"--served-model-name\",\"Qwen/Qwen3-0.6B-14098-pd\",\"--page-size\",\"16\",\"--tp\",\"1\",\"--trust-remote-code\",\"--disaggregation-mode\",\"prefill\",\"--disaggregation-transfer-backend\",\"mooncake\",\"--disaggregation-bootstrap-port\",\"12345\",\"--host\",\"0.0.0.0\",\"--disable-cuda-graph\",\"--disable-piecewise-cuda-graph\",\"--mem-fraction-static\",\"0.8\",\"--max-total-tokens\",\"2048\",\"--context-length\",\"1024\",\"--max-running-requests\",\"4\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"HF_HUB_CACHE\",\"value\":\"/model-cache/hub\"},{\"name\":\"HF_HUB_OFFLINE\",\"value\":\"1\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"MC_FORCE_TCP\",\"value\":\"1\"}],\"image\":\"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"4\",\"memory\":\"8Gi\",\"nvidia.com/gpu.shared\":\"1\"},\"requests\":{\"cpu\":\"2\",\"memory\":\"4Gi\",\"nvidia.com/gpu.shared\":\"1\"}},\"securityContext\":{\"capabilities\":{\"add\":[\"IPC_LOCK\",\"SYS_RESOURCE\"]}},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"},{\"mountPath\":\"/dev/shm\",\"name\":\"dshm\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/_disagg.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"disagg.py\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/decode_handler.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"decode_handler.py\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/prefill_handler.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"prefill_handler.py\"}],\"workingDir\":\"/workspace/examples/backends/sglang\"}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"nvidia.com/gpu\",\"operator\":\"Exists\"}],\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"model-cache\"},{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"2Gi\"},\"name\":\"dshm\"},{\"configMap\":{\"name\":\"sglang-14098-fix-dce302dd7a\"},\"name\":\"issue14098-fix\"}]}},\"replicas\":1,\"sharedMemorySize\":\"2Gi\",\"type\":\"prefill\"},{\"name\":\"decode\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/experiment\":\"issue-14098-disaggregated\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.sglang\",\"--model-path\",\"Qwen/Qwen3-0.6B\",\"--served-model-name\",\"Qwen/Qwen3-0.6B-14098-pd\",\"--page-size\",\"16\",\"--tp\",\"1\",\"--trust-remote-code\",\"--disaggregation-mode\",\"decode\",\"--disaggregation-transfer-backend\",\"mooncake\",\"--disaggregation-bootstrap-port\",\"12345\",\"--host\",\"0.0.0.0\",\"--disable-cuda-graph\",\"--disable-piecewise-cuda-graph\",\"--mem-fraction-static\",\"0.8\",\"--max-total-tokens\",\"2048\",\"--context-length\",\"1024\",\"--max-running-requests\",\"4\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"HF_HUB_CACHE\",\"value\":\"/model-cache/hub\"},{\"name\":\"HF_HUB_OFFLINE\",\"value\":\"1\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"MC_FORCE_TCP\",\"value\":\"1\"}],\"image\":\"nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"4\",\"memory\":\"8Gi\",\"nvidia.com/gpu.shared\":\"1\"},\"requests\":{\"cpu\":\"2\",\"memory\":\"4Gi\",\"nvidia.com/gpu.shared\":\"1\"}},\"securityContext\":{\"capabilities\":{\"add\":[\"IPC_LOCK\",\"SYS_RESOURCE\"]}},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"},{\"mountPath\":\"/dev/shm\",\"name\":\"dshm\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/_disagg.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"disagg.py\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/decode_handler.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"decode_handler.py\"},{\"mountPath\":\"/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/prefill_handler.py\",\"name\":\"issue14098-fix\",\"readOnly\":true,\"subPath\":\"prefill_handler.py\"}],\"workingDir\":\"/workspace/examples/backends/sglang\"}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"nvidia.com/gpu\",\"operator\":\"Exists\"}],\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"model-cache\"},{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"2Gi\"},\"name\":\"dshm\"},{\"configMap\":{\"name\":\"sglang-14098-fix-dce302dd7a\"},\"name\":\"issue14098-fix\"}]}},\"replicas\":1,\"sharedMemorySize\":\"2Gi\",\"type\":\"decode\"}]}}\n",
+          "nvidia.com/current-worker-hash": "05acd4f0",
+          "nvidia.com/current-worker-hash-v2": "9014ee44",
+          "nvidia.com/dynamo-operator-origin-version": "1.3.1"
+        },
+        "creationTimestamp": "2026-09-01T14:49:30Z",
+        "finalizers": [
+          "nvidia.com/finalizer"
+        ],
+        "generation": 6,
+        "labels": {
+          "app.kubernetes.io/name": "sglang-qwen3-pd-14098",
+          "app.kubernetes.io/part-of": "dynamo",
+          "token-labs/experiment": "issue-14098-disaggregated"
+        },
+        "name": "sglang-qwen3-pd-14098",
+        "namespace": "token-labs",
+        "resourceVersion": "80234588",
+        "uid": "b0cb4efa-4c4c-4066-b019-c07ebd33f604"
+      },
+      "spec": {
+        "backendFramework": "sglang",
+        "components": [
+          {
+            "minAvailable": 1,
+            "name": "Frontend",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/experiment": "issue-14098-disaggregated"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.frontend",
+                      "--router-mode",
+                      "kv",
+                      "--trust-remote-code"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "PYTHONUNBUFFERED",
+                        "value": "1"
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:cfe42887399b617c07bc369e088d58906b5c2c274d4654a82d73a46e10b9b2a2",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "2",
+                        "memory": "4Gi"
+                      },
+                      "requests": {
+                        "cpu": "1",
+                        "memory": "2Gi"
+                      }
+                    }
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "controller"
+                },
+                "tolerations": [
+                  {
+                    "effect": "NoSchedule",
+                    "key": "node-role.kubernetes.io/control-plane",
+                    "operator": "Exists"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "type": "frontend"
+          },
+          {
+            "minAvailable": 1,
+            "name": "prefill",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/experiment": "issue-14098-disaggregated"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.sglang",
+                      "--model-path",
+                      "Qwen/Qwen3-0.6B",
+                      "--served-model-name",
+                      "Qwen/Qwen3-0.6B-14098-pd",
+                      "--page-size",
+                      "16",
+                      "--tp",
+                      "1",
+                      "--trust-remote-code",
+                      "--disaggregation-mode",
+                      "prefill",
+                      "--disaggregation-transfer-backend",
+                      "mooncake",
+                      "--disaggregation-bootstrap-port",
+                      "12345",
+                      "--host",
+                      "0.0.0.0",
+                      "--disable-cuda-graph",
+                      "--disable-piecewise-cuda-graph",
+                      "--mem-fraction-static",
+                      "0.8",
+                      "--max-total-tokens",
+                      "2048",
+                      "--context-length",
+                      "1024",
+                      "--max-running-requests",
+                      "4"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "HF_HOME",
+                        "value": "/model-cache"
+                      },
+                      {
+                        "name": "HF_HUB_CACHE",
+                        "value": "/model-cache/hub"
+                      },
+                      {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "1"
+                      },
+                      {
+                        "name": "PYTHONUNBUFFERED",
+                        "value": "1"
+                      },
+                      {
+                        "name": "MC_FORCE_TCP",
+                        "value": "1"
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "4",
+                        "memory": "8Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      },
+                      "requests": {
+                        "cpu": "2",
+                        "memory": "4Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      }
+                    },
+                    "securityContext": {
+                      "capabilities": {
+                        "add": [
+                          "IPC_LOCK",
+                          "SYS_RESOURCE"
+                        ]
+                      }
+                    },
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/model-cache",
+                        "name": "model-cache"
+                      },
+                      {
+                        "mountPath": "/dev/shm",
+                        "name": "dshm"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/_disagg.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "disagg.py"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/decode_handler.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "decode_handler.py"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/prefill_handler.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "prefill_handler.py"
+                      }
+                    ],
+                    "workingDir": "/workspace/examples/backends/sglang"
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "spark-01"
+                },
+                "tolerations": [
+                  {
+                    "effect": "NoSchedule",
+                    "key": "nvidia.com/gpu",
+                    "operator": "Exists"
+                  }
+                ],
+                "volumes": [
+                  {
+                    "hostPath": {
+                      "path": "/home/nvidia/.cache/huggingface",
+                      "type": "Directory"
+                    },
+                    "name": "model-cache"
+                  },
+                  {
+                    "emptyDir": {
+                      "medium": "Memory",
+                      "sizeLimit": "2Gi"
+                    },
+                    "name": "dshm"
+                  },
+                  {
+                    "configMap": {
+                      "name": "sglang-14098-fix-dce302dd7a"
+                    },
+                    "name": "issue14098-fix"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "sharedMemorySize": "2Gi",
+            "type": "prefill"
+          },
+          {
+            "minAvailable": 1,
+            "name": "decode",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/experiment": "issue-14098-disaggregated"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.sglang",
+                      "--model-path",
+                      "Qwen/Qwen3-0.6B",
+                      "--served-model-name",
+                      "Qwen/Qwen3-0.6B-14098-pd",
+                      "--page-size",
+                      "16",
+                      "--tp",
+                      "1",
+                      "--trust-remote-code",
+                      "--disaggregation-mode",
+                      "decode",
+                      "--disaggregation-transfer-backend",
+                      "mooncake",
+                      "--disaggregation-bootstrap-port",
+                      "12345",
+                      "--host",
+                      "0.0.0.0",
+                      "--disable-cuda-graph",
+                      "--disable-piecewise-cuda-graph",
+                      "--mem-fraction-static",
+                      "0.8",
+                      "--max-total-tokens",
+                      "2048",
+                      "--context-length",
+                      "1024",
+                      "--max-running-requests",
+                      "4"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "HF_HOME",
+                        "value": "/model-cache"
+                      },
+                      {
+                        "name": "HF_HUB_CACHE",
+                        "value": "/model-cache/hub"
+                      },
+                      {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "1"
+                      },
+                      {
+                        "name": "PYTHONUNBUFFERED",
+                        "value": "1"
+                      },
+                      {
+                        "name": "MC_FORCE_TCP",
+                        "value": "1"
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/sglang-runtime-nightly@sha256:8e410361722b5bc52bfdcc6107d374d36a49e45297b30dc54144ab942180abcb",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "4",
+                        "memory": "8Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      },
+                      "requests": {
+                        "cpu": "2",
+                        "memory": "4Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      }
+                    },
+                    "securityContext": {
+                      "capabilities": {
+                        "add": [
+                          "IPC_LOCK",
+                          "SYS_RESOURCE"
+                        ]
+                      }
+                    },
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/model-cache",
+                        "name": "model-cache"
+                      },
+                      {
+                        "mountPath": "/dev/shm",
+                        "name": "dshm"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/_disagg.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "disagg.py"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/decode_handler.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "decode_handler.py"
+                      },
+                      {
+                        "mountPath": "/usr/local/lib/python3.12/dist-packages/dynamo/sglang/request_handlers/llm/prefill_handler.py",
+                        "name": "issue14098-fix",
+                        "readOnly": true,
+                        "subPath": "prefill_handler.py"
+                      }
+                    ],
+                    "workingDir": "/workspace/examples/backends/sglang"
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "spark-01"
+                },
+                "tolerations": [
+                  {
+                    "effect": "NoSchedule",
+                    "key": "nvidia.com/gpu",
+                    "operator": "Exists"
+                  }
+                ],
+                "volumes": [
+                  {
+                    "hostPath": {
+                      "path": "/home/nvidia/.cache/huggingface",
+                      "type": "Directory"
+                    },
+                    "name": "model-cache"
+                  },
+                  {
+                    "emptyDir": {
+                      "medium": "Memory",
+                      "sizeLimit": "2Gi"
+                    },
+                    "name": "dshm"
+                  },
+                  {
+                    "configMap": {
+                      "name": "sglang-14098-fix-dce302dd7a"
+                    },
+                    "name": "issue14098-fix"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "sharedMemorySize": "2Gi",
+            "type": "decode"
+          }
+        ]
+      },
+      "status": {
+        "components": {
+          "Frontend": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "sglang-qwen3-pd-14098-0-frontend"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-sglang-qwen3-pd-14098",
+            "updatedReplicas": 1
+          },
+          "decode": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "sglang-qwen3-pd-14098-0-decode"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-sglang-qwen3-pd-14098",
+            "updatedReplicas": 1
+          },
+          "prefill": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "sglang-qwen3-pd-14098-0-prefill"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-sglang-qwen3-pd-14098",
+            "updatedReplicas": 1
+          }
+        },
+        "conditions": [
+          {
+            "lastTransitionTime": "2026-09-01T15:49:47Z",
+            "message": "All resources are ready",
+            "reason": "all_resources_are_ready",
+            "status": "True",
+            "type": "Ready"
+          }
+        ],
+        "observedGeneration": 6,
+        "state": "successful"
+      }
+    },
+    {
+      "apiVersion": "nvidia.com/v1beta1",
+      "kind": "DynamoGraphDeployment",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"nvidia.com/v1beta1\",\"kind\":\"DynamoGraphDeployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"vllm-agg-gb10-dspark\",\"app.kubernetes.io/part-of\":\"dynamo\",\"token-labs/scenario\":\"nemotron35-dspark\"},\"name\":\"vllm-agg-gb10-dspark\",\"namespace\":\"token-labs\"},\"spec\":{\"backendFramework\":\"vllm\",\"components\":[{\"name\":\"Frontend\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/scenario\":\"nemotron35-dspark\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.frontend\",\"--trust-remote-code\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"DYN_HTTP_BODY_LIMIT_MB\",\"value\":\"200\"},{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"HF_HUB_OFFLINE\",\"value\":\"1\"},{\"name\":\"HF_MODULES_CACHE\",\"value\":\"/tmp/hf_modules\"},{\"name\":\"NCCL_IB_DISABLE\",\"value\":\"1\"}],\"image\":\"nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0-nemotron-3.5-lightning-dev.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"4Gi\"},\"requests\":{\"cpu\":\"1\",\"memory\":\"2Gi\"}},\"startupProbe\":{\"failureThreshold\":60,\"httpGet\":{\"path\":\"/health\",\"port\":8000},\"periodSeconds\":10,\"timeoutSeconds\":60},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"shared-model-cache\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-02\"},\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"shared-model-cache\"}]}},\"replicas\":1,\"type\":\"frontend\"},{\"name\":\"agg\",\"podTemplate\":{\"metadata\":{\"labels\":{\"token-labs/scenario\":\"nemotron35-dspark\"}},\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.vllm\",\"--model\",\"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4\",\"--served-model-name\",\"nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo\",\"--trust-remote-code\",\"--moe-backend\",\"marlin\",\"--kv-cache-dtype\",\"fp8\",\"--enable-prefix-caching\",\"--tensor-parallel-size\",\"1\",\"--max-model-len\",\"1048576\",\"--gpu-memory-utilization\",\"0.85\",\"--quantization\",\"modelopt_fp4\",\"--mamba-cache-mode\",\"align\",\"--no-disable-hybrid-kv-cache-manager\",\"--mamba-backend\",\"flashinfer\",\"--mamba-ssm-cache-dtype\",\"float16\",\"--speculative-config=$(SPECULATIVE_CONFIG)\",\"--dyn-reasoning-parser\",\"nemotron_v3\",\"--dyn-tool-call-parser\",\"qwen3_coder\",\"--disaggregation-mode\",\"agg\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"POD_UID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.uid\"}}},{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"HF_HUB_OFFLINE\",\"value\":\"0\"},{\"name\":\"HF_MODULES_CACHE\",\"value\":\"/tmp/hf_modules\"},{\"name\":\"TRITON_CACHE_DIR\",\"value\":\"/tmp/.triton-cache\"},{\"name\":\"VLLM_CONFIG_ROOT\",\"value\":\"/tmp/vllm-config\"},{\"name\":\"VLLM_CACHE_ROOT\",\"value\":\"/tmp/vllm-cache\"},{\"name\":\"LIBRARY_PATH\",\"value\":\"/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/local/cuda/compat\"},{\"name\":\"VLLM_ENGINE_READY_TIMEOUT_S\",\"value\":\"3600\"},{\"name\":\"VLLM_OMNI_USE_QUACK_FP8\",\"value\":\"0\"},{\"name\":\"VLLM_WORKER_MULTIPROC_METHOD\",\"value\":\"spawn\"},{\"name\":\"VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS\",\"value\":\"1\"},{\"name\":\"SPECULATIVE_CONFIG\",\"valueFrom\":{\"configMapKeyRef\":{\"key\":\"speculative-config\",\"name\":\"vllm-agg-gb10-dspark-config\"}}},{\"name\":\"VLLM_DISABLED_KERNELS\",\"value\":\"FlashInferFP8ScaledMMLinearKernel\"},{\"name\":\"PYTHONHASHSEED\",\"value\":\"0\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"NCCL_IB_DISABLE\",\"value\":\"1\"},{\"name\":\"HF_TOKEN\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"HF_TOKEN\",\"name\":\"hf-token\"}}}],\"image\":\"nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0-nemotron-3.5-lightning-dev.1\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"main\",\"resources\":{\"limits\":{\"cpu\":\"8\",\"memory\":\"56Gi\",\"nvidia.com/gpu.shared\":\"1\"},\"requests\":{\"cpu\":\"4\",\"memory\":\"32Gi\",\"nvidia.com/gpu.shared\":\"1\"}},\"securityContext\":{\"capabilities\":{\"add\":[\"IPC_LOCK\",\"SYS_RESOURCE\"]},\"runAsUser\":0},\"startupProbe\":{\"failureThreshold\":120,\"httpGet\":{\"path\":\"/live\",\"port\":9090},\"periodSeconds\":30,\"timeoutSeconds\":20},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"shared-model-cache\"},{\"mountPath\":\"/dev/shm\",\"name\":\"dshm\"}],\"workingDir\":\"/workspace/\"}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-02\"},\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"shared-model-cache\"},{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"40Gi\"},\"name\":\"dshm\"}]}},\"replicas\":1,\"sharedMemorySize\":\"40Gi\",\"type\":\"worker\"}]}}\n",
+          "nvidia.com/current-worker-hash": "8bea868f",
+          "nvidia.com/current-worker-hash-v2": "aae0d9b7",
+          "nvidia.com/dynamo-operator-origin-version": "1.3.1"
+        },
+        "creationTimestamp": "2026-08-31T05:00:44Z",
+        "finalizers": [
+          "nvidia.com/finalizer"
+        ],
+        "generation": 1,
+        "labels": {
+          "app.kubernetes.io/name": "vllm-agg-gb10-dspark",
+          "app.kubernetes.io/part-of": "dynamo",
+          "token-labs/scenario": "nemotron35-dspark"
+        },
+        "name": "vllm-agg-gb10-dspark",
+        "namespace": "token-labs",
+        "resourceVersion": "79045155",
+        "uid": "75534b50-8f98-4f83-af88-0897b3d74a23"
+      },
+      "spec": {
+        "backendFramework": "vllm",
+        "components": [
+          {
+            "minAvailable": 1,
+            "name": "Frontend",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/scenario": "nemotron35-dspark"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.frontend",
+                      "--trust-remote-code"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "DYN_HTTP_BODY_LIMIT_MB",
+                        "value": "200"
+                      },
+                      {
+                        "name": "HF_HOME",
+                        "value": "/model-cache"
+                      },
+                      {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "1"
+                      },
+                      {
+                        "name": "HF_MODULES_CACHE",
+                        "value": "/tmp/hf_modules"
+                      },
+                      {
+                        "name": "NCCL_IB_DISABLE",
+                        "value": "1"
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0-nemotron-3.5-lightning-dev.1",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "2",
+                        "memory": "4Gi"
+                      },
+                      "requests": {
+                        "cpu": "1",
+                        "memory": "2Gi"
+                      }
+                    },
+                    "startupProbe": {
+                      "failureThreshold": 60,
+                      "httpGet": {
+                        "path": "/health",
+                        "port": 8000
+                      },
+                      "periodSeconds": 10,
+                      "timeoutSeconds": 60
+                    },
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/model-cache",
+                        "name": "shared-model-cache"
+                      }
+                    ]
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "spark-02"
+                },
+                "volumes": [
+                  {
+                    "hostPath": {
+                      "path": "/home/nvidia/.cache/huggingface",
+                      "type": "Directory"
+                    },
+                    "name": "shared-model-cache"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "type": "frontend"
+          },
+          {
+            "minAvailable": 1,
+            "name": "agg",
+            "podTemplate": {
+              "metadata": {
+                "labels": {
+                  "token-labs/scenario": "nemotron35-dspark"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-m",
+                      "dynamo.vllm",
+                      "--model",
+                      "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+                      "--served-model-name",
+                      "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-dynamo",
+                      "--trust-remote-code",
+                      "--moe-backend",
+                      "marlin",
+                      "--kv-cache-dtype",
+                      "fp8",
+                      "--enable-prefix-caching",
+                      "--tensor-parallel-size",
+                      "1",
+                      "--max-model-len",
+                      "1048576",
+                      "--gpu-memory-utilization",
+                      "0.85",
+                      "--quantization",
+                      "modelopt_fp4",
+                      "--mamba-cache-mode",
+                      "align",
+                      "--no-disable-hybrid-kv-cache-manager",
+                      "--mamba-backend",
+                      "flashinfer",
+                      "--mamba-ssm-cache-dtype",
+                      "float16",
+                      "--speculative-config=$(SPECULATIVE_CONFIG)",
+                      "--dyn-reasoning-parser",
+                      "nemotron_v3",
+                      "--dyn-tool-call-parser",
+                      "qwen3_coder",
+                      "--disaggregation-mode",
+                      "agg"
+                    ],
+                    "command": [
+                      "python3"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_UID",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "fieldPath": "metadata.uid"
+                          }
+                        }
+                      },
+                      {
+                        "name": "HF_HOME",
+                        "value": "/model-cache"
+                      },
+                      {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "0"
+                      },
+                      {
+                        "name": "HF_MODULES_CACHE",
+                        "value": "/tmp/hf_modules"
+                      },
+                      {
+                        "name": "TRITON_CACHE_DIR",
+                        "value": "/tmp/.triton-cache"
+                      },
+                      {
+                        "name": "VLLM_CONFIG_ROOT",
+                        "value": "/tmp/vllm-config"
+                      },
+                      {
+                        "name": "VLLM_CACHE_ROOT",
+                        "value": "/tmp/vllm-cache"
+                      },
+                      {
+                        "name": "LIBRARY_PATH",
+                        "value": "/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/local/cuda/compat"
+                      },
+                      {
+                        "name": "VLLM_ENGINE_READY_TIMEOUT_S",
+                        "value": "3600"
+                      },
+                      {
+                        "name": "VLLM_OMNI_USE_QUACK_FP8",
+                        "value": "0"
+                      },
+                      {
+                        "name": "VLLM_WORKER_MULTIPROC_METHOD",
+                        "value": "spawn"
+                      },
+                      {
+                        "name": "VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS",
+                        "value": "1"
+                      },
+                      {
+                        "name": "SPECULATIVE_CONFIG",
+                        "valueFrom": {
+                          "configMapKeyRef": {
+                            "key": "speculative-config",
+                            "name": "vllm-agg-gb10-dspark-config"
+                          }
+                        }
+                      },
+                      {
+                        "name": "VLLM_DISABLED_KERNELS",
+                        "value": "FlashInferFP8ScaledMMLinearKernel"
+                      },
+                      {
+                        "name": "PYTHONHASHSEED",
+                        "value": "0"
+                      },
+                      {
+                        "name": "PYTHONUNBUFFERED",
+                        "value": "1"
+                      },
+                      {
+                        "name": "NCCL_IB_DISABLE",
+                        "value": "1"
+                      },
+                      {
+                        "name": "HF_TOKEN",
+                        "valueFrom": {
+                          "secretKeyRef": {
+                            "key": "HF_TOKEN",
+                            "name": "hf-token"
+                          }
+                        }
+                      }
+                    ],
+                    "image": "nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0-nemotron-3.5-lightning-dev.1",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "main",
+                    "resources": {
+                      "limits": {
+                        "cpu": "8",
+                        "memory": "56Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      },
+                      "requests": {
+                        "cpu": "4",
+                        "memory": "32Gi",
+                        "nvidia.com/gpu.shared": "1"
+                      }
+                    },
+                    "securityContext": {
+                      "capabilities": {
+                        "add": [
+                          "IPC_LOCK",
+                          "SYS_RESOURCE"
+                        ]
+                      },
+                      "runAsUser": 0
+                    },
+                    "startupProbe": {
+                      "failureThreshold": 120,
+                      "httpGet": {
+                        "path": "/live",
+                        "port": 9090
+                      },
+                      "periodSeconds": 30,
+                      "timeoutSeconds": 20
+                    },
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/model-cache",
+                        "name": "shared-model-cache"
+                      },
+                      {
+                        "mountPath": "/dev/shm",
+                        "name": "dshm"
+                      }
+                    ],
+                    "workingDir": "/workspace/"
+                  }
+                ],
+                "nodeSelector": {
+                  "kubernetes.io/hostname": "spark-02"
+                },
+                "volumes": [
+                  {
+                    "hostPath": {
+                      "path": "/home/nvidia/.cache/huggingface",
+                      "type": "Directory"
+                    },
+                    "name": "shared-model-cache"
+                  },
+                  {
+                    "emptyDir": {
+                      "medium": "Memory",
+                      "sizeLimit": "40Gi"
+                    },
+                    "name": "dshm"
+                  }
+                ]
+              }
+            },
+            "replicas": 1,
+            "sharedMemorySize": "40Gi",
+            "type": "worker"
+          }
+        ]
+      },
+      "status": {
+        "components": {
+          "Frontend": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "vllm-agg-gb10-dspark-0-frontend"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-vllm-agg-gb10-dspark",
+            "updatedReplicas": 1
+          },
+          "agg": {
+            "componentKind": "PodClique",
+            "componentNames": [
+              "vllm-agg-gb10-dspark-0-agg"
+            ],
+            "readyReplicas": 1,
+            "replicas": 1,
+            "runtimeNamespace": "token-labs-vllm-agg-gb10-dspark",
+            "updatedReplicas": 1
+          }
+        },
+        "conditions": [
+          {
+            "lastTransitionTime": "2026-08-31T09:09:53Z",
+            "message": "All resources are ready",
+            "reason": "all_resources_are_ready",
+            "status": "True",
+            "type": "Ready"
+          }
+        ],
+        "observedGeneration": 1,
+        "state": "successful"
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}
