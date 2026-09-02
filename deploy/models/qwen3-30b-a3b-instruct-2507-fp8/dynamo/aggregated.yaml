@@ -89,8 +89,6 @@ spec:
                 - -m
                 - dynamo.vllm
               args:
-                - -m
-                - dynamo.vllm
                 - --model
                 - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
                 - --served-model-name
@@ -101,10 +99,10 @@ spec:
                 - --max-model-len
                 - "32768"
                 - --max-num-seqs
-                - "1"
+                - "64"
                 - --gpu-memory-utilization
-                - "0.40"
-                - --enable-prefix-caching
+                - "0.70"
+                - --no-enable-prefix-caching
               env:
                 - name: POD_UID
                   valueFrom:
@@ -145,7 +143,7 @@ spec:
                   nvidia.com/gpu.shared: "1"
                 limits:
                   cpu: "8"
-                  memory: 56Gi
+                  memory: 112Gi
                   nvidia.com/gpu.shared: "1"
               securityContext:
                 runAsUser: 0

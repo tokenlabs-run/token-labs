@@ -1,0 +1,209 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "3"
+    meta.helm.sh/release-name: llm-d-qwen3-control-aggregated
+    meta.helm.sh/release-namespace: token-labs
+  creationTimestamp: "2026-08-31T05:00:35Z"
+  generation: 4
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: v0.4.0
+    helm.sh/chart: llm-d-modelservice-v0.4.16
+  name: llm-d-qwen3-control-aggregated-llm-d-modelservice-decode
+  namespace: token-labs
+  resourceVersion: "80422077"
+  uid: a2d51495-e35e-4a9c-9cc0-25ed7bd9d99b
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      llm-d.ai/accelerator-vendor: nvidia
+      llm-d.ai/hardware-variant: gpu
+      llm-d.ai/inference-serving: "true"
+      llm-d.ai/model: qwen3-30b-control-llm-d
+      llm-d.ai/role: decode
+      token-labs/scenario: qwen3-30b-control
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        llm-d.ai/accelerator-vendor: nvidia
+        llm-d.ai/hardware-variant: gpu
+        llm-d.ai/inference-serving: "true"
+        llm-d.ai/model: qwen3-30b-control-llm-d
+        llm-d.ai/role: decode
+        token-labs/scenario: qwen3-30b-control
+    spec:
+      containers:
+      - args:
+        - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+        - --port
+        - "8200"
+        - --served-model-name
+        - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-llm-d
+        - --max-model-len
+        - "32768"
+        - --max-num-seqs
+        - "64"
+        - --gpu-memory-utilization
+        - "0.70"
+        - --no-enable-prefix-caching
+        - --trust-remote-code
+        command:
+        - vllm
+        - serve
+        env:
+        - name: USER
+          value: nvidia
+        - name: LOGNAME
+          value: nvidia
+        - name: HOME
+          value: /tmp
+        - name: XDG_CACHE_HOME
+          value: /tmp/.cache
+        - name: FLASHINFER_WORKSPACE_DIR
+          value: /tmp/.cache/flashinfer
+        - name: TRITON_CACHE_DIR
+          value: /tmp/.triton-cache
+        - name: VLLM_CACHE_ROOT
+          value: /tmp/vllm-cache
+        - name: TORCHINDUCTOR_CACHE_DIR
+          value: /tmp/torchinductor-cache
+        - name: HF_HOME
+          value: /model-cache
+        - name: HF_HUB_CACHE
+          value: /model-cache/hub
+        - name: HF_HUB_OFFLINE
+          value: "0"
+        - name: HF_HUB_DISABLE_XET
+          value: "1"
+        - name: FLASHINFER_DISABLE_VERSION_CHECK
+          value: "1"
+        - name: VLLM_OMNI_USE_QUACK_FP8
+          value: "0"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: VLLM_WORKER_MULTIPROC_METHOD
+          value: spawn
+        - name: DP_SIZE
+          value: "1"
+        - name: TP_SIZE
+          value: "1"
+        - name: DP_SIZE_LOCAL
+          value: "1"
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: HF_TOKEN
+              name: hf-token
+        image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.3.1
+        imagePullPolicy: IfNotPresent
+        name: vllm
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /v1/models
+            port: 8000
+            scheme: HTTP
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: "8"
+            memory: 112Gi
+            nvidia.com/gpu.shared: "1"
+          requests:
+            cpu: "4"
+            memory: 32Gi
+            nvidia.com/gpu.shared: "1"
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 1003
+          runAsNonRoot: true
+          runAsUser: 1002
+        startupProbe:
+          failureThreshold: 180
+          httpGet:
+            path: /v1/models
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /model-cache
+          name: model-cache
+        - mountPath: /dev/shm
+          name: shm
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - --port=8000
+        - --model-server-port=8200
+        - --kv-connector=nixlv2
+        - --zap-encoder=json
+        - --zap-log-level=debug
+        - --secure-proxy=false
+        image: ghcr.io/llm-d/llm-d-router-disagg-sidecar:v0.10.0
+        imagePullPolicy: IfNotPresent
+        name: routing-proxy
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        resources: {}
+        restartPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      nodeSelector:
+        kubernetes.io/hostname: spark-01
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: llm-d-qwen3-control-aggregated-llm-d-modelservice
+      serviceAccountName: llm-d-qwen3-control-aggregated-llm-d-modelservice
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /home/nvidia/.cache/huggingface
+          type: Directory
+        name: model-cache
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 8Gi
+        name: shm
+status:
+  conditions:
+  - lastTransitionTime: "2026-09-01T20:28:43Z"
+    lastUpdateTime: "2026-09-01T20:28:43Z"
+    message: Deployment does not have minimum availability.
+    reason: MinimumReplicasUnavailable
+    status: "False"
+    type: Available
+  - lastTransitionTime: "2026-08-31T05:00:35Z"
+    lastUpdateTime: "2026-09-01T20:31:40Z"
+    message: ReplicaSet "llm-d-qwen3-control-aggregated-llm-d-modelservice-decode-655b57fb98"
+      is progressing.
+    reason: ReplicaSetUpdated
+    status: "True"
+    type: Progressing
+  observedGeneration: 4
+  replicas: 1
+  unavailableReplicas: 1
+  updatedReplicas: 1

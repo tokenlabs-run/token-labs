@@ -83,10 +83,10 @@ decode:
         - --max-model-len
         - "32768"
         - --max-num-seqs
-        - "1"
+        - "64"
         - --gpu-memory-utilization
-        - "0.40"
-        - --enable-prefix-caching
+        - "0.70"
+        - --no-enable-prefix-caching
         - --trust-remote-code
       env:
         # Non-root uid 1002 has no /etc/passwd entry in this image, so any
@@ -127,6 +127,8 @@ decode:
           value: "1"
         - name: FLASHINFER_DISABLE_VERSION_CHECK
           value: "1"
+        - name: VLLM_OMNI_USE_QUACK_FP8
+          value: "0"
         - name: PYTHONUNBUFFERED
           value: "1"
         - name: VLLM_WORKER_MULTIPROC_METHOD
@@ -138,7 +140,7 @@ decode:
           nvidia.com/gpu.shared: "1"
         limits:
           cpu: "8"
-          memory: 56Gi
+          memory: 112Gi
           nvidia.com/gpu.shared: "1"
       volumeMounts:
         - name: model-cache

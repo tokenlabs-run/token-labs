@@ -1,0 +1,67 @@
+{
+  "status": "interrupted_external_scale_down",
+  "started_at_utc": "2026-09-01T20:39:00Z",
+  "tool_sessions": {
+    "llm-d": 1096,
+    "dynamo": null
+  },
+  "raw_dir": "results/2026-09-01-qwen3-spark-pareto/raw",
+  "completed_smoke_checks": [
+    "llm-d",
+    "dynamo"
+  ],
+  "remaining": [
+    "Monitor both matrix processes; fix failed points without changing engine configuration mid-comparison.",
+    "Validate all 42 exports including exact ISL/OSL.",
+    "Run scripts/qwen3-30b/aggregate.py raw --output docs/qwen3-spark-pareto.json with actual raw directory path.",
+    "Add Qwen Pareto results to existing Token Labs docs dashboard and publish through its existing workflow.",
+    "Record final analysis and limitations, leave both stacks healthy, mark goal complete."
+  ],
+  "public_route_update": {
+    "status": "awaiting_user_approval",
+    "reason": "Automatic approval review rejected removing the existing public Nemotron listing while adding Qwen Dynamo. No live route change was applied.",
+    "prepared_file": "deploy/platform/gateway/aigatewayroute-models.yaml",
+    "commit_constraint": "Do not deploy or publish this routing change without the requested user approval."
+  },
+  "dynamic_discovery": {
+    "status": "deployed_verified",
+    "public_endpoint": "https://api.tokenlabs.run/v1/models",
+    "expected_models": [
+      "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-dynamo",
+      "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8-llm-d"
+    ],
+    "refresh_seconds": 28,
+    "website_change": "published and verified on www.tokenlabs.run",
+    "note": "Discovery route policy is deployed. Previously rejected inference route replacement remains unapplied.",
+    "commit": "852858e3c28e2f8cf8c4c598d7ba8bcae024c5fb"
+  },
+  "runner_pids": {
+    "llm-d": null,
+    "dynamo": null
+  },
+  "spark01_recovery": {
+    "last_heartbeat_before_outage": "2026-09-02T01:12:35Z",
+    "replacement_pod": "llm-d-qwen3-control-aggregated-llm-d-modelservice-decode-62fz8n",
+    "invalid_attempt": "raw/isl8192-osl8192__llm-d-c16.failed-spark01-node-outage-20260902T011235Z",
+    "rerun_policy": "fresh canonical c16 point after endpoint readiness"
+  },
+  "dynamo_c64_interruption": {
+    "archived_attempt": "raw/isl8192-osl8192__dynamo-c64.interrupted-no-export-20260902T0404Z",
+    "observed": "runner and AIPerf process absent; no profile_export_aiperf.json",
+    "endpoint_after_interruption": "healthy Kubernetes frontend and worker pods on Ready spark-02",
+    "policy": "fresh canonical rerun with unchanged manifest and runner arguments",
+    "resumed_at_utc": "2026-09-02T04:05:00Z"
+  },
+  "external_scale_down_20260902T0406Z": {
+    "observed": [
+      "llm-d Deployment scaled from 1 to 0 and serving pod deleted",
+      "Dynamo frontend and worker pods deleted immediately afterward",
+      "both in-flight c64 attempts lost their endpoints and are invalid"
+    ],
+    "preserved_attempts": [
+      "raw/isl8192-osl8192__llm-d-c64.invalid-external-scale-down-20260902T0406Z",
+      "raw/isl8192-osl8192__dynamo-c64.invalid-external-scale-down-20260902T0406Z"
+    ],
+    "policy": "do not restore automatically until concurrent operator intent is known; rerun canonical points from scratch after restoration"
+  }
+}
