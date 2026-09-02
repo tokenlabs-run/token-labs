@@ -105,6 +105,58 @@ def check_models(ctx: dict[str, Any]) -> dict[str, Any]:
     return {"elapsed_ms": result["elapsed_ms"], "model_count": len(ids)}
 
 
+def check_provider_catalog(ctx: dict[str, Any]) -> dict[str, Any]:
+    _, result = request_json(
+        ctx["session"], "GET", ctx["provider_models_url"], timeout=ctx["timeout"]
+    )
+    body = result["body"]
+    require(isinstance(body, dict) and isinstance(body.get("data"), list),
+            "provider catalog must contain a data array")
+    matches = [item for item in body["data"]
+               if isinstance(item, dict) and item.get("id") == ctx["model"]]
+    require(len(matches) == 1, "provider catalog must contain the exact model once")
+    document = matches[0]
+    require(document.get("schema_version") == "2.4", "provider schema must be 2.4")
+    require(document.get("is_ready") is True, "provider model is not ready")
+    require(isinstance(document.get("name"), str) and document["name"], "missing name")
+    require(isinstance(document.get("created"), int), "missing created timestamp")
+    require(isinstance(document.get("hugging_face_id"), str), "missing Hugging Face ID")
+    require(document.get("openrouter", {}).get("slug") == ctx["model"],
+            "OpenRouter slug differs from model ID")
+    inputs = document.get("input_modalities")
+    outputs = document.get("output_modalities")
+    require(isinstance(inputs, list) and inputs, "missing input modalities")
+    require(isinstance(outputs, list) and outputs, "missing output modalities")
+    text_inputs = [item for item in inputs if item.get("type") == "text"]
+    text_outputs = [item for item in outputs if item.get("type") == "text"]
+    require(len(text_inputs) == 1 and len(text_outputs) == 1,
+            "expected exactly one text input and output modality")
+    for label, modality in (("input", text_inputs[0]), ("output", text_outputs[0])):
+        require(isinstance(modality.get("pricing"), list) and modality["pricing"],
+                f"missing {label} pricing")
+        require(isinstance(modality.get("capacity"), list) and modality["capacity"],
+                f"missing {label} capacity")
+    require(text_outputs[0].get("streaming") is True, "text streaming not declared")
+    root_capacity = document.get("capacity")
+    require(isinstance(root_capacity, list), "missing request capacity")
+    require(any(item.get("type") == "concurrency" for item in root_capacity),
+            "missing concurrency capacity")
+    require(any(item.get("type") == "request" for item in root_capacity),
+            "missing request-per-minute capacity")
+    require(isinstance(document.get("datacenters"), list) and document["datacenters"],
+            "missing datacenter declaration")
+    require(isinstance(document.get("deployment_region"), str)
+            and document["deployment_region"], "missing deployment region")
+    require(isinstance(document.get("compliance"), dict), "missing compliance declaration")
+    return {
+        "elapsed_ms": result["elapsed_ms"],
+        "schema_version": document["schema_version"],
+        "is_ready": document["is_ready"],
+        "input_modalities": [item.get("type") for item in inputs],
+        "output_modalities": [item.get("type") for item in outputs],
+    }
+
+
 def check_auth_required(ctx: dict[str, Any]) -> dict[str, Any]:
     response = requests.get(f"{ctx['url']}/v1/models", timeout=ctx["timeout"])
     require(response.status_code in (401, 403), f"unauthenticated request returned {response.status_code}")
@@ -299,6 +351,7 @@ def check_structured_output(ctx: dict[str, Any]) -> dict[str, Any]:
 
 
 CHECKS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
+    "provider-catalog": check_provider_catalog,
     "models": check_models,
     "auth-required": check_auth_required,
     "nonstream": check_nonstream,
@@ -314,6 +367,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", required=True)
     parser.add_argument("--model", required=True)
+    parser.add_argument("--provider-models-url")
     parser.add_argument("--api-key-env", default="TOKENLABS_BENCH_API_KEY")
     parser.add_argument("--output", required=True, type=pathlib.Path)
     parser.add_argument("--timeout", type=int, default=300)
@@ -336,6 +390,7 @@ def main() -> int:
         "url": args.url.rstrip("/"),
         "model": args.model,
         "timeout": args.timeout,
+        "provider_models_url": args.provider_models_url,
     }
     selected = [
         "models",
@@ -345,6 +400,8 @@ def main() -> int:
         "unknown-model",
         "invalid-request",
     ]
+    if args.provider_models_url:
+        selected.insert(0, "provider-catalog")
     if args.tools:
         selected.append("tools")
     if args.structured_outputs:

@@ -220,7 +220,8 @@ writing the bearer token to disk:
 export TOKENLABS_BENCH_API_KEY='<dedicated-test-key>'
 
 python3 scripts/openrouter/check_api_conformance.py \
-  --url https://api.tokenlabs.run \
+  --url https://api.tokenlabs.run/openrouter \
+  --provider-models-url https://api.tokenlabs.run/openrouter/models \
   --model qwen/qwen3-30b-a3b-instruct-2507 \
   --output results/openrouter-conformance/report.json \
   --repetitions 200 \
@@ -228,7 +229,9 @@ python3 scripts/openrouter/check_api_conformance.py \
   --structured-outputs
 ```
 
-The suite checks authenticated discovery, unauthenticated rejection,
+The suite checks the ready schema-2.4 provider catalog (including exact model,
+modalities, pricing, capacity, region, and compliance), authenticated discovery,
+unauthenticated rejection,
 non-streaming response and usage schemas, SSE framing and `[DONE]`, streamed
 usage, unknown-model and malformed-request status codes, exact deterministic
 tool calls, and strict JSON-schema output. The report stores only sanitized

@@ -50,8 +50,44 @@ class FakeSession:
         del args, kwargs
         return self.response
 
+    def request(self, *args, **kwargs):
+        del args, kwargs
+        return self.response
+
 
 class ConformanceValidationTests(unittest.TestCase):
+    def test_provider_catalog_requires_ready_complete_model(self):
+        model = "qwen/qwen3-30b-a3b-instruct-2507"
+        document = {
+            "schema_version": "2.4", "id": model, "name": "Qwen", "created": 1,
+            "hugging_face_id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+            "is_ready": True, "openrouter": {"slug": model},
+            "input_modalities": [{"type": "text", "pricing": [{}], "capacity": [{}]}],
+            "output_modalities": [{"type": "text", "streaming": True,
+                                   "pricing": [{}], "capacity": [{}]}],
+            "capacity": [{"type": "request"}, {"type": "concurrency"}],
+            "datacenters": [{"country_code": "US"}], "deployment_region": "US",
+            "compliance": {"zdr": False, "hipaa": False},
+        }
+        result = conformance.check_provider_catalog({
+            "session": FakeSession(FakeResponse(body={"data": [document]})),
+            "provider_models_url": "https://example.test/models",
+            "model": model, "timeout": 1,
+        })
+        self.assertTrue(result["is_ready"])
+
+    def test_provider_catalog_rejects_not_ready(self):
+        model = "qwen/qwen3-30b-a3b-instruct-2507"
+        response = FakeResponse(body={"data": [{
+            "schema_version": "2.4", "id": model, "is_ready": False
+        }]})
+        with self.assertRaisesRegex(conformance.CheckFailure, "not ready"):
+            conformance.check_provider_catalog({
+                "session": FakeSession(response),
+                "provider_models_url": "https://example.test/models",
+                "model": model, "timeout": 1,
+            })
+
     def test_valid_usage(self):
         self.assertEqual(
             conformance.validate_usage(
