@@ -155,13 +155,22 @@
     .stat-pill strong { color: var(--text); font-weight: 600; }
     .detail-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: flex-start; }
 
-    /* TABS */
-    .tab-bar { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-    .tab { padding: 12px 18px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all var(--transition); white-space: nowrap; }
-    .tab:hover { color: var(--text); }
-    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: flex; flex-direction: column; }
+    /* SINGLE-FLOW MODEL JOURNEY */
+    .detail-header { padding: 28px 0 36px; border-bottom: 1px solid var(--border); }
+    .detail-name { font-size: clamp(2rem,5vw,3.5rem); letter-spacing: -.04em; }
+    .detail-desc { max-width: 720px; font-size: 16px; }
+    .journey-nav { position: sticky; top: 60px; z-index: 100; display: flex; gap: 24px; padding: 14px 0; margin-bottom: 56px; overflow-x: auto; background: rgba(10,10,10,.92); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+    .journey-nav a { color: var(--text-muted); text-decoration: none; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .journey-nav a:hover { color: var(--accent); }
+    .journey-section { display: flex; flex-direction: column; gap: 22px; padding: 0 0 72px; scroll-margin-top: 126px; }
+    .journey-heading { max-width: 700px; }
+    .journey-step { color: var(--accent); font: 700 11px ui-monospace,Menlo,monospace; letter-spacing: .1em; text-transform: uppercase; }
+    .journey-heading h2 { margin-top: 8px; font-size: clamp(1.65rem,3vw,2.3rem); letter-spacing: -.03em; }
+    .journey-heading p { margin-top: 8px; color: var(--text-secondary); line-height: 1.6; }
+    .tab-panel { display: flex; flex-direction: column; }
+    .advanced-details { border-top: 1px solid var(--border); padding-top: 18px; }
+    .advanced-details summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; font-weight: 700; }
+    .advanced-details[open] summary { margin-bottom: 18px; color: var(--accent); }
 
     /* OVERVIEW TAB */
     .overview-grid { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr); gap: 20px; align-items: start; }
@@ -307,6 +316,13 @@
       .nav-logo { margin-right:8px; }
       .nav-links { overflow-x:auto; }
       .nav-link { padding:7px 9px; white-space:nowrap; }
+      .detail-header { flex-wrap:wrap; padding-top:18px; }
+      .detail-actions { width:100%; }
+      .detail-actions .btn-primary { flex:1; justify-content:center; padding:12px 18px; }
+      .journey-nav { margin-bottom:38px; gap:18px; }
+      .journey-section { padding-bottom:52px; }
+      .playground-layout { height:auto; min-height:680px; flex-direction:column; }
+      .playground-settings { width:100%; border-right:0; border-bottom:1px solid var(--border); }
     }
   </style>
 </head>
@@ -427,18 +443,19 @@
       </div>
       <div class="detail-actions">
         <button class="btn btn-ghost btn-sm" id="compare-toggle-btn">Compare</button>
-        <button class="btn btn-primary btn-sm" onclick="switchTab('tab-playground')">Try in Playground</button>
+        <button class="btn btn-primary btn-sm" onclick="switchTab('tab-playground')">Start serving</button>
       </div>
     </div>
 
-    <div class="tab-bar">
-      <div class="tab active" data-tab="tab-overview"   onclick="switchTab('tab-overview')">Overview</div>
-      <div class="tab"        data-tab="tab-playground" onclick="switchTab('tab-playground')">Playground</div>
-      <div class="tab"        data-tab="tab-api"        onclick="switchTab('tab-api')">API Reference</div>
-    </div>
+    <nav class="journey-nav" aria-label="Model serving sections">
+      <a href="#tab-overview">Overview</a>
+      <a href="#tab-playground">Try the endpoint</a>
+      <a href="#tab-api">Integrate</a>
+    </nav>
 
     <!-- OVERVIEW -->
-    <div class="tab-panel active" id="tab-overview">
+    <div class="tab-panel active journey-section" id="tab-overview">
+      <div class="journey-heading"><div class="journey-step">01 · Understand</div><h2>Built for production-shaped inference</h2><p>Review the model, serving footprint, and measured cost profile before sending a request.</p></div>
       <div class="overview-grid">
         <div style="display:flex;flex-direction:column;gap:20px;">
           <div class="info-card">
@@ -475,7 +492,8 @@
     </div>
 
     <!-- PLAYGROUND -->
-    <div class="tab-panel" id="tab-playground">
+    <div class="tab-panel journey-section" id="tab-playground">
+      <div class="journey-heading"><div class="journey-step">02 · Serve</div><h2>Send a request to the live endpoint</h2><p>Add your API key, tune only what you need, and see streaming output in context.</p></div>
       <div class="playground-layout">
         <div class="playground-settings">
           <div class="settings-section">
@@ -581,7 +599,8 @@
     </div>
 
     <!-- API -->
-    <div class="tab-panel" id="tab-api">
+    <div class="tab-panel journey-section" id="tab-api">
+      <div class="journey-heading"><div class="journey-step">03 · Integrate</div><h2>Move from test to application</h2><p>Copy an OpenAI-compatible example and connect the same endpoint from your stack.</p></div>
       <div class="api-section">
         <div class="api-section-title">Endpoint</div>
         <div class="endpoint-box">
@@ -614,8 +633,8 @@
           <div class="code-panel" id="code-litellm"><pre id="code-litellm-pre"></pre></div>
         </div>
       </div>
-      <div class="api-section">
-        <div class="api-section-title">Request Parameters</div>
+      <details class="api-section advanced-details">
+        <summary>Advanced request parameters</summary>
         <div class="info-card">
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead><tr style="border-bottom:1px solid var(--border);">
@@ -633,7 +652,7 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </details>
     </div>
 
   </div>
@@ -930,9 +949,8 @@ function refreshOverview() {
 }
 
 function switchTab(id) {
-  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===id));
-  document.getElementById(id).classList.add("active");
+  const section = document.getElementById(id);
+  if (section) section.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 function refreshApiPanel() {
