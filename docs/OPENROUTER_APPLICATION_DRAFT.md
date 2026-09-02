@@ -17,9 +17,9 @@ this document.
 | Distinguishing Features | Select `High Throughput` only after the final public-path gate passes. Consider `Unique Infrastructure` only if OpenRouter agrees that dedicated DGX Spark capacity qualifies. | The rendered choices are Low Latency, High Throughput, Unique Models, Low Pricing, Unique Infrastructure, Decentralized, and Strategic Partnership. Do not select unproven claims. |
 | Extra Details | See “Application narrative” below. | Draft. |
 | URL to Models | `https://api.tokenlabs.run/openrouter/models` | Implemented in Git; verify it is deployed and returns HTTP 200 with the validated schema-2.4 document before submission. Do **not** enter `/v1/models`: it is OpenAI-format. |
-| Privacy Policy URL | `[PUBLIC PRIVACY POLICY URL]` | Required and missing. Publish an approved policy before submission. |
-| Terms of Service URL | `[PUBLIC TERMS URL]` | Required by the supplied rendered form snapshot. Publish approved terms before submission. |
-| Data Policy | `[APPROVED RETENTION/TRAINING/LOGGING POLICY]` | Required. State prompt/output retention, training use, subprocessors, deletion, and abuse/security-log exceptions. |
+| Privacy Policy URL | `https://www.tokenlabs.run/privacy.html` | Draft is published in the repository; verify the public URL and obtain owner/legal approval before submission. |
+| Terms of Service URL | `https://www.tokenlabs.run/terms.html` | Draft is published in the repository; verify the public URL and obtain owner/legal approval before submission. |
+| Data Policy | `Token Labs does not use prompts or completions for training. Inference content is processed transiently and is not intentionally retained after request completion. Operational metadata—model, token counts, timing, status, and security signals—may be retained up to 30 days, with limited extensions for security, billing disputes, or legal obligations. Details: https://www.tokenlabs.run/data-policy.html` | Draft published; owner must approve and confirm the stated controls before submission. |
 | Supported Output Modalities | Select `Text` only. | The rendered choices also include Image, Audio, Video, Embeddings, Rerank, and TTS; the selected model does not provide them. |
 | Inference Location | `[COUNTRY/REGION WHERE THE DGX SPARK RUNS]` | Required; infrastructure owner must confirm. |
 | HQ Location | `[COMPANY HQ COUNTRY/REGION]` | Required; company owner must confirm. |

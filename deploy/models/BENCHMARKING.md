@@ -53,12 +53,14 @@ P and D workers, as required for compatible NIXL cache metadata.
 Repeat benchmarks with the node selectors swapped to control for differences
 between `spark-01` and `spark-02`; keep all engine arguments unchanged.
 
-## Qwen3 Spark single-worker baseline (stopped)
+## Qwen3 Spark single-replica controls (stopped)
 
 The 2026-09-01 Qwen3 matrix was stopped after 26 of 42 points because its
 one-worker topology cannot measure distributed framework behavior. See
 `results/2026-09-01-qwen3-spark-pareto/README.md` for the validated partial
-results and limitations. Do not publish it as a framework comparison.
+results and limitations. Its experiment class is `single-replica-control`:
+use it only for per-replica capacity and frontend/orchestration overhead. Do not
+publish it as evidence of multi-replica routing, scaling, or framework behavior.
 
 For future model and hardware experiments, copy
 `scripts/benchmarks/example-config.json` and use the configuration-driven

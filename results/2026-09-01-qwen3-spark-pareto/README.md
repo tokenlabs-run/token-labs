@@ -1,7 +1,10 @@
-# Qwen3 30B FP8 on two DGX Spark nodes
+# Qwen3 30B FP8 single-replica controls
 
-This is a single-worker control-plane baseline, not a distributed-serving
-framework comparison. Each arm has one vLLM worker on one Spark, so neither
+Experiment class: **`single-replica-control`**.
+
+These are one-box aggregated controls for each serving arm, not a
+distributed-serving framework comparison. Each arm has exactly one model
+replica: one vLLM worker on one Spark. Therefore neither
 framework can demonstrate multi-worker routing, load balancing, or
 prefill/decode disaggregation in this matrix.
 
@@ -10,6 +13,10 @@ were scaled to zero to release the Spark nodes. The interrupted 8192/8192 c=64
 artifacts are preserved with a `stopped-single-worker-baseline` suffix and are
 not valid benchmark points. No Pareto curve from this incomplete matrix should
 be published as a framework comparison.
+
+Allowed use: per-replica capacity and orchestration/frontend overhead controls.
+Disallowed use: claims about multi-replica KV-aware routing, load balancing,
+horizontal scaling efficiency, high availability, or failover.
 
 - Model: Qwen/Qwen3-30B-A3B-Instruct-2507-FP8 (MoE, 30.5B total / 3.3B activated parameters per token).
 - spark-01: llm-d modelservice-managed vLLM and routing sidecar.

@@ -570,11 +570,14 @@
 
   <!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
   <div class="section" id="mi300x-qwen38">
-    <div class="section-title">Qwen/Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d Aggregated</div>
+    <div class="section-title">Qwen3.8-27B on AMD MI300X — aggregated single-replica controls</div>
     <p class="section-desc">
+      <strong style="color:var(--yellow);">Single-replica control.</strong>
       Aggregated vLLM serving on separate 1&times; AMD Instinct MI300X instances. NVIDIA AIPerf 0.12.0,
       streaming chat, concurrency 4, four measured requests per point, fixed token lengths, seed 42.
       Dynamo path: frontend &rarr; vLLM worker. llm-d path: Envoy &rarr; EPP &rarr; vLLM.
+      Use these results for per-replica capacity and wrapper overhead only; they do not test
+      multi-worker routing, load balancing, horizontal scaling, or failover.
     </p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
       <div class="card" style="padding:1rem 1.25rem;">
@@ -659,14 +662,17 @@
 
   <!-- ── NVIDIA DGX Spark: Dynamo vs llm-d Pareto ────────── -->
   <div class="section" id="dgx-spark-pareto">
-    <div class="section-title">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 on NVIDIA DGX Spark (GB10) — Dynamo vs llm-d Aggregated Pareto</div>
+    <div class="section-title">Nemotron 3.5 on NVIDIA DGX Spark — aggregated single-replica controls</div>
     <p class="section-desc">
+      <strong style="color:var(--yellow);">Single-replica control.</strong>
       Same model, same weights, same KV dtype, same speculative decoder — only the serving
       framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
       backend directly (no gateway in the path).
       Model: <span class="mono">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</span> ·
       modelopt_fp4 weights · fp8 KV · dspark spec-decode (3 tokens) · TP=1 · DGX Spark GB10 ·
       ISL 1024 / OSL 256 · concurrency 1&ndash;32
+      · one model replica per arm. This curve measures per-replica capacity and wrapper
+      overhead, not multi-worker routing or horizontal scaling.
     </p>
     <p class="section-desc" style="margin-top:-0.35rem;">
       Up and to the right is better: <strong>y</strong> is what the box produces in total,
@@ -1605,15 +1611,15 @@ const REGISTRY_DATA = [
     date: "2026-04-15",
   },
   {
-    _group: "Framework A/B — nvidia/Nemotron-3.5-Lightning-30B-A3B-NVFP4 · DGX Spark GB10 · AIPerf 0.12.0 · ISL1024/OSL256 · 2026-08-28",
+    _group: "Single-replica controls — Nemotron-3.5-Lightning-30B-A3B-NVFP4 · DGX Spark GB10 · AIPerf 0.12.0 · ISL1024/OSL256 · 2026-08-28",
     id: "nemotron35-llmd-aiperf-ab",
     name: "llm-d Aggregated (AIPerf A/B)",
     model: "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
     framework: "llm-d",
     status: "done",
     throughput: 575.1, ttft_p50: 649.8, itl_p50: 51.4,
-    hypothesis: "Same weights, KV dtype and speculative decoder as the Dynamo arm, so the serving framework is the only variable. Measures whether llm-d's EPP routing layer costs throughput or latency versus Dynamo's frontend/worker split.",
-    notes: "Metrics shown at c=32. Full ladder c=1..32: 99.7 / 150.9 / 208.0 / 294.2 / 414.3 / 575.1 tok/s. Throughput within +/-2.3% of Dynamo everywhere and identical to 0.02% at c=1, confirming the two profiles are config-aligned. llm-d leads TTFT by 25-38% at c=4-8 (287ms vs 396ms, 333ms vs 415ms). ITL indistinguishable. 640 requests, 0 errors.",
+    hypothesis: "Single-replica control for per-replica capacity and wrapper overhead. It does not test EPP multi-worker routing, horizontal scaling, or failover.",
+    notes: "One model replica per arm. Metrics shown at c=32. Full ladder c=1..32: 99.7 / 150.9 / 208.0 / 294.2 / 414.3 / 575.1 tok/s. Throughput within +/-2.3% of Dynamo everywhere and identical to 0.02% at c=1. llm-d leads TTFT by 25-38% at c=4-8. ITL indistinguishable. 640 requests, 0 errors. Control only; no multi-replica claim.",
     date: "2026-08-28",
   },
   {
@@ -1623,8 +1629,8 @@ const REGISTRY_DATA = [
     framework: "dynamo",
     status: "done",
     throughput: 572.2, ttft_p50: 681.4, itl_p50: 51.6,
-    hypothesis: "Dynamo aggregated worker serving the identical model/config as the llm-d arm. Tests whether the frontend-to-worker hop imposes a measurable per-request cost.",
-    notes: "Metrics shown at c=32. Full ladder c=1..32: 99.7 / 154.4 / 208.6 / 299.5 / 416.4 / 572.2 tok/s. Matches llm-d on throughput but trails on TTFT at mid concurrency; the gap closes again by c=32, which is the shape of a fixed per-request routing cost being amortised rather than a throughput ceiling. 640 requests, 0 errors.",
+    hypothesis: "Single-replica Dynamo control for per-replica capacity and frontend-to-worker overhead. It does not test KV-aware multi-worker routing or horizontal scaling.",
+    notes: "One model replica per arm. Metrics shown at c=32. Full ladder c=1..32: 99.7 / 154.4 / 208.6 / 299.5 / 416.4 / 572.2 tok/s. Matches llm-d on throughput but trails on TTFT at mid concurrency. 640 requests, 0 errors. Control only; no multi-replica claim.",
     date: "2026-08-28",
   },
 ];
