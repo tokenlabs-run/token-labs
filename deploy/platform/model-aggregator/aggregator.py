@@ -148,7 +148,8 @@ async def lifespan(app):
     _namespace = SA_PATH.joinpath('namespace').read_text().strip()
     host = os.environ['KUBERNETES_SERVICE_HOST']
     port = os.environ.get('KUBERNETES_SERVICE_PORT_HTTPS', '443')
-    async with httpx.AsyncClient(timeout=5.0, trust_env=False) as backend_client, \
+    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=5.0, read=None, write=30.0, pool=5.0),
+                              trust_env=False) as backend_client, \
             httpx.AsyncClient(base_url=f'https://{host}:{port}', timeout=5.0,
                               verify=str(SA_PATH / 'ca.crt'), trust_env=False) as kube_client:
         # Separate clients ensure Kubernetes credentials never reach model servers.

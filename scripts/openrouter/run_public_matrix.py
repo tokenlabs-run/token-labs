@@ -59,18 +59,24 @@ def validate_export(
         raise ValueError(
             f"{path}: completed {completed:g}, require at least {minimum_requests}"
         )
-    for metric, expected in (
-        ("input_sequence_length", isl),
-        ("output_sequence_length", osl),
-    ):
-        observed = {
-            statistic: metric_value(data, metric, statistic)
-            for statistic in ("avg", "min", "max")
-        }
-        if any(abs(value - expected) > 0.01 for value in observed.values()):
-            raise ValueError(
-                f"{path}: {metric} mismatch: {observed}, expected {expected}"
-            )
+    input_observed = {
+        statistic: metric_value(data, "input_sequence_length", statistic)
+        for statistic in ("avg", "min", "max")
+    }
+    if (max(input_observed.values()) - min(input_observed.values()) > 0.01
+            or not isl <= input_observed["avg"] <= isl + 64):
+        raise ValueError(
+            f"{path}: input_sequence_length mismatch: {input_observed}; "
+            f"expected constant content length {isl} plus 0..64 chat-template tokens"
+        )
+    output_observed = {
+        statistic: metric_value(data, "output_sequence_length", statistic)
+        for statistic in ("avg", "min", "max")
+    }
+    if any(abs(value - osl) > 0.01 for value in output_observed.values()):
+        raise ValueError(
+            f"{path}: output_sequence_length mismatch: {output_observed}, expected {osl}"
+        )
     for metric, statistic in (
         ("output_token_throughput", "avg"),
         ("output_token_throughput_per_user", "avg"),

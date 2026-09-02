@@ -8,9 +8,9 @@ metadata:
     token-labs/model: "true"
     token-labs/scenario: openrouter-production-candidate
 spec:
-  # Intentionally inert in Git. Scale to one only for an approved benchmark or
-  # launch; a single Spark must never run a second competing model worker.
-  replicas: 0
+  # One approved single-Spark production-candidate replica. Do not schedule a
+  # second model worker on spark-01 while this deployment is active.
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -46,6 +46,7 @@ spec:
         - --gpu-memory-utilization
         - "0.70"
         - --no-enable-prefix-caching
+        # Request-body logging remains disabled: do not add --enable-log-requests.
         - --trust-remote-code
         - --host
         - 0.0.0.0
