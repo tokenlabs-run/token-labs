@@ -18,6 +18,10 @@ is absent or malformed. A configured `is_ready: true` is dynamically reduced to
 false unless that exact model ID is present on a live backend.
 
 OpenRouter should use `https://api.tokenlabs.run/openrouter/v1` as its API base.
+Both `/models` and `/chat/completions` under that base require a bearer key from
+the `openrouter-provider-auth` Secret's `api-key` entry. They return 503 while
+the Secret is absent and 401 for a missing or incorrect credential; the separate
+schema-2.4 provider catalog remains public at `/openrouter/models`.
 The chat route admits at most `OPENROUTER_MAX_CONCURRENCY` requests and returns
 HTTP 429 plus `Retry-After` immediately above the limit. Accepted streaming
 requests hold their slot until the upstream stream closes, so slow streams cannot

@@ -87,6 +87,16 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(a._inflight, 0)
         a.OPENROUTER_CONCURRENCY = old_limit
 
+    def test_provider_bearer_authentication(self):
+        old_key = a.OPENROUTER_API_KEY
+        a.OPENROUTER_API_KEY = 'test-secret'
+        self.assertTrue(a.provider_authorized('Bearer test-secret'))
+        self.assertTrue(a.provider_authorized('bearer test-secret'))
+        self.assertFalse(a.provider_authorized('Bearer wrong'))
+        self.assertFalse(a.provider_authorized('Basic test-secret'))
+        self.assertFalse(a.provider_authorized(None))
+        a.OPENROUTER_API_KEY = old_key
+
 
 if __name__ == '__main__':
     unittest.main()

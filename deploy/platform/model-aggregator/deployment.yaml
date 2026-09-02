@@ -76,6 +76,12 @@ spec:
           value: /etc/openrouter/models.json
         - name: OPENROUTER_MAX_CONCURRENCY
           value: "16"
+        - name: OPENROUTER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openrouter-provider-auth
+              key: api-key
+              optional: true
         resources:
           requests:
             cpu: "100m"
@@ -152,6 +158,9 @@ spec:
     - path:
         type: Exact
         value: /openrouter/v1/chat/completions
+    - path:
+        type: Exact
+        value: /openrouter/v1/models
     backendRefs:
     - name: model-aggregator
       port: 8000

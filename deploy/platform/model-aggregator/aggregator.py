@@ -5,6 +5,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import secrets
 import time
 
 import httpx
@@ -23,6 +24,7 @@ _namespace = None
 PROVIDER_DOCUMENT_PATH = Path(os.environ.get(
     'OPENROUTER_MODEL_DOCUMENT_PATH', '/etc/openrouter/models.json'))
 OPENROUTER_CONCURRENCY = int(os.environ.get('OPENROUTER_MAX_CONCURRENCY', '16'))
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
 _admission_lock = asyncio.Lock()
 _inflight = 0
 
@@ -126,6 +128,14 @@ async def release():
         _inflight -= 1
 
 
+def provider_authorized(authorization: str | None) -> bool:
+    if not OPENROUTER_API_KEY or not authorization:
+        return False
+    scheme, separator, credential = authorization.partition(' ')
+    return (separator == ' ' and scheme.lower() == 'bearer'
+            and secrets.compare_digest(credential, OPENROUTER_API_KEY))
+
+
 async def background_refresh():
     while True:
         await asyncio.sleep(REFRESH_INTERVAL)
@@ -166,6 +176,17 @@ async def list_models():
     return JSONResponse({'object': 'list', 'data': _cache}, headers=headers)
 
 
+@app.get('/openrouter/v1/models')
+async def list_openrouter_api_models(request: Request):
+    if not OPENROUTER_API_KEY:
+        return JSONResponse({'error': {'message': 'Provider credentials unavailable'}},
+                            status_code=503)
+    if not provider_authorized(request.headers.get('authorization')):
+        return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,
+                            headers={'WWW-Authenticate': 'Bearer'})
+    return await list_models()
+
+
 @app.get('/openrouter/models')
 async def list_openrouter_models():
     headers = {'Cache-Control': 'no-store'}
@@ -179,6 +200,12 @@ async def list_openrouter_models():
 @app.post('/openrouter/v1/chat/completions')
 async def openrouter_chat_completions(request: Request):
     """Bound OpenRouter queueing and proxy accepted work to the live backend."""
+    if not OPENROUTER_API_KEY:
+        return JSONResponse({'error': {'message': 'Provider credentials unavailable'}},
+                            status_code=503)
+    if not provider_authorized(request.headers.get('authorization')):
+        return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,
+                            headers={'WWW-Authenticate': 'Bearer'})
     try:
         payload = await request.json()
     except (ValueError, json.JSONDecodeError):
