@@ -8,7 +8,7 @@ target on one exclusive NVIDIA GB10. The highest-throughput checkpoint is
 
 - **1,337.20 output tok/s** short-run maximum at client concurrency 384 with
   256 active requests (ISL 512 / OSL 128).
-- **1,325.53 output tok/s sustained for 395.53 seconds**, covering 4,096
+- **1,346.02 output tok/s sustained for 389.51 seconds**, covering 4,096
   requests and 524,288 generated tokens at concurrency 256.
 - **677.81 output tok/s** for the exact long profile at concurrency 64
   (ISL 2048 / OSL 1024).
@@ -85,9 +85,11 @@ EAGLE3 used the exact `lmsys/SGLang-EAGLE3-Qwen3-30B-A3B-Instruct-2507-
 SpecForge-Nex` draft and the author-published 3-step/top-k-1/4-draft-token
 settings. It was slower than non-speculative tuned FP8 at all measured points.
 
-The sustained NVFP4 c256 run delivered **1,325.53 output tok/s** for 395.53
+The strict sustained NVFP4 c256 run delivered **1,346.02 output tok/s** for 389.51
 seconds: 4,096 requests, 524,288 output tokens, exact lengths, and zero errors.
-The c384 short-run maximum is only 0.28% faster and has materially higher TTFT.
+It cycled a fixed pool of 128 exact-length prompts with SGLang radix caching
+disabled, so repeated text could not create a prefix-cache speedup. The c384
+short-run point reached 1,337.20 tok/s with materially higher TTFT.
 
 For ISL 2048 / OSL 1024, NVFP4 auto delivered **677.81 output tok/s** at c64
 with exact lengths and zero errors. A c128 raw run reached 833.60 tok/s but was
@@ -111,7 +113,7 @@ Maximum-throughput NVFP4 server flags:
 --trust-remote-code
 ```
 
-- Practical sustained maximum: client concurrency 256, 1,325.53 output tok/s.
+- Practical sustained maximum: client concurrency 256, 1,346.02 output tok/s.
 - Absolute measured maximum: client concurrency 384 with 256 active requests,
   1,337.20 output tok/s, at the cost of higher TTFT.
 - Lower-latency choices: c16 gives 377.93 tok/s; c32 gives 575.89 tok/s.
@@ -148,7 +150,7 @@ the down projection without TMA because no separate down table was available.
   settings were measured; it peaked at 461.58 tok/s at c64 and trailed plain
   tuned FP8 at every tested concurrency.
 - The exact 18.119 GB NVFP4 checkpoint was cached on both Spark nodes. SGLang
-  selected the GB10 `flashinfer_cutlass` path and sustained 1,325.53 tok/s;
+  selected the GB10 `flashinfer_cutlass` path and sustained 1,346.02 tok/s;
   explicit `flashinfer_cudnn` peaked at 802.29 tok/s in the c16/c32/c64 sweep.
 - The installed runtime exposes DFlash, but no verified public DFlash draft for
   this exact 2507 target checkpoint has been identified.
