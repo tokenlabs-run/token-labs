@@ -238,6 +238,23 @@ tool calls, and strict JSON-schema output. The report stores only sanitized
 evidence and failures. Do not add `--tools` or `--structured-outputs` to the
 provider model document unless all corresponding repetitions pass.
 
+Prove that saturation is rejected before the engine queue grows:
+
+```bash
+python3 scripts/openrouter/check_early_429.py \
+  --url https://api.tokenlabs.run/openrouter/v1/chat/completions \
+  --model qwen/qwen3-30b-a3b-instruct-2507 \
+  --requests 24 \
+  --expected-max-admitted 16 \
+  --max-429-ms 1000 \
+  --output results/openrouter-conformance/early-429.json
+```
+
+This deliberately holds accepted streams open while excess requests arrive.
+Passing requires both accepted work and early 429s, no unexpected statuses, a
+`Retry-After` header on every rejection, no more than the configured number of
+accepted streams, and p95 429 response headers within the declared threshold.
+
 ## Execution order
 
 1. Finish and validate all 42 canonical Qwen3 points.
