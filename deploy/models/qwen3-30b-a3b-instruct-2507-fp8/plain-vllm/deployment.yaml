@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-30b-openrouter-vllm
+  namespace: token-labs
+  labels: &labels
+    app: qwen3-30b-openrouter-vllm
+    token-labs/model: "true"
+    token-labs/scenario: openrouter-production-candidate
+spec:
+  # Intentionally inert in Git. Scale to one only for an approved benchmark or
+  # launch; a single Spark must never run a second competing model worker.
+  replicas: 0
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: qwen3-30b-openrouter-vllm
+  template:
+    metadata:
+      labels: *labels
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: spark-01
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      terminationGracePeriodSeconds: 120
+      containers:
+      - name: vllm
+        image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.3.1
+        imagePullPolicy: IfNotPresent
+        command: [vllm]
+        args:
+        - serve
+        - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+        - --served-model-name
+        - qwen/qwen3-30b-a3b-instruct-2507
+        - --tensor-parallel-size
+        - "1"
+        - --max-model-len
+        - "32768"
+        - --max-num-seqs
+        - "64"
+        - --gpu-memory-utilization
+        - "0.70"
+        - --no-enable-prefix-caching
+        - --trust-remote-code
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+        ports:
+        - name: http
+          containerPort: 8000
+        env:
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: HF_TOKEN
+        - name: USER
+          value: nvidia
+        - name: LOGNAME
+          value: nvidia
+        - name: HOME
+          value: /tmp
+        - name: XDG_CACHE_HOME
+          value: /tmp/.cache
+        - name: HF_HOME
+          value: /model-cache
+        - name: HF_HUB_CACHE
+          value: /model-cache/hub
+        - name: HF_HUB_DISABLE_XET
+          value: "1"
+        - name: FLASHINFER_WORKSPACE_DIR
+          value: /tmp/.cache/flashinfer
+        - name: FLASHINFER_DISABLE_VERSION_CHECK
+          value: "1"
+        - name: TRITON_CACHE_DIR
+          value: /tmp/.triton-cache
+        - name: VLLM_CACHE_ROOT
+          value: /tmp/vllm-cache
+        - name: TORCHINDUCTOR_CACHE_DIR
+          value: /tmp/torchinductor-cache
+        - name: VLLM_OMNI_USE_QUACK_FP8
+          value: "0"
+        - name: VLLM_WORKER_MULTIPROC_METHOD
+          value: spawn
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            cpu: "4"
+            memory: 32Gi
+            nvidia.com/gpu.shared: "1"
+          limits:
+            cpu: "8"
+            memory: 112Gi
+            nvidia.com/gpu.shared: "1"
+        startupProbe:
+          httpGet:
+            path: /v1/models
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 180
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 30
+          failureThreshold: 5
+          timeoutSeconds: 5
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1002
+          runAsGroup: 1003
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: model-cache
+          mountPath: /model-cache
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: model-cache
+        hostPath:
+          path: /home/nvidia/.cache/huggingface
+          type: Directory
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 8Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen3-30b-openrouter-vllm
+  namespace: token-labs
+  labels:
+    app: qwen3-30b-openrouter-vllm
+    token-labs/model: "true"
+spec:
+  selector:
+    app: qwen3-30b-openrouter-vllm
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
