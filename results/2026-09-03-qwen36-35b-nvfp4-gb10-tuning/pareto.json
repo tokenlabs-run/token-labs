@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen36-35b-a3b-nvfp4-gb10-batching-tuning",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Tuned blue candidate on spark-02; vLLM 0.25.0; model revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; TP1; max model length 131072; max sequences 128; max batched tokens 8192; GPU memory utilization 0.85; flashinfer_b12x; chunked prefill enabled by vLLM default; no speculative decoding. Active production green on spark-01 is untouched."
+  },
+  "model": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "complete": false,
+  "expected_points": 5,
+  "measured_points": 4,
+  "missing": [
+    "isl1024-osl1024__vllm-blue-tuned-c128"
+  ],
+  "measured_requests": 228,
+  "combos": {
+    "ISL1024/OSL1024": {
+      "vllm-blue-tuned": [
+        {
+          "framework": "vllm-blue-tuned",
+          "concurrency": 1,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 71.05181586298974,
+          "tput_per_user": 71.95458883487859,
+          "ttft_p50": 187.5451205,
+          "ttft_p95": 195.76281644999997,
+          "itl_p50": 13.893582299608992,
+          "req_latency_p50": 14399.772395999998,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 4,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-nvfp4-gb10-tuning/raw/isl1024-osl1024__vllm-blue-tuned-c1/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "vllm-blue-tuned",
+          "concurrency": 16,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 340.97728500151226,
+          "tput_per_user": 22.26812637918372,
+          "ttft_p50": 2104.0614809999997,
+          "ttft_p95": 2764.944172,
+          "itl_p50": 44.850915156402735,
+          "req_latency_p50": 47978.1941645,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-nvfp4-gb10-tuning/raw/isl1024-osl1024__vllm-blue-tuned-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "vllm-blue-tuned",
+          "concurrency": 32,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 472.8004941908093,
+          "tput_per_user": 15.409807972449368,
+          "ttft_p50": 2836.180931,
+          "ttft_p95": 4405.9849806,
+          "itl_p50": 64.89447526246335,
+          "req_latency_p50": 69211.22176,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 64,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-nvfp4-gb10-tuning/raw/isl1024-osl1024__vllm-blue-tuned-c32/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "vllm-blue-tuned",
+          "concurrency": 64,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 605.9086779185304,
+          "tput_per_user": 9.862502656151637,
+          "ttft_p50": 3300.2225805,
+          "ttft_p95": 8840.660702950001,
+          "itl_p50": 102.83215039540566,
+          "req_latency_p50": 107834.124495,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 128,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-nvfp4-gb10-tuning/raw/isl1024-osl1024__vllm-blue-tuned-c64/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

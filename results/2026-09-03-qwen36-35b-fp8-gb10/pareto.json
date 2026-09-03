@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen36-35b-a3b-fp8-gb10",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Official Qwen FP8 blue candidate on spark-02; vLLM 0.25.0; revision 95a723d08a9490559dae23d0cff1d9466213d989; TP1; max model length 131072; max sequences 128; max batched tokens 8192; GPU memory utilization 0.85; automatic FP8/MoE backend; chunked prefill enabled by vLLM default; no speculative decoding. Active production green on spark-01 is untouched."
+  },
+  "model": "Qwen/Qwen3.6-35B-A3B-FP8",
+  "complete": true,
+  "expected_points": 2,
+  "measured_points": 2,
+  "missing": [],
+  "measured_requests": 36,
+  "combos": {
+    "ISL1024/OSL1024": {
+      "vllm-blue-fp8": [
+        {
+          "framework": "vllm-blue-fp8",
+          "concurrency": 1,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 48.51790060052574,
+          "tput_per_user": 49.08893739252924,
+          "ttft_p50": 256.3162455,
+          "ttft_p95": 270.88958069999995,
+          "itl_p50": 20.368317738025414,
+          "req_latency_p50": 21097.9485915,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 4,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-fp8-gb10/raw/isl1024-osl1024__vllm-blue-fp8-c1/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "vllm-blue-fp8",
+          "concurrency": 16,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 214.73192412442938,
+          "tput_per_user": 13.938351553808609,
+          "ttft_p50": 2869.9560684999997,
+          "ttft_p95": 3613.86223305,
+          "itl_p50": 71.9168882028348,
+          "req_latency_p50": 76218.030292,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-fp8-gb10/raw/isl1024-osl1024__vllm-blue-fp8-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

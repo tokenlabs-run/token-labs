@@ -1,0 +1,60 @@
+{
+  "backend": {
+    "name": "vllm-blue-mtp2",
+    "url": "http://127.0.0.1:18003",
+    "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"
+  },
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "MTP blue candidate on spark-02; vLLM 0.25.0; model revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; TP1; MTP speculative tokens 2; max model length 131072; max sequences 128; max batched tokens 8192; GPU memory utilization 0.85; flashinfer_cutlass (common backend for NVFP4 main MoE and unquantized MTP draft MoE); chunked prefill enabled by vLLM default. Active production green on spark-01 is untouched."
+  },
+  "workload": {
+    "isl": 1024,
+    "osl": 1024
+  },
+  "concurrency": 16,
+  "requests": 32,
+  "command": [
+    "/home/nvidia/aiperf-venv/bin/aiperf",
+    "profile",
+    "-m",
+    "unsloth/qwen3.6-35b-a3b-nvfp4-fast",
+    "--url",
+    "http://127.0.0.1:18003",
+    "--endpoint-type",
+    "completions",
+    "--streaming",
+    "--concurrency",
+    "16",
+    "--request-count",
+    "32",
+    "--num-warmup-requests",
+    "1",
+    "--synthetic-input-tokens-mean",
+    "1024",
+    "--synthetic-input-tokens-stddev",
+    "0",
+    "--output-tokens-mean",
+    "1024",
+    "--output-tokens-stddev",
+    "0",
+    "--num-dataset-entries",
+    "33",
+    "--tokenizer",
+    "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+    "--use-server-token-count",
+    "--random-seed",
+    "42",
+    "--request-timeout-seconds",
+    "1800",
+    "--artifact-dir",
+    "results/2026-09-03-qwen36-35b-nvfp4-gb10-mtp/raw/isl1024-osl1024__vllm-blue-mtp2-c16",
+    "--tokenizer-trust-remote-code",
+    "--use-legacy-max-tokens",
+    "--extra-inputs",
+    "{\"ignore_eos\":true,\"temperature\":0}"
+  ],
+  "started_at": "2026-09-03T05:17:43.069028+00:00"
+}

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-token-labs-openrouter
+  namespace: monitoring
+  labels: {grafana_dashboard: "1"}
+data:
+  token-labs-openrouter.json: |
+    {"uid":"token-labs-openrouter","title":"Token Labs — OpenRouter Provider Health","tags":["token-labs","openrouter"],"schemaVersion":39,"version":1,"refresh":"15s","time":{"from":"now-6h","to":"now"},"panels":[
+    {"id":1,"type":"stat","title":"Public API","gridPos":{"x":0,"y":0,"w":6,"h":5},"fieldConfig":{"defaults":{"unit":"bool","thresholds":{"mode":"absolute","steps":[{"color":"red"},{"color":"green","value":1}]}}},"targets":[{"expr":"min(token_labs_openrouter_probe_success)","refId":"A"}]},
+    {"id":2,"type":"stat","title":"OpenRouter-style Uptime (5m)","gridPos":{"x":6,"y":0,"w":6,"h":5},"fieldConfig":{"defaults":{"unit":"percentunit","thresholds":{"mode":"absolute","steps":[{"color":"red"},{"color":"yellow","value":0.8},{"color":"green","value":0.95}]}}},"targets":[{"expr":"min(token_labs:openrouter_uptime:rate5m)","refId":"A"}]},
+    {"id":3,"type":"stat","title":"TTFT","gridPos":{"x":12,"y":0,"w":6,"h":5},"fieldConfig":{"defaults":{"unit":"s","thresholds":{"mode":"absolute","steps":[{"color":"green"},{"color":"yellow","value":2},{"color":"red","value":3}]}}},"targets":[{"expr":"max(token_labs_openrouter_probe_ttft_seconds)","refId":"A"}]},
+    {"id":4,"type":"stat","title":"Output Throughput","gridPos":{"x":18,"y":0,"w":6,"h":5},"targets":[{"expr":"min(token_labs_openrouter_probe_output_tokens_per_second)","refId":"A"}]},
+    {"id":5,"type":"timeseries","title":"Public Latency and TTFT","gridPos":{"x":0,"y":5,"w":12,"h":8},"fieldConfig":{"defaults":{"unit":"s"}},"targets":[{"expr":"token_labs_openrouter_probe_latency_seconds","legendFormat":"{{model}} total","refId":"A"},{"expr":"token_labs_openrouter_probe_ttft_seconds","legendFormat":"{{model}} TTFT","refId":"B"}]},
+    {"id":6,"type":"timeseries","title":"Request Outcomes","gridPos":{"x":12,"y":5,"w":12,"h":8},"targets":[{"expr":"sum by (outcome,status_code) (rate(token_labs_openrouter_probe_requests_total[5m]))","legendFormat":"{{outcome}} HTTP {{status_code}}","refId":"A"}]},
+    {"id":7,"type":"table","title":"Firing Alerts","gridPos":{"x":0,"y":13,"w":24,"h":8},"targets":[{"expr":"ALERTS{team=\"token-labs\",alertstate=\"firing\"}","instant":true,"format":"table","refId":"A"}]}]}

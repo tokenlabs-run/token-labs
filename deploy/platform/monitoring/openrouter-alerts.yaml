@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: token-labs-openrouter
+  namespace: monitoring
+  labels: {release: kube-prometheus-stack}
+spec:
+  groups:
+  - name: token-labs.openrouter
+    interval: 15s
+    rules:
+    - record: token_labs:openrouter_uptime:rate5m
+      expr: sum by (model) (rate(token_labs_openrouter_probe_requests_total{outcome="success"}[5m])) / sum by (model) (rate(token_labs_openrouter_probe_requests_total{status_code!~"400|403|413|429"}[5m]))
+    - record: token_labs:openrouter_429_rate:rate5m
+      expr: sum by (model) (rate(token_labs_openrouter_probe_requests_total{status_code="429"}[5m])) / sum by (model) (rate(token_labs_openrouter_probe_requests_total[5m]))
+    - alert: TokenLabsPublicAPIUnavailable
+      expr: token_labs_openrouter_probe_success == 0
+      for: 1m
+      labels: {severity: critical, slo: availability, team: token-labs, namespace: token-labs}
+      annotations: {summary: "Token Labs public completion path is unavailable", description: "Authenticated streaming requests through api.tokenlabs.run have failed for one minute."}
+    - alert: TokenLabsOpenRouterUptimeDegraded
+      expr: token_labs:openrouter_uptime:rate5m < 0.95
+      for: 2m
+      labels: {severity: critical, slo: availability, team: token-labs, namespace: token-labs}
+      annotations: {summary: "OpenRouter-style uptime is below 95%", description: "Public request uptime for {{ $labels.model }} is {{ $value | humanizePercentage }} over 5m."}
+    - alert: TokenLabsOpenRouterTTFTHigh
+      expr: token_labs_openrouter_probe_ttft_seconds > 3
+      for: 2m
+      labels: {severity: critical, slo: ttft, team: token-labs, namespace: token-labs}
+      annotations: {summary: "Public-path TTFT exceeds 3 seconds", description: "TTFT for {{ $labels.model }} is {{ $value | humanizeDuration }}."}
+    - alert: TokenLabsOpenRouterTTFTWarning
+      expr: token_labs_openrouter_probe_ttft_seconds > 2
+      for: 5m
+      labels: {severity: warning, slo: ttft, team: token-labs, namespace: token-labs}
+      annotations: {summary: "Public-path TTFT is rising", description: "TTFT for {{ $labels.model }} is {{ $value | humanizeDuration }}."}
+    - alert: TokenLabsOpenRouterThroughputLow
+      expr: token_labs_openrouter_probe_output_tokens_per_second < 20
+      for: 5m
+      labels: {severity: warning, slo: throughput, team: token-labs, namespace: token-labs}
+      annotations: {summary: "Public-path streaming throughput is low", description: "Observed stream throughput for {{ $labels.model }} is {{ $value }} chunks/s."}
+    - alert: TokenLabsOpenRouterRateLimited
+      expr: token_labs:openrouter_429_rate:rate5m > 0.05
+      for: 2m
+      labels: {severity: warning, slo: capacity, team: token-labs, namespace: token-labs}
+      annotations: {summary: "Public endpoint is rate limiting", description: "{{ $value | humanizePercentage }} of probes returned 429; OpenRouter tracks this separately from uptime."}
+    - alert: TokenLabsSyntheticMonitorStale
+      expr: time() - token_labs_openrouter_probe_last_success_timestamp_seconds > 120
+      for: 1m
+      labels: {severity: critical, slo: monitoring, team: token-labs, namespace: token-labs}
+      annotations: {summary: "No successful public synthetic request for two minutes", description: "The public API or its synthetic monitor is failing for {{ $labels.model }}."}

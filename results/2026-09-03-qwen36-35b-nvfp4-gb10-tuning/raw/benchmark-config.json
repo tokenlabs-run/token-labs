@@ -1,0 +1,47 @@
+{
+  "experiment": "qwen36-35b-a3b-nvfp4-gb10-batching-tuning",
+  "model": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "tokenizer": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "tokenizer_trust_remote_code": true,
+  "endpoint_type": "completions",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Tuned blue candidate on spark-02; vLLM 0.25.0; model revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; TP1; max model length 131072; max sequences 128; max batched tokens 8192; GPU memory utilization 0.85; flashinfer_b12x; chunked prefill enabled by vLLM default; no speculative decoding. Active production green on spark-01 is untouched."
+  },
+  "backends": [
+    {
+      "name": "vllm-blue-tuned",
+      "url": "http://127.0.0.1:18002",
+      "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"
+    }
+  ],
+  "workloads": [
+    {
+      "isl": 1024,
+      "osl": 1024
+    }
+  ],
+  "concurrencies": [
+    1,
+    16,
+    32,
+    64,
+    128
+  ],
+  "sampling": {
+    "waves": 2,
+    "minimum_requests": 4,
+    "warmup_requests": 1
+  },
+  "seed": 42,
+  "extra_inputs": {
+    "ignore_eos": true,
+    "temperature": 0
+  },
+  "use_legacy_max_tokens": true,
+  "ready_timeout_seconds": 1800,
+  "request_timeout_seconds": 1800,
+  "point_timeout_seconds": 3600
+}

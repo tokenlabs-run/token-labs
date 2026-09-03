@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "experiment": "qwen36-35b-a3b-nvfp4-gb10-mtp2",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "MTP blue candidate on spark-02; vLLM 0.25.0; model revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; TP1; MTP speculative tokens 2; max model length 131072; max sequences 128; max batched tokens 8192; GPU memory utilization 0.85; flashinfer_cutlass (common backend for NVFP4 main MoE and unquantized MTP draft MoE); chunked prefill enabled by vLLM default. Active production green on spark-01 is untouched."
+  },
+  "model": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "complete": true,
+  "expected_points": 2,
+  "measured_points": 2,
+  "missing": [],
+  "measured_requests": 36,
+  "combos": {
+    "ISL1024/OSL1024": {
+      "vllm-blue-mtp2": [
+        {
+          "framework": "vllm-blue-mtp2",
+          "concurrency": 1,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 56.22640107689539,
+          "tput_per_user": 59.420484632181314,
+          "ttft_p50": 225.529024,
+          "ttft_p95": 241.7631745,
+          "itl_p50": 18.769777727761483,
+          "req_latency_p50": 19437.3848545,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 4,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-nvfp4-gb10-mtp/raw/isl1024-osl1024__vllm-blue-mtp2-c1/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        },
+        {
+          "framework": "vllm-blue-mtp2",
+          "concurrency": 16,
+          "req_isl": 1024,
+          "req_osl": 1024,
+          "tput_total": 284.4208222261115,
+          "tput_per_user": 22.69195560736938,
+          "ttft_p50": 2912.118238,
+          "ttft_p95": 7945.6547696,
+          "itl_p50": 48.232186107038125,
+          "req_latency_p50": 51250.507967,
+          "isl": 1024.0,
+          "osl": 1024.0,
+          "requests": 32,
+          "errors": 0,
+          "source": "results/2026-09-03-qwen36-35b-nvfp4-gb10-mtp/raw/isl1024-osl1024__vllm-blue-mtp2-c16/profile_export_aiperf.json",
+          "pareto": true,
+          "framework_pareto": true
+        }
+      ]
+    }
+  }
+}

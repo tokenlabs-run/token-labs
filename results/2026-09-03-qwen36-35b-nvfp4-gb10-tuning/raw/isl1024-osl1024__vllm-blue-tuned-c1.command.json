@@ -1,0 +1,60 @@
+{
+  "backend": {
+    "name": "vllm-blue-tuned",
+    "url": "http://127.0.0.1:18002",
+    "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"
+  },
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Tuned blue candidate on spark-02; vLLM 0.25.0; model revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; TP1; max model length 131072; max sequences 128; max batched tokens 8192; GPU memory utilization 0.85; flashinfer_b12x; chunked prefill enabled by vLLM default; no speculative decoding. Active production green on spark-01 is untouched."
+  },
+  "workload": {
+    "isl": 1024,
+    "osl": 1024
+  },
+  "concurrency": 1,
+  "requests": 4,
+  "command": [
+    "/home/nvidia/aiperf-venv/bin/aiperf",
+    "profile",
+    "-m",
+    "unsloth/qwen3.6-35b-a3b-nvfp4-fast",
+    "--url",
+    "http://127.0.0.1:18002",
+    "--endpoint-type",
+    "completions",
+    "--streaming",
+    "--concurrency",
+    "1",
+    "--request-count",
+    "4",
+    "--num-warmup-requests",
+    "1",
+    "--synthetic-input-tokens-mean",
+    "1024",
+    "--synthetic-input-tokens-stddev",
+    "0",
+    "--output-tokens-mean",
+    "1024",
+    "--output-tokens-stddev",
+    "0",
+    "--num-dataset-entries",
+    "5",
+    "--tokenizer",
+    "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+    "--use-server-token-count",
+    "--random-seed",
+    "42",
+    "--request-timeout-seconds",
+    "1800",
+    "--artifact-dir",
+    "results/2026-09-03-qwen36-35b-nvfp4-gb10-tuning/raw/isl1024-osl1024__vllm-blue-tuned-c1",
+    "--tokenizer-trust-remote-code",
+    "--use-legacy-max-tokens",
+    "--extra-inputs",
+    "{\"ignore_eos\":true,\"temperature\":0}"
+  ],
+  "started_at": "2026-09-03T04:31:07.627669+00:00"
+}
