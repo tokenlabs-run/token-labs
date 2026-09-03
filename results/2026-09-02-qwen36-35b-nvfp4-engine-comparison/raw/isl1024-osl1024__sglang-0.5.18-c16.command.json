@@ -1,0 +1,60 @@
+{
+  "backend": {
+    "name": "sglang-0.5.18",
+    "url": "http://127.0.0.1:18001",
+    "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"
+  },
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Sequential single-worker engine comparison on spark-01; identical model revision and direct diagnostic Service path."
+  },
+  "workload": {
+    "isl": 1024,
+    "osl": 1024
+  },
+  "concurrency": 16,
+  "requests": 32,
+  "command": [
+    "/home/nvidia/aiperf-venv/bin/aiperf",
+    "profile",
+    "-m",
+    "unsloth/qwen3.6-35b-a3b-nvfp4-fast",
+    "--url",
+    "http://127.0.0.1:18001",
+    "--endpoint-type",
+    "completions",
+    "--streaming",
+    "--concurrency",
+    "16",
+    "--request-count",
+    "32",
+    "--num-warmup-requests",
+    "1",
+    "--synthetic-input-tokens-mean",
+    "1024",
+    "--synthetic-input-tokens-stddev",
+    "0",
+    "--output-tokens-mean",
+    "1024",
+    "--output-tokens-stddev",
+    "0",
+    "--num-dataset-entries",
+    "33",
+    "--tokenizer",
+    "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+    "--use-server-token-count",
+    "--random-seed",
+    "42",
+    "--request-timeout-seconds",
+    "1800",
+    "--artifact-dir",
+    "results/2026-09-02-qwen36-35b-nvfp4-engine-comparison/raw/isl1024-osl1024__sglang-0.5.18-c16",
+    "--tokenizer-trust-remote-code",
+    "--use-legacy-max-tokens",
+    "--extra-inputs",
+    "{\"ignore_eos\":true,\"temperature\":0}"
+  ],
+  "started_at": "2026-09-02T20:24:56.601718+00:00"
+}

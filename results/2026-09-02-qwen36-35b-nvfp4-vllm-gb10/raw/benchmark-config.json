@@ -1,0 +1,47 @@
+{
+  "experiment": "qwen36-35b-a3b-nvfp4-vllm-gb10-single-worker-isl1024-osl1024",
+  "model": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "tokenizer": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "tokenizer_trust_remote_code": true,
+  "endpoint_type": "completions",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Single vLLM 0.25.0 worker on spark-01 (arm64, kernel 6.11.0-1016-nvidia); image docker.io/vllm/vllm-openai@sha256:fc56161ee42a011aeee78b65d0a81b6683c7d04402fd40503d14d4d6c98f07cb; Unsloth revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; NVFP4 flashinfer_b12x; TP=1; max model length=131072; max sequences=16; GPU memory utilization=0.85; no speculative decoding; direct diagnostic Service path."
+  },
+  "backends": [
+    {
+      "name": "vllm-green",
+      "url": "http://127.0.0.1:18000",
+      "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"
+    }
+  ],
+  "workloads": [
+    {
+      "isl": 1024,
+      "osl": 1024
+    }
+  ],
+  "concurrencies": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "sampling": {
+    "waves": 2,
+    "minimum_requests": 4,
+    "warmup_requests": 1
+  },
+  "seed": 42,
+  "extra_inputs": {
+    "ignore_eos": true,
+    "temperature": 0
+  },
+  "use_legacy_max_tokens": true,
+  "ready_timeout_seconds": 600,
+  "request_timeout_seconds": 1800,
+  "point_timeout_seconds": 3600
+}

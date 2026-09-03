@@ -1,0 +1,25 @@
+{
+  "experiment": "qwen36-35b-a3b-nvfp4-serving-engine-gb10-single-worker-isl1024-osl1024",
+  "model": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "tokenizer": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "tokenizer_trust_remote_code": true,
+  "endpoint_type": "completions",
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Sequential single-worker engine comparison on spark-01; identical model revision and direct diagnostic Service path."
+  },
+  "backends": [
+    {"name": "sglang-0.5.18", "url": "http://127.0.0.1:18001", "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"}
+  ],
+  "workloads": [{"isl": 1024, "osl": 1024}],
+  "concurrencies": [1, 2, 4, 8, 16],
+  "sampling": {"waves": 2, "minimum_requests": 4, "warmup_requests": 1},
+  "seed": 42,
+  "extra_inputs": {"ignore_eos": true, "temperature": 0},
+  "use_legacy_max_tokens": true,
+  "ready_timeout_seconds": 1800,
+  "request_timeout_seconds": 1800,
+  "point_timeout_seconds": 3600
+}

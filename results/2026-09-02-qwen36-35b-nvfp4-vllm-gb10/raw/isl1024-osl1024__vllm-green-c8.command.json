@@ -1,0 +1,60 @@
+{
+  "backend": {
+    "name": "vllm-green",
+    "url": "http://127.0.0.1:18000",
+    "model": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"
+  },
+  "hardware": {
+    "accelerator": "NVIDIA GB10 (DGX Spark)",
+    "nodes_per_backend": 1,
+    "gpus_per_worker": 1,
+    "notes": "Single vLLM 0.25.0 worker on spark-01 (arm64, kernel 6.11.0-1016-nvidia); image docker.io/vllm/vllm-openai@sha256:fc56161ee42a011aeee78b65d0a81b6683c7d04402fd40503d14d4d6c98f07cb; Unsloth revision 1c3f884bc99aac2524f6d49bcbac8c88401afd66; NVFP4 flashinfer_b12x; TP=1; max model length=131072; max sequences=16; GPU memory utilization=0.85; no speculative decoding; direct diagnostic Service path."
+  },
+  "workload": {
+    "isl": 1024,
+    "osl": 1024
+  },
+  "concurrency": 8,
+  "requests": 16,
+  "command": [
+    "/home/nvidia/aiperf-venv/bin/aiperf",
+    "profile",
+    "-m",
+    "unsloth/qwen3.6-35b-a3b-nvfp4-fast",
+    "--url",
+    "http://127.0.0.1:18000",
+    "--endpoint-type",
+    "completions",
+    "--streaming",
+    "--concurrency",
+    "8",
+    "--request-count",
+    "16",
+    "--num-warmup-requests",
+    "1",
+    "--synthetic-input-tokens-mean",
+    "1024",
+    "--synthetic-input-tokens-stddev",
+    "0",
+    "--output-tokens-mean",
+    "1024",
+    "--output-tokens-stddev",
+    "0",
+    "--num-dataset-entries",
+    "17",
+    "--tokenizer",
+    "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+    "--use-server-token-count",
+    "--random-seed",
+    "42",
+    "--request-timeout-seconds",
+    "1800",
+    "--artifact-dir",
+    "results/2026-09-02-qwen36-35b-nvfp4-vllm-gb10/raw/isl1024-osl1024__vllm-green-c8",
+    "--tokenizer-trust-remote-code",
+    "--use-legacy-max-tokens",
+    "--extra-inputs",
+    "{\"ignore_eos\":true,\"temperature\":0}"
+  ],
+  "started_at": "2026-09-02T19:51:48.870589+00:00"
+}
