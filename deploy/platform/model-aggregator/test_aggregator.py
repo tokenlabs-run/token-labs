@@ -158,5 +158,49 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
         a.OPENROUTER_API_KEY = old_key
 
 
+class ReasoningTranslationTests(unittest.TestCase):
+    model = 'unsloth/qwen3.6-35b-a3b-nvfp4-fast'
+
+    def translate(self, **extra):
+        return a.prepare_openrouter_payload({'model': self.model, **extra})
+
+    def test_missing_reasoning_defaults_to_non_thinking(self):
+        payload = self.translate(messages=[])
+        self.assertFalse(payload['chat_template_kwargs']['enable_thinking'])
+        self.assertNotIn('reasoning', payload)
+
+    def test_explicit_reasoning_enables_thinking(self):
+        for reasoning in ({}, {'enabled': True}, {'effort': 'low'},
+                          {'max_tokens': 256}):
+            with self.subTest(reasoning=reasoning):
+                payload = self.translate(reasoning=reasoning)
+                self.assertTrue(
+                    payload['chat_template_kwargs']['enable_thinking'])
+                self.assertNotIn('reasoning', payload)
+
+    def test_explicit_disable_wins(self):
+        for reasoning in ({'enabled': False}, {'effort': 'none'}):
+            with self.subTest(reasoning=reasoning):
+                payload = self.translate(reasoning=reasoning)
+                self.assertFalse(
+                    payload['chat_template_kwargs']['enable_thinking'])
+
+    def test_gateway_overrides_provider_specific_thinking_flag(self):
+        payload = self.translate(
+            chat_template_kwargs={'enable_thinking': True, 'other': 'kept'})
+        self.assertFalse(payload['chat_template_kwargs']['enable_thinking'])
+        self.assertEqual(payload['chat_template_kwargs']['other'], 'kept')
+
+    def test_invalid_reasoning_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'reasoning must be an object'):
+            self.translate(reasoning=True)
+        with self.assertRaisesRegex(ValueError, 'enabled must be a boolean'):
+            self.translate(reasoning={'enabled': 'yes'})
+
+    def test_unrelated_models_are_unchanged(self):
+        payload = {'model': 'other/model', 'reasoning': {'enabled': True}}
+        self.assertEqual(a.prepare_openrouter_payload(payload), payload)
+
+
 if __name__ == '__main__':
     unittest.main()

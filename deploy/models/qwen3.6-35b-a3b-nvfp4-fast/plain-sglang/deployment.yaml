@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen36-35b-nvfp4-sglang-benchmark
+  namespace: token-labs
+  labels: &labels
+    app: qwen36-35b-nvfp4-sglang-benchmark
+    token-labs/model: "true"
+    token-labs/model-id: qwen36-35b-nvfp4
+    token-labs/scenario: serving-engine-benchmark
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 1800
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: qwen36-35b-nvfp4-sglang-benchmark}
+  template:
+    metadata:
+      labels: *labels
+    spec:
+      nodeSelector: {kubernetes.io/hostname: spark-01}
+      tolerations:
+      - {key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}
+      terminationGracePeriodSeconds: 120
+      containers:
+      - name: sglang
+        image: lmsysorg/sglang:v0.5.18@sha256:9e148f5ac788e856a06166bd6347a831831eb9fcfab4d1770874823a7c29a1a1
+        imagePullPolicy: IfNotPresent
+        command: [python3]
+        args:
+        - -m
+        - sglang.launch_server
+        - --model-path
+        - unsloth/Qwen3.6-35B-A3B-NVFP4-Fast
+        - --revision
+        - 1c3f884bc99aac2524f6d49bcbac8c88401afd66
+        - --served-model-name
+        - unsloth/qwen3.6-35b-a3b-nvfp4-fast
+        - --tp
+        - "1"
+        - --context-length
+        - "131072"
+        - --max-running-requests
+        - "16"
+        - --mem-fraction-static
+        - "0.85"
+        - --trust-remote-code
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+        env:
+        - {name: CUTE_DSL_ARCH, value: sm_121a}
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef: {name: hf-token, key: HF_TOKEN}
+        - {name: HOME, value: /tmp}
+        - {name: XDG_CACHE_HOME, value: /tmp/.cache}
+        - {name: HF_HOME, value: /model-cache}
+        - {name: HF_HUB_CACHE, value: /model-cache/hub}
+        - {name: FLASHINFER_WORKSPACE_DIR, value: /tmp/.cache/flashinfer}
+        - {name: TRITON_CACHE_DIR, value: /tmp/.triton-cache}
+        - {name: TORCHINDUCTOR_CACHE_DIR, value: /tmp/torchinductor-cache}
+        - {name: PYTHONUNBUFFERED, value: "1"}
+        ports:
+        - {name: http, containerPort: 8000}
+        resources:
+          requests: {cpu: "4", memory: 48Gi, nvidia.com/gpu: "1"}
+          limits: {cpu: "8", memory: 112Gi, nvidia.com/gpu: "1"}
+        startupProbe:
+          httpGet: {path: /v1/models, port: http}
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 60
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet: {path: /health, port: http}
+          periodSeconds: 10
+          failureThreshold: 3
+          timeoutSeconds: 5
+        securityContext:
+          capabilities: {add: [IPC_LOCK, SYS_RESOURCE]}
+        volumeMounts:
+        - {name: model-cache, mountPath: /model-cache}
+        - {name: shm, mountPath: /dev/shm}
+      volumes:
+      - name: model-cache
+        hostPath: {path: /home/nvidia/.cache/huggingface, type: Directory}
+      - name: shm
+        emptyDir: {medium: Memory, sizeLimit: 32Gi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: qwen36-35b-nvfp4-sglang-benchmark, namespace: token-labs}
+spec:
+  selector: {app: qwen36-35b-nvfp4-sglang-benchmark}
+  ports:
+  - {name: http, port: 8000, targetPort: http}

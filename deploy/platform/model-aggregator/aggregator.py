@@ -28,6 +28,9 @@ OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
 _admission_lock = asyncio.Lock()
 _inflight = 0
 
+QWEN_THINKING_MODELS = {
+    'unsloth/qwen3.6-35b-a3b-nvfp4-fast',
+}
 
 def service_url(service):
     meta, spec = service.get('metadata', {}), service.get('spec', {})
@@ -129,6 +132,40 @@ def provider_authorized(authorization: str | None) -> bool:
             and secrets.compare_digest(credential, OPENROUTER_API_KEY))
 
 
+def prepare_openrouter_payload(payload):
+    """Translate OpenRouter reasoning controls into Qwen chat-template controls."""
+    forwarded = dict(payload)
+    if forwarded.get('model') not in QWEN_THINKING_MODELS:
+        return forwarded
+
+    reasoning_supplied = 'reasoning' in forwarded
+    reasoning = forwarded.pop('reasoning', None)
+    if reasoning_supplied and not isinstance(reasoning, dict):
+        raise ValueError('reasoning must be an object')
+
+    # Qwen thinking is opt-in for Token Labs. An explicitly supplied empty
+    # object means "enable with defaults", matching OpenRouter semantics.
+    enable_thinking = reasoning_supplied
+    if reasoning_supplied:
+        enabled = reasoning.get('enabled')
+        effort = reasoning.get('effort')
+        if enabled is not None and not isinstance(enabled, bool):
+            raise ValueError('reasoning.enabled must be a boolean')
+        if enabled is False or effort == 'none':
+            enable_thinking = False
+        elif enabled is True:
+            enable_thinking = True
+
+    template_kwargs = forwarded.get('chat_template_kwargs', {})
+    if not isinstance(template_kwargs, dict):
+        raise ValueError('chat_template_kwargs must be an object')
+    forwarded['chat_template_kwargs'] = {
+        **template_kwargs,
+        'enable_thinking': enable_thinking,
+    }
+    return forwarded
+
+
 async def background_refresh():
     while True:
         await asyncio.sleep(REFRESH_INTERVAL)
@@ -201,6 +238,10 @@ async def proxy_chat_completions(request: Request):
     backend = _model_backends.get(model)
     if backend is None:
         return JSONResponse({'error': {'message': 'Model is not ready'}}, status_code=404)
+    try:
+        payload = prepare_openrouter_payload(payload)
+    except ValueError as error:
+        return JSONResponse({'error': {'message': str(error)}}, status_code=400)
     if not await admit():
         return JSONResponse(
             {'error': {'message': 'Capacity temporarily exhausted; retry later'}},
