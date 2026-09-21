@@ -10,7 +10,7 @@
       "tokenizer": "Qwen",
       "description": "Qwen3.6 35B A3B NVFP4 Fast, provided by Token Labs.",
       "input_modalities": [
-        {"type": "text", "supported_inputs": {"max_context_length": {"value": 131072, "unit": "token"}}},
+        {"type": "text", "supported_inputs": {"max_context_length": {"value": 131072, "unit": "token"}}, "pricing": [{"type": "prompt", "unit": "token", "cost_usd": "0.00000005"}]},
         {"type": "image"}
       ],
       "output_modalities": [
@@ -25,10 +25,11 @@
             "stop": {"type": "array", "max_items": 4},
             "seed": {"type": "integer"},
             "reasoning": {"type": "boolean"}
-          }
+          },
+          "pricing": [{"type": "completion", "unit": "token", "cost_usd": "0.00000070"}]
         }
       ],
-      "capacity": [{"type": "concurrency", "unit": "request", "value": 1}],
+      "capacity": [{"type": "concurrency", "unit": "request", "value": 16}],
       "is_ready": true,
       "is_free": true,
       "openrouter": {"slug": "unsloth/qwen3.6-35b-a3b-nvfp4-fast"}

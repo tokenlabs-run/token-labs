@@ -76,6 +76,26 @@ class ConformanceValidationTests(unittest.TestCase):
         })
         self.assertTrue(result["is_ready"])
 
+    def test_provider_catalog_accepts_free_model_without_pricing(self):
+        model = "qwen/qwen3-free"
+        document = {
+            "schema_version": "2.4", "id": model, "name": "Qwen",
+            "created": 1, "hugging_face_id": "Qwen/Qwen3",
+            "is_ready": True, "is_free": True,
+            "openrouter": {"slug": model},
+            "input_modalities": [{"type": "text"}],
+            "output_modalities": [{"type": "text", "streaming": True,
+                                   "supported_parameters": {}}],
+            "capacity": [{"type": "concurrency", "unit": "request",
+                          "value": 16}],
+        }
+        result = conformance.check_provider_catalog({
+            "session": FakeSession(FakeResponse(body={"data": [document]})),
+            "provider_models_url": "https://example.test/models",
+            "model": model, "timeout": 1,
+        })
+        self.assertTrue(result["is_ready"])
+
     def test_provider_catalog_rejects_not_ready(self):
         model = "qwen/qwen3-30b-a3b-instruct-2507"
         response = FakeResponse(body={"data": [{

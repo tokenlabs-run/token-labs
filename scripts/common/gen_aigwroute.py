@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Render deploy/platform/gateway/aigatewayroute-models.yaml from live cluster state.
 
-Envoy AI Gateway synthesizes /v1/models from the AIGatewayRoute's rule list --
-it never polls a backend -- and docs/index.html (www.tokenlabs.run) fetches that
-response and renders it. A hand-maintained rule list therefore drifts in two
-directions, both of them publicly visible: a model that was torn down keeps
-being advertised and 503s when anyone calls it, and a freshly deployed one stays
-unreachable until someone remembers to edit YAML. Regenerating from what is
-actually running is what keeps the advertised set honest.
+The default discovery mode reads declared workload intent. --discovery live
+instead queries /v1/models on ready serving Services, matching the model
+aggregator's Service selection. The public catalog is served by the aggregator;
+this generator configures inference routing, independently of that catalog.
+Live mode produces a reviewable snapshot, not a background reconciler. It must
+not be used to promote a candidate or remove production routes automatically.
 
 Exactly ONE AIGatewayRoute is emitted, and that is not a style preference. Each
 AIGatewayRoute compiles to an HTTPRoute whose final rule is a bare
@@ -46,11 +45,13 @@ import pathlib
 import re
 import subprocess
 import sys
+from urllib.parse import quote
 from dataclasses import dataclass
 
 GATEWAY_NAME = "token-labs-gateway"
 ROUTE_NAME = "token-labs-models"
 SERVICE_PORT = 8000
+DYNAMO_WORKER_TYPES = {"worker", "prefill", "decode"}
 # Every emitted object carries this so `kubectl apply --prune -l ...` can delete
 # the objects of a model that has been torn down. Without it, undeploying leaves
 # an orphaned Backend behind and the model keeps being advertised -- the same
@@ -73,6 +74,7 @@ class Model:
     backend_host: str  # in-cluster FQDN the Backend points at
     source: str  # workload this was discovered from, for the comment
     selector: dict | None = None  # llm-d only: emit a Service with this selector
+    backend_port: int = SERVICE_PORT
 
 
 def kubectl(*args: str) -> dict:
@@ -134,7 +136,7 @@ def is_servable(obj: dict, framework: str) -> bool:
         return any(
             (comp.get("replicas") or 0) > 0
             for comp in (obj["spec"].get("components") or [])
-            if comp.get("type") == "worker"
+            if comp.get("type") in DYNAMO_WORKER_TYPES
         )
 
     # llm-d: readyReplicas is ABSENT rather than 0 before anything goes ready,
@@ -150,7 +152,7 @@ def discover_dynamo(ns: str) -> list[Model]:
         if not is_servable(item, "dynamo"):
             continue
         for comp in item["spec"].get("components") or []:
-            if comp.get("type") != "worker":
+            if comp.get("type") not in DYNAMO_WORKER_TYPES or not comp.get("replicas", 0):
                 continue
             for c in comp.get("podTemplate", {}).get("spec", {}).get("containers", []):
                 served = served_name(c.get("args") or [])
@@ -164,7 +166,8 @@ def discover_dynamo(ns: str) -> list[Model]:
                             source=f"DynamoGraphDeployment/{name}",
                         )
                     )
-    return models
+    # Prefill and decode advertise the same model through one frontend.
+    return list({(m.served_name, m.backend_host): m for m in models}.values())
 
 
 def discover_llmd(ns: str) -> list[Model]:
@@ -236,14 +239,71 @@ def discover_plain(ns: str) -> list[Model]:
     return models
 
 
+def discover_live(ns: str) -> list[Model]:
+    """Probe ready serving Services through the API proxy (no host cluster DNS).
+
+    Probe errors abort generation: a transient failure must not silently remove
+    a public route. Services without ready endpoints are excluded from this
+    snapshot; reviewers must compare it with existing routes before applying.
+    """
+    services = kubectl("get", "service", "-n", ns, "-o", "json")["items"]
+    slices = kubectl("get", "endpointslices.discovery.k8s.io", "-n", ns, "-o", "json")["items"]
+    ready = {
+        item["metadata"].get("labels", {}).get("kubernetes.io/service-name")
+        for item in slices
+        if any(e.get("conditions", {}).get("ready") is True
+               and not e.get("conditions", {}).get("terminating", False)
+               for e in (item.get("endpoints") or []))
+    }
+    models = []
+    for service in services:
+        meta, spec = service["metadata"], service.get("spec", {})
+        selector = spec.get("selector") or {}
+        labels = meta.get("labels") or {}
+        if meta.get("deletionTimestamp") or not selector or spec.get("type") == "ExternalName":
+            continue
+        if selector.get("nvidia.com/dynamo-component-type") == "frontend":
+            framework = "dynamo"
+        elif (selector.get("llm-d.ai/inference-serving") == "true"
+              and selector.get("llm-d.ai/role") == "decode"):
+            framework = "llm-d"
+        elif labels.get("token-labs/model") == "true":
+            framework = "plain"
+        else:
+            continue
+        ports = [p for p in spec.get("ports", []) if p.get("protocol", "TCP") == "TCP"]
+        port = next((p["port"] for p in ports if p.get("name") == "http"), None)
+        if port is None:
+            port = next((p["port"] for p in ports if p.get("port") == SERVICE_PORT), None)
+        if port is None:
+            continue
+        name = meta["name"]
+        if name not in ready:
+            print(f"Skipping Service/{name}: no ready endpoints", file=sys.stderr)
+            continue
+        path = (f"/api/v1/namespaces/{quote(ns, safe='')}/services/"
+                f"{quote('http:' + name + ':' + str(port), safe=':')}/proxy/v1/models")
+        response = kubectl("get", "--raw", path, "--request-timeout=10s")
+        data = response.get("data") if isinstance(response, dict) else None
+        if not isinstance(data, list):
+            sys.exit(f"Service/{name}: invalid /v1/models response; refusing to generate routes")
+        names = set()
+        for entry in data:
+            if not isinstance(entry, dict) or not isinstance(entry.get("id"), str) or not entry["id"].strip():
+                sys.exit(f"Service/{name}: invalid model ID; refusing to generate routes")
+            names.add(entry["id"])
+        if not names:
+            sys.exit(f"Service/{name}: ready but model inventory is empty; refusing to generate routes")
+        for served in sorted(names):
+            models.append(Model(served, framework, slug(served),
+                                f"{name}.{ns}.svc.cluster.local", f"Service/{name}",
+                                backend_port=port))
+    return models
+
+
 HEADER = """# GENERATED by scripts/common/gen_aigwroute.py -- do not edit by hand.
-# Regenerate after any deploy or teardown:
-#   python3 scripts/common/gen_aigwroute.py && kubectl apply -f {out}
-#
-# A rule here is an advertisement. Envoy AI Gateway synthesizes /v1/models from
-# this list alone -- it never polls a backend -- and docs/index.html
-# (www.tokenlabs.run) renders that response directly, so a rule whose workload is
-# gone shows up publicly as an available model and 503s on use.
+# Review before applying; model promotion follows MODEL_ROLLOUT_RUNBOOK.md.
+# Public /v1/models comes from the model aggregator; this file controls routing.
 #
 # There must be exactly ONE AIGatewayRoute on this Gateway. Each one compiles to
 # an HTTPRoute ending in a bare `PathPrefix: /` catch-all that direct-responds
@@ -254,7 +314,7 @@ HEADER = """# GENERATED by scripts/common/gen_aigwroute.py -- do not edit by han
 
 
 def render(models: list[Model], ns: str, out: pathlib.Path) -> str:
-    parts = [HEADER.format(out=out.relative_to(pathlib.Path(__file__).resolve().parents[2]))]
+    parts = [HEADER]
 
     for m in models:
         if m.selector:
@@ -294,7 +354,7 @@ spec:
   endpoints:
     - fqdn:
         hostname: {m.backend_host}
-        port: {SERVICE_PORT}
+        port: {m.backend_port}
 ---
 apiVersion: aigateway.envoyproxy.io/v1alpha1
 kind: AIServiceBackend
@@ -319,7 +379,7 @@ spec:
         - headers:
             - type: Exact
               name: x-ai-eg-model
-              value: {m.served_name}
+              value: {json.dumps(m.served_name)}
       backendRefs:
         - name: {m.slug}"""
         for m in models
@@ -416,9 +476,13 @@ def main() -> int:
         action="store_true",
         help="kubectl apply the result and prune objects of torn-down models",
     )
+    ap.add_argument("--discovery", choices=("intent", "live"), default="intent",
+                    help="intent: workload flags; live: ready Services and /v1/models")
     args = ap.parse_args()
+    if args.discovery == "live" and args.apply:
+        ap.error("--discovery live produces a review-only snapshot; --apply is not supported")
 
-    models = (
+    models = discover_live(args.namespace) if args.discovery == "live" else (
         discover_dynamo(args.namespace)
         + discover_llmd(args.namespace)
         + discover_plain(args.namespace)
@@ -448,6 +512,12 @@ def main() -> int:
                 "--served-model-name suffix."
             )
         seen[m.served_name] = m
+
+    slugs: dict[str, Model] = {}
+    for m in models:
+        if not m.slug or (m.slug in slugs and slugs[m.slug].served_name != m.served_name):
+            sys.exit(f"Ambiguous or empty gateway object name {m.slug!r}; use distinct model IDs")
+        slugs[m.slug] = m
 
     text = render(models, args.namespace, args.out)
 

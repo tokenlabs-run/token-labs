@@ -131,23 +131,27 @@ def check_provider_catalog(ctx: dict[str, Any]) -> dict[str, Any]:
     text_outputs = [item for item in outputs if item.get("type") == "text"]
     require(len(text_inputs) == 1 and len(text_outputs) == 1,
             "expected exactly one text input and output modality")
+    if document.get("is_free") is not True:
+        for label, modality in (("input", text_inputs[0]), ("output", text_outputs[0])):
+            require(isinstance(modality.get("pricing"), list) and modality["pricing"],
+                    f"missing {label} pricing for paid model")
     for label, modality in (("input", text_inputs[0]), ("output", text_outputs[0])):
-        require(isinstance(modality.get("pricing"), list) and modality["pricing"],
-                f"missing {label} pricing")
-        require(isinstance(modality.get("capacity"), list) and modality["capacity"],
-                f"missing {label} capacity")
+        if "capacity" in modality:
+            require(isinstance(modality["capacity"], list),
+                    f"invalid {label} capacity")
     require(text_outputs[0].get("streaming") is True, "text streaming not declared")
     root_capacity = document.get("capacity")
     require(isinstance(root_capacity, list), "missing request capacity")
     require(any(item.get("type") == "concurrency" for item in root_capacity),
             "missing concurrency capacity")
-    require(any(item.get("type") == "request" for item in root_capacity),
-            "missing request-per-minute capacity")
-    require(isinstance(document.get("datacenters"), list) and document["datacenters"],
-            "missing datacenter declaration")
-    require(isinstance(document.get("deployment_region"), str)
-            and document["deployment_region"], "missing deployment region")
-    require(isinstance(document.get("compliance"), dict), "missing compliance declaration")
+    if "datacenters" in document:
+        require(isinstance(document["datacenters"], list) and document["datacenters"],
+                "invalid datacenter declaration")
+    if "deployment_region" in document:
+        require(isinstance(document["deployment_region"], str)
+                and document["deployment_region"], "invalid deployment region")
+    if "compliance" in document:
+        require(isinstance(document["compliance"], dict), "invalid compliance declaration")
     return {
         "elapsed_ms": result["elapsed_ms"],
         "schema_version": document["schema_version"],

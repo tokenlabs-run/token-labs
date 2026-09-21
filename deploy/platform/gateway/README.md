@@ -57,14 +57,39 @@ models still exist in the cluster with no endpoints and no route referencing
 them. They are harmless, and `deploy/platform/monitoring/` still points at some
 of the Services, so they were left in place.
 
-**`/v1/models` is a declaration, not a health check.** Envoy AI Gateway
-synthesizes it from the route's rule list and never polls a backend. A model
-that is deployed but still loading weights is listed and returns 503; the route
-layer structurally cannot express "not ready yet". `is_servable()` in the
-generator gates on intent for exactly this reason — 503 ("deployed, not ready")
-is a more honest answer than 404 ("no such model"). Making the site show live /
-loading / down needs a prober publishing measured status, which does not exist
-yet.
+**Catalog and routing are separate.** The public `/v1/models` endpoint is
+served by the model aggregator, which probes serving Services every 28 seconds.
+Discovering a model there does not create its inference route.
+
+The generator defaults to workload intent. It recognizes Dynamo `worker`,
+`prefill`, and `decode` components, deduplicating prefill/decode names behind
+one frontend. To discover actual model IDs and aliases from live backends:
+
+```bash
+python3 scripts/common/gen_aigwroute.py --discovery live --stdout > /tmp/routes.yaml
+```
+
+Live mode selects Dynamo frontend Services, llm-d decode Services, and Services
+labeled `token-labs/model=true`, matching the aggregator. It probes Services
+with ready EndpointSlices via the Kubernetes Service proxy, so the invoking
+host does not need cluster DNS. The kubectl identity needs list access to
+Services/EndpointSlices and get access to `services/proxy`. HTTP ports other
+than 8000 are preserved when named `http`.
+
+This is a snapshot, not a continuous controller. Services without ready
+endpoints are omitted; failed probes, malformed inventories, and empty
+inventories on ready Services abort generation. Duplicate model names across
+Services and colliding generated object names also abort rather than choosing
+a traffic destination implicitly. `--discovery live --apply` is disabled.
+Review the output against existing routes: temporary unavailability must not
+remove a production route, and discovering a candidate must not promote it.
+Follow `deploy/models/MODEL_ROLLOUT_RUNBOOK.md` for production changes.
+
+Run discovery tests with:
+
+```bash
+python3 -m unittest discover -s scripts/common -p 'test_gen_aigwroute.py'
+```
 
 ## Control plane
 

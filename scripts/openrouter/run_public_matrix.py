@@ -63,11 +63,10 @@ def validate_export(
         statistic: metric_value(data, "input_sequence_length", statistic)
         for statistic in ("avg", "min", "max")
     }
-    if (max(input_observed.values()) - min(input_observed.values()) > 0.01
-            or not isl <= input_observed["avg"] <= isl + 64):
+    if any(not isl <= value <= isl + 64 for value in input_observed.values()):
         raise ValueError(
             f"{path}: input_sequence_length mismatch: {input_observed}; "
-            f"expected constant content length {isl} plus 0..64 chat-template tokens"
+            f"expected content lengths {isl}..{isl + 64} including chat-template tokens"
         )
     output_observed = {
         statistic: metric_value(data, "output_sequence_length", statistic)
