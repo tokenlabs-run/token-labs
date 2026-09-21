@@ -13,6 +13,11 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 REFRESH_INTERVAL = 28.0
+# Empty preserves automatic discovery; production pins approved Service names.
+MODEL_BACKEND_SERVICES = frozenset(
+    name.strip() for name in os.environ.get('MODEL_BACKEND_SERVICES', '').split(',')
+    if name.strip()
+)
 SA_PATH = Path('/var/run/secrets/kubernetes.io/serviceaccount')
 log = logging.getLogger(__name__)
 _cache = []
@@ -34,6 +39,8 @@ QWEN_THINKING_MODELS = {
 
 def service_url(service):
     meta, spec = service.get('metadata', {}), service.get('spec', {})
+    if MODEL_BACKEND_SERVICES and meta.get('name') not in MODEL_BACKEND_SERVICES:
+        return None
     labels, selector = meta.get('labels', {}), spec.get('selector', {})
     serving = (
         labels.get('token-labs/model') == 'true'

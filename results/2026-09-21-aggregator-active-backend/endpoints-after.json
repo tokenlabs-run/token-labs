@@ -1,0 +1,40 @@
+{
+    "apiVersion": "v1",
+    "kind": "Endpoints",
+    "metadata": {
+        "annotations": {
+            "endpoints.kubernetes.io/last-change-trigger-time": "2026-09-21T19:24:08Z"
+        },
+        "creationTimestamp": "2026-04-14T21:42:50Z",
+        "labels": {
+            "app": "model-aggregator"
+        },
+        "name": "model-aggregator",
+        "namespace": "token-labs",
+        "resourceVersion": "99397968",
+        "uid": "647acbc1-606e-4cf3-9da8-dcc5e85f1583"
+    },
+    "subsets": [
+        {
+            "addresses": [
+                {
+                    "ip": "10.244.0.242",
+                    "nodeName": "controller",
+                    "targetRef": {
+                        "kind": "Pod",
+                        "name": "model-aggregator-candidate-3-7d4b65744d-v8ftj",
+                        "namespace": "token-labs",
+                        "uid": "2996e010-bd51-406d-afb5-71dbdb70f499"
+                    }
+                }
+            ],
+            "ports": [
+                {
+                    "name": "http",
+                    "port": 8000,
+                    "protocol": "TCP"
+                }
+            ]
+        }
+    ]
+}

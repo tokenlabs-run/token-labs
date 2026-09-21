@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 import httpx
 import aggregator as a
 
@@ -54,6 +55,41 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual((await a.list_models()).status_code, 503)
                 self.assertEqual(a._cache, [])
             a.SA_PATH = old_path
+
+    async def test_allowlist_only_probes_approved_service_and_does_not_fallback(self):
+        services = [service(name, {'nvidia.com/dynamo-component-type': 'frontend'})
+                    for name in ('active', 'inactive')]
+        calls = []
+        failed = False
+
+        def backend(request):
+            calls.append(request.url.host.split('.')[0])
+            return httpx.Response(503 if failed else 200,
+                                  json={'data': [{'id': 'active-model'}]})
+
+        with tempfile.TemporaryDirectory() as directory:
+            token_path = Path(directory)
+            (token_path / 'token').write_text('test-token')
+            async with httpx.AsyncClient(transport=httpx.MockTransport(
+                    lambda request: httpx.Response(200, json={'items': services})),
+                    base_url='https://kube') as k, httpx.AsyncClient(
+                    transport=httpx.MockTransport(backend)) as b:
+                with patch.multiple(a, MODEL_BACKEND_SERVICES=frozenset({'active'}),
+                                    SA_PATH=token_path, _namespace='token-labs',
+                                    _kube_client=k, _http_client=b):
+                    await a.refresh_cache()
+                    self.assertEqual(calls, ['active'])
+                    self.assertEqual(a._model_backends, {
+                        'active-model': 'http://active.token-labs.svc.cluster.local:8000'})
+                    failed = True
+                    await a.refresh_cache()
+                    self.assertEqual(calls, ['active', 'active'])
+                    self.assertEqual(a._cache, [])
+                    self.assertEqual(a._model_backends, {})
+                    services.pop(0)
+                    await a.refresh_cache()
+                    self.assertEqual(calls, ['active', 'active'])
+                    self.assertEqual(a._model_backends, {})
 
     def test_service_selection(self):
         self.assertIsNone(a.service_url(service('prefill', {'llm-d.ai/inference-serving': 'true', 'llm-d.ai/role': 'prefill'})))

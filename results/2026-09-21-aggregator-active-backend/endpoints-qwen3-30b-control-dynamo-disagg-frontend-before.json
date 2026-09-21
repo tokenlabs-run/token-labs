@@ -1,0 +1,41 @@
+{
+  "apiVersion": "v1",
+  "kind": "Endpoints",
+  "metadata": {
+    "annotations": {
+      "endpoints.kubernetes.io/last-change-trigger-time": "2026-09-17T22:37:20Z"
+    },
+    "creationTimestamp": "2026-09-17T22:00:20Z",
+    "labels": {
+      "nvidia.com/dynamo-discovery-backend": "kubernetes",
+      "nvidia.com/dynamo-discovery-enabled": "true"
+    },
+    "name": "qwen3-30b-control-dynamo-disagg-frontend",
+    "namespace": "token-labs",
+    "resourceVersion": "95716470",
+    "uid": "8395cdb2-d330-4fa6-b083-3c531fe5239b"
+  },
+  "subsets": [
+    {
+      "addresses": [
+        {
+          "ip": "10.244.0.240",
+          "nodeName": "controller",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "qwen3-30b-control-dynam-9ae0-0-frontend-q7582",
+            "namespace": "token-labs",
+            "uid": "ea82eb3e-7d73-4c07-913d-e419e16bd852"
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "http",
+          "port": 8000,
+          "protocol": "TCP"
+        }
+      ]
+    }
+  ]
+}

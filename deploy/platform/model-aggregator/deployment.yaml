@@ -72,6 +72,8 @@ spec:
         - containerPort: 8000
           name: http
         env:
+        - name: MODEL_BACKEND_SERVICES
+          value: "qwen3-30b-control-dynamo-disagg-frontend"
         - name: OPENROUTER_MODEL_DOCUMENT_PATH
           value: /etc/openrouter/models.json
         - name: OPENROUTER_MAX_CONCURRENCY

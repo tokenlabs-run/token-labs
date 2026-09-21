@@ -1,11 +1,21 @@
 # Live model discovery
 
-Deploy with `kubectl apply -k deploy/platform/model-aggregator`. Kustomize bundles
-`aggregator.py` into a versioned ConfigMap and rolls the deployment on changes.
+Render with `kubectl kustomize deploy/platform/model-aggregator`. Kustomize bundles
+`aggregator.py` into a versioned ConfigMap. For production changes, deploy a separate
+aggregator candidate and diagnostic Service, verify it, then change only the stable
+Service selector. Keep the previous aggregator ready for rollback; do not apply a
+pod-template change to the Deployment selected by the production Service.
 
 Every 28 seconds the aggregator lists Services in its own namespace and queries
 `/v1/models` on llm-d decode services, Dynamo frontends, and any other serving
-Service labeled `token-labs/model=true`. Services need an `http` port or port
+Service labeled `token-labs/model=true`. `MODEL_BACKEND_SERVICES` optionally limits
+those candidates to comma-separated Service names in the same namespace. Production
+currently allows only `qwen3-30b-control-dynamo-disagg-frontend`; inactive and
+experimental Services are not probed or used for chat routing. Update the allowlist
+through a separate aggregator candidate when the approved serving Service changes.
+An empty/unset allowlist restores automatic discovery. An unavailable allowlisted
+backend is still reported and is never replaced by an unapproved Service.
+Services need an `http` port or port
 8000. Model IDs come exclusively from successful backend responses. Unavailable
 or removed backends disappear on the next refresh; duplicate model IDs merge.
 A failed Kubernetes discovery returns 503, never a static or stale fallback.

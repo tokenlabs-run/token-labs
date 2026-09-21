@@ -1,0 +1,199 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "model-aggregator-code-e7f4ab8b7e1c",
+        "namespace": "token-labs"
+      },
+      "immutable": true,
+      "data": {
+        "aggregator.py": "\"\"\"Discover serving Services and expose only their live OpenAI model IDs.\"\"\"\nimport asyncio\nfrom contextlib import asynccontextmanager, suppress\nimport json\nimport logging\nimport os\nfrom pathlib import Path\nimport secrets\nimport time\n\nimport httpx\nfrom fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse, StreamingResponse\n\nREFRESH_INTERVAL = 28.0\n# Empty preserves automatic discovery; production pins approved Service names.\nMODEL_BACKEND_SERVICES = frozenset(\n    name.strip() for name in os.environ.get('MODEL_BACKEND_SERVICES', '').split(',')\n    if name.strip()\n)\nSA_PATH = Path('/var/run/secrets/kubernetes.io/serviceaccount')\nlog = logging.getLogger(__name__)\n_cache = []\n_model_backends = {}\n_last_success = 0.0\n_http_client = None\n_kube_client = None\n_namespace = None\nPROVIDER_DOCUMENT_PATH = Path(os.environ.get(\n    'OPENROUTER_MODEL_DOCUMENT_PATH', '/etc/openrouter/models.json'))\nOPENROUTER_CONCURRENCY = int(os.environ.get('OPENROUTER_MAX_CONCURRENCY', '16'))\nOPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')\n_admission_lock = asyncio.Lock()\n_inflight = 0\n\nQWEN_THINKING_MODELS = {\n    'unsloth/qwen3.6-35b-a3b-nvfp4-fast',\n}\n\ndef service_url(service):\n    meta, spec = service.get('metadata', {}), service.get('spec', {})\n    if MODEL_BACKEND_SERVICES and meta.get('name') not in MODEL_BACKEND_SERVICES:\n        return None\n    labels, selector = meta.get('labels', {}), spec.get('selector', {})\n    serving = (\n        labels.get('token-labs/model') == 'true'\n        or (selector.get('llm-d.ai/inference-serving') == 'true'\n            and selector.get('llm-d.ai/role') == 'decode')\n        or selector.get('nvidia.com/dynamo-component-type') == 'frontend'\n    )\n    if not serving or spec.get('type') == 'ExternalName' or not selector:\n        return None\n    ports = [p for p in spec.get('ports', []) if p.get('protocol', 'TCP') == 'TCP']\n    port = next((p['port'] for p in ports if p.get('name') == 'http'), None)\n    if port is None:\n        port = next((p['port'] for p in ports if p.get('port') == 8000), None)\n    if port is None:\n        return None\n    return f\"http://{meta['name']}.{meta['namespace']}.svc.cluster.local:{port}/v1/models\"\n\n\nasync def fetch_live_models(url):\n    try:\n        response = await _http_client.get(url)\n        response.raise_for_status()\n        data = response.json()['data']\n        if not isinstance(data, list):\n            return []\n        return [dict(id=m['id'], object='model', owned_by='token-labs')\n                for m in data if isinstance(m, dict)\n                and isinstance(m.get('id'), str) and m['id'].strip()]\n    except (httpx.HTTPError, ValueError, KeyError, TypeError):\n        log.warning('Model endpoint unavailable: %s', url)\n        return []\n\n\nasync def refresh_cache():\n    global _cache, _last_success, _model_backends\n    try:\n        # Read the projected token each time so Kubernetes token rotation works.\n        token = SA_PATH.joinpath('token').read_text().strip()\n        response = await _kube_client.get(\n            f'/api/v1/namespaces/{_namespace}/services',\n            headers={'Authorization': f'Bearer {token}'})\n        response.raise_for_status()\n        services = response.json()['items']\n        urls = sorted({url for service in services if (url := service_url(service))})\n        results = await asyncio.gather(*(fetch_live_models(url) for url in urls))\n        models = {m['id']: m for group in results for m in group}\n        _model_backends = {\n            model['id']: url.removesuffix('/v1/models')\n            for url, group in zip(urls, results)\n            for model in group\n        }\n        _cache = [models[key] for key in sorted(models)]\n        _last_success = time.monotonic()\n    except Exception:\n        # Never substitute stale or configured models for failed discovery.\n        log.exception('Service discovery failed')\n        _cache = []\n        _model_backends = {}\n        _last_success = 0.0\n\n\ndef provider_document():\n    \"\"\"Load the approved static provider document from the mounted ConfigMap.\"\"\"\n    try:\n        envelope = json.loads(PROVIDER_DOCUMENT_PATH.read_text())\n        documents = envelope['data']\n        if not isinstance(documents, list) or not all(\n                isinstance(document, dict) for document in documents):\n            raise ValueError('data must be an array')\n        return envelope\n    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):\n        log.exception('Approved OpenRouter model document unavailable')\n        return None\n\n\nasync def admit():\n    global _inflight\n    async with _admission_lock:\n        if _inflight >= OPENROUTER_CONCURRENCY:\n            return False\n        _inflight += 1\n        return True\n\n\nasync def release():\n    global _inflight\n    async with _admission_lock:\n        _inflight -= 1\n\n\ndef provider_authorized(authorization: str | None) -> bool:\n    if not OPENROUTER_API_KEY or not authorization:\n        return False\n    scheme, separator, credential = authorization.partition(' ')\n    return (separator == ' ' and scheme.lower() == 'bearer'\n            and secrets.compare_digest(credential, OPENROUTER_API_KEY))\n\n\ndef prepare_openrouter_payload(payload):\n    \"\"\"Translate OpenRouter reasoning controls into Qwen chat-template controls.\"\"\"\n    forwarded = dict(payload)\n    if forwarded.get('model') not in QWEN_THINKING_MODELS:\n        return forwarded\n\n    reasoning_supplied = 'reasoning' in forwarded\n    reasoning = forwarded.pop('reasoning', None)\n    if reasoning_supplied and not isinstance(reasoning, dict):\n        raise ValueError('reasoning must be an object')\n\n    # Qwen thinking is opt-in for Token Labs. An explicitly supplied empty\n    # object means \"enable with defaults\", matching OpenRouter semantics.\n    enable_thinking = reasoning_supplied\n    if reasoning_supplied:\n        enabled = reasoning.get('enabled')\n        effort = reasoning.get('effort')\n        if enabled is not None and not isinstance(enabled, bool):\n            raise ValueError('reasoning.enabled must be a boolean')\n        if enabled is False or effort == 'none':\n            enable_thinking = False\n        elif enabled is True:\n            enable_thinking = True\n\n    template_kwargs = forwarded.get('chat_template_kwargs', {})\n    if not isinstance(template_kwargs, dict):\n        raise ValueError('chat_template_kwargs must be an object')\n    forwarded['chat_template_kwargs'] = {\n        **template_kwargs,\n        'enable_thinking': enable_thinking,\n    }\n    return forwarded\n\n\nasync def background_refresh():\n    while True:\n        await asyncio.sleep(REFRESH_INTERVAL)\n        await refresh_cache()\n\n\n@asynccontextmanager\nasync def lifespan(app):\n    global _http_client, _kube_client, _namespace\n    _namespace = SA_PATH.joinpath('namespace').read_text().strip()\n    host = os.environ['KUBERNETES_SERVICE_HOST']\n    port = os.environ.get('KUBERNETES_SERVICE_PORT_HTTPS', '443')\n    async with httpx.AsyncClient(timeout=httpx.Timeout(connect=5.0, read=None, write=30.0, pool=5.0),\n                              trust_env=False) as backend_client, \\\n            httpx.AsyncClient(base_url=f'https://{host}:{port}', timeout=5.0,\n                              verify=str(SA_PATH / 'ca.crt'), trust_env=False) as kube_client:\n        # Separate clients ensure Kubernetes credentials never reach model servers.\n        _http_client, _kube_client = backend_client, kube_client\n        await refresh_cache()\n        task = asyncio.create_task(background_refresh())\n        try:\n            yield\n        finally:\n            task.cancel()\n            with suppress(asyncio.CancelledError):\n                await task\n\n\napp = FastAPI(lifespan=lifespan)\n\n\n@app.get('/v1/models')\n@app.get('/models')\nasync def list_models():\n    headers = {'Cache-Control': 'no-store'}\n    if not _last_success or time.monotonic() - _last_success > 2 * REFRESH_INTERVAL:\n        return JSONResponse({'error': {'message': 'Model discovery unavailable'}},\n                            status_code=503, headers=headers)\n    return JSONResponse({'object': 'list', 'data': _cache}, headers=headers)\n\n\n@app.get('/openrouter/v1/models')\nasync def list_openrouter_api_models(request: Request):\n    if not OPENROUTER_API_KEY:\n        return JSONResponse({'error': {'message': 'Provider credentials unavailable'}},\n                            status_code=503)\n    if not provider_authorized(request.headers.get('authorization')):\n        return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,\n                            headers={'WWW-Authenticate': 'Bearer'})\n    return await list_models()\n\n\n@app.get('/openrouter/models')\nasync def list_openrouter_models():\n    headers = {'Cache-Control': 'no-store'}\n    document = provider_document()\n    if document is None:\n        return JSONResponse({'error': {'message': 'Provider catalog unavailable'}},\n                            status_code=503, headers=headers)\n    return JSONResponse(document, headers=headers)\n\n\nasync def proxy_chat_completions(request: Request):\n    \"\"\"Bound queueing and proxy an accepted request to its discovered backend.\"\"\"\n    try:\n        payload = await request.json()\n    except (ValueError, json.JSONDecodeError):\n        return JSONResponse({'error': {'message': 'Invalid JSON'}}, status_code=400)\n    model = payload.get('model') if isinstance(payload, dict) else None\n    backend = _model_backends.get(model)\n    if backend is None:\n        return JSONResponse({'error': {'message': 'Model is not ready'}}, status_code=404)\n    try:\n        payload = prepare_openrouter_payload(payload)\n    except ValueError as error:\n        return JSONResponse({'error': {'message': str(error)}}, status_code=400)\n    if not await admit():\n        return JSONResponse(\n            {'error': {'message': 'Capacity temporarily exhausted; retry later'}},\n            status_code=429,\n            headers={'Retry-After': '1', 'Cache-Control': 'no-store'},\n        )\n    upstream = None\n    slot_owned = True\n    try:\n        upstream = await _http_client.send(\n            _http_client.build_request(\n                'POST', f'{backend}/v1/chat/completions', json=payload,\n                headers={'accept': request.headers.get('accept', 'application/json')}),\n            stream=True,\n        )\n        content_type = upstream.headers.get('content-type', 'application/json')\n        if payload.get('stream'):\n            async def stream_and_release():\n                try:\n                    async for chunk in upstream.aiter_raw():\n                        yield chunk\n                finally:\n                    await upstream.aclose()\n                    await release()\n            slot_owned = False\n            return StreamingResponse(stream_and_release(), status_code=upstream.status_code,\n                                     media_type=content_type)\n        body = await upstream.aread()\n        await upstream.aclose()\n        await release()\n        slot_owned = False\n        return JSONResponse(content=json.loads(body), status_code=upstream.status_code)\n    except Exception:\n        if upstream is not None:\n            await upstream.aclose()\n        if slot_owned:\n            await release()\n        log.exception('OpenRouter upstream request failed')\n        return JSONResponse({'error': {'message': 'Upstream unavailable'}},\n                            status_code=502)\n\n\n@app.post('/v1/chat/completions')\nasync def direct_chat_completions(request: Request):\n    \"\"\"Proxy the public Token Labs API using the same live catalog mapping.\"\"\"\n    return await proxy_chat_completions(request)\n\n\n@app.post('/openrouter/v1/chat/completions')\nasync def openrouter_chat_completions(request: Request):\n    \"\"\"Authenticate OpenRouter, then use the shared live backend mapping.\"\"\"\n    if not OPENROUTER_API_KEY:\n        return JSONResponse({'error': {'message': 'Provider credentials unavailable'}},\n                            status_code=503)\n    if not provider_authorized(request.headers.get('authorization')):\n        return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,\n                            headers={'WWW-Authenticate': 'Bearer'})\n    return await proxy_chat_completions(request)\n\n\n@app.get('/health')\nasync def health():\n    return {'status': 'ok'}\n"
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "app": "model-aggregator-candidate-3"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "model-aggregator-candidate-3"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "args": [
+                  "pip install fastapi uvicorn httpx --quiet\nuvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app\n"
+                ],
+                "command": [
+                  "/bin/sh",
+                  "-c"
+                ],
+                "env": [
+                  {
+                    "name": "OPENROUTER_MODEL_DOCUMENT_PATH",
+                    "value": "/etc/openrouter/models.json"
+                  },
+                  {
+                    "name": "OPENROUTER_MAX_CONCURRENCY",
+                    "value": "16"
+                  },
+                  {
+                    "name": "OPENROUTER_API_KEY",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "api-key",
+                        "name": "openrouter-provider-auth",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "name": "MODEL_BACKEND_SERVICES",
+                    "value": "qwen3-30b-control-dynamo-disagg-frontend"
+                  }
+                ],
+                "image": "python:3.11-slim",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8000,
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 30,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "aggregator",
+                "ports": [
+                  {
+                    "containerPort": 8000,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8000,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 30,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "code"
+                  },
+                  {
+                    "mountPath": "/etc/openrouter",
+                    "name": "openrouter-model-document",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "nodeSelector": {
+              "kubernetes.io/hostname": "controller"
+            },
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "model-aggregator",
+            "serviceAccountName": "model-aggregator",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoSchedule",
+                "key": "node-role.kubernetes.io/control-plane",
+                "operator": "Exists"
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "model-aggregator-code-e7f4ab8b7e1c"
+                },
+                "name": "code"
+              },
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "openrouter-model-document-65h9t4c967"
+                },
+                "name": "openrouter-model-document"
+              }
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "name": "model-aggregator-candidate-3",
+        "namespace": "token-labs",
+        "labels": {
+          "app": "model-aggregator-candidate-3"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "model-aggregator-candidate-3",
+        "namespace": "token-labs"
+      },
+      "spec": {
+        "selector": {
+          "app": "model-aggregator-candidate-3"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "targetPort": 8000
+          }
+        ]
+      }
+    }
+  ]
+}
