@@ -85,7 +85,7 @@
     const user = message('user', prompt);
     const reply = message('assistant', '');
     status('Waiting for a response…');
-    let text = '', reasoning = '', thinking;
+    let text = '', reasoning = '', thinking, finishReason;
     const messages = [...history, {role: 'user', content: prompt}];
     if ($('system').value.trim()) messages.unshift({role: 'system', content: $('system').value.trim()});
     try {
@@ -93,6 +93,7 @@
         method: 'POST',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${key}`},
         body: JSON.stringify({model: $('model').value, messages, stream: true,
+          chat_template_kwargs: {enable_thinking: false},
           temperature: Number($('temperature').value), max_tokens: Number($('max-tokens').value)}),
         signal: controller.signal
       });
@@ -111,7 +112,9 @@
         if (data.trim() === '[DONE]') {done = true; return;}
         const chunk = JSON.parse(data);
         if (chunk.error) throw new Error('The model could not complete this response. Please try again.');
-        const delta = chunk.choices?.[0]?.delta;
+        const choice = chunk.choices?.[0];
+        if (choice?.finish_reason) finishReason = choice.finish_reason;
+        const delta = choice?.delta;
         if (!delta) return;
         const chat = document.querySelector('.chat');
         const follow = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 100;
@@ -147,7 +150,9 @@
       if (text) {
         history.push({role: 'user', content: prompt}, {role: 'assistant', content: text});
         $('prompt').value = '';
-        status('Response complete.');
+        status(finishReason === 'length'
+          ? 'Output limit reached. Increase max output tokens in Settings for a longer answer.'
+          : 'Response complete.');
       } else {
         status('No answer was returned. Try increasing max output tokens in Settings.', true);
       }
