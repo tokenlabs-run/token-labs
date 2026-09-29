@@ -12,20 +12,20 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
-  name: qwen3-30b-a3b-instruct-2507-fp8
+  name: glm-4-7-flash
   namespace: token-labs
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
 spec:
   endpoints:
     - fqdn:
-        hostname: qwen3-30b-control-dynamo-disagg-frontend.token-labs.svc.cluster.local
+        hostname: glm47-flash-dynamo-disagg-frontend.token-labs.svc.cluster.local
         port: 8000
 ---
-apiVersion: aigateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIServiceBackend
 metadata:
-  name: qwen3-30b-a3b-instruct-2507-fp8
+  name: glm-4-7-flash
   namespace: token-labs
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
@@ -35,9 +35,9 @@ spec:
   backendRef:
     group: gateway.envoyproxy.io
     kind: Backend
-    name: qwen3-30b-a3b-instruct-2507-fp8
+    name: glm-4-7-flash
 ---
-apiVersion: aigateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIGatewayRoute
 metadata:
   name: token-labs-models
@@ -45,8 +45,6 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
 spec:
-  schema:
-    name: OpenAI
   # Declared once here so token accounting applies uniformly to every model and
   # both serving stacks.
   llmRequestCosts:
@@ -56,16 +54,18 @@ spec:
       type: OutputToken
     - metadataKey: llm_total_token
       type: TotalToken
-  targetRefs:
+  parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
       name: token-labs-gateway
   rules:
-    # Qwen/Qwen3-30B-A3B-Instruct-2507-FP8 (dynamo) -- from Service/qwen3-30b-control-dynamo-disagg-frontend
+    # glm-4.7-flash (dynamo) -- from DynamoGraphDeployment/glm47-flash-dynamo-disagg
     - matches:
         - headers:
             - type: Exact
               name: x-ai-eg-model
-              value: "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
+              value: "glm-4.7-flash"
+      timeouts:
+        request: 3600s
       backendRefs:
-        - name: qwen3-30b-a3b-instruct-2507-fp8
+        - name: glm-4-7-flash

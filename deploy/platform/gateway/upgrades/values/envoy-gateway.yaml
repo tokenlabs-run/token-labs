@@ -1,0 +1,43 @@
+# Reviewed overrides for chart 1.9.1; CRDs are upgraded separately.
+config:
+  envoyGateway:
+    extensionApis:
+      enableBackend: true
+      enableEnvoyPatchPolicy: true
+    extensionManager:
+      hooks:
+        xdsTranslator:
+          post:
+          - Translation
+          - Cluster
+          - Route
+          translation:
+            cluster:
+              includeAll: true
+            listener:
+              includeAll: true
+            route:
+              includeAll: true
+            secret:
+              includeAll: true
+      service:
+        fqdn:
+          hostname: ai-gateway-controller.envoy-ai-gateway-system.svc.cluster.local
+          port: 1063
+    gateway:
+      controllerName: gateway.envoyproxy.io/gatewayclass-controller
+    logging:
+      level:
+        default: info
+    provider:
+      type: Kubernetes
+crds:
+  enabled: false
+deployment:
+  pod:
+    nodeSelector:
+      kubernetes.io/hostname: controller
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/control-plane
+      operator: Exists
