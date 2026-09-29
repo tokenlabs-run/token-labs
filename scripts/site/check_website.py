@@ -53,6 +53,18 @@ def main():
             for width in [360, 390, 768, 1440]:
                 page.set_viewport_size({'width': width, 'height': 900})
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (name, width)
+        for resource in docs.glob('*.html'):
+            if resource.stem in {'index', 'playground', 'dashboards'}:
+                continue
+            page.goto(f'{args.base_url}/{resource.name}')
+            assert page.locator('header.header nav a').count() == 2
+            assert page.locator('h1').count() == 1
+            for width in [390, 1440]:
+                page.set_viewport_size({'width': width, 'height': 900})
+                assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), resource.name
+        page.goto(f'{args.base_url}/benchmark-results.html#dgx-spark-dynamo-pd')
+        assert page.locator('#dgx-spark-dynamo-pd').is_visible()
+        assert page.locator('#dgx-spark-dynamo-pd').evaluate('(el) => el.closest("details").open')
         page.goto(f'{args.base_url}/playground.html')
         page.wait_for_function('document.querySelector("#model").value === "test-model"')
         page.locator('#api-key').fill('test-key-not-a-secret')

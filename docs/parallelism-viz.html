@@ -1,11 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>LLM Parallelism Strategies</title>
-<style>
-  :root {
+<style>@scope (.resource-content) {
+
+  :scope {
     --bg:            #0a0a0a;
     --bg-elevated:   #111111;
     --bg-card:       #1a1a1a;
@@ -27,7 +29,7 @@
     --radius:        10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
+  :scope {
     background: var(--bg);
     color: var(--text);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -131,60 +133,55 @@
   @keyframes dash-flow     { to { stroke-dashoffset: -24; } }
   @keyframes dash-flow-rev { to { stroke-dashoffset:  24; } }
   @keyframes token-travel  { 0% { opacity:0 } 5% { opacity:1 } 90% { opacity:1 } 100% { opacity:0 } }
-</style>
-</head>
-<body>
+
+}</style>
+<link href="assets/site.css" rel="stylesheet"/><link href="assets/resources.css" rel="stylesheet"/><script defer="True" src="assets/resources.js"></script></head>
+<body class="resource-page"><a class="skip" href="#main">Skip to content</a><header class="header shell"><a aria-label="Token Labs home" class="brand" href="index.html"><span aria-hidden="true" class="brand-mark">t.</span>token labs</a><nav aria-label="Main navigation"><a href="playground.html">Playground</a><a href="dashboards.html">Dashboards</a></nav></header><main class="shell resource-content" id="main"><p class="resource-breadcrumb"><a href="labs.html">Experiments &amp; resources</a></p>
 <div class="container">
-
 <header>
-  <h1>LLM Parallelism Strategies</h1>
-  <p>How model weights and layers are distributed across 2 devices — and how a single inference request traverses each strategy. Model: 8-layer transformer with MoE FFN (4 experts/layer).</p>
+<h1>LLM Parallelism Strategies</h1>
+<p>How model weights and layers are distributed across 2 devices — and how a single inference request traverses each strategy. Model: 8-layer transformer with MoE FFN (4 experts/layer).</p>
 </header>
-
 <div class="toolbar">
-  <nav id="tabs">
-    <button class="active" data-key="dp" onclick="switchTab('dp')">Data (DP=2)</button>
-    <button data-key="tp" onclick="switchTab('tp')">Tensor (TP=2)</button>
-    <button data-key="pp" onclick="switchTab('pp')">Pipeline (PP=2)</button>
-    <button data-key="ep" onclick="switchTab('ep')">Expert (EP=2)</button>
-    <button data-key="wep" onclick="switchTab('wep')">Wide-EP</button>
-  </nav>
-  <div class="flow-toggle" id="flowToggle" onclick="toggleFlow()">
-    <div class="flow-dot"></div>
+<nav id="tabs">
+<button class="active" data-key="dp" onclick="switchTab('dp')">Data (DP=2)</button>
+<button data-key="tp" onclick="switchTab('tp')">Tensor (TP=2)</button>
+<button data-key="pp" onclick="switchTab('pp')">Pipeline (PP=2)</button>
+<button data-key="ep" onclick="switchTab('ep')">Expert (EP=2)</button>
+<button data-key="wep" onclick="switchTab('wep')">Wide-EP</button>
+</nav>
+<div class="flow-toggle" id="flowToggle" onclick="toggleFlow()">
+<div class="flow-dot"></div>
     Animate request flow
   </div>
 </div>
-
 <div class="viz-card">
-  <div class="svg-wrap">
-    <svg id="viz" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <marker id="ah-fwd"   markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#facc15"/></marker>
-        <marker id="ah-rev"   markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><polygon points="8 0,0 3,8 6" fill="#facc15"/></marker>
-        <marker id="ah-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#76b900"/></marker>
-        <marker id="ah-green-rev" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><polygon points="8 0,0 3,8 6" fill="#76b900"/></marker>
-        <marker id="ah-white" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#fff"/></marker>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-    </svg>
-  </div>
-
-  <!-- request flow diagram -->
-  <div class="flow-section" id="flowSection">
-    <h3>Request traversal — forward pass</h3>
-    <svg id="flowViz" viewBox="0 0 900 120" xmlns="http://www.w3.org/2000/svg"></svg>
-  </div>
-
-  <div id="legend" class="legend"></div>
-  <div id="caption" class="caption"></div>
+<div class="svg-wrap">
+<svg id="viz" viewbox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="ah-fwd" markerheight="6" markerwidth="8" orient="auto" refx="8" refy="3"><polygon fill="#facc15" points="0 0,8 3,0 6"></polygon></marker>
+<marker id="ah-rev" markerheight="6" markerwidth="8" orient="auto" refx="0" refy="3"><polygon fill="#facc15" points="8 0,0 3,8 6"></polygon></marker>
+<marker id="ah-green" markerheight="6" markerwidth="8" orient="auto" refx="8" refy="3"><polygon fill="#76b900" points="0 0,8 3,0 6"></polygon></marker>
+<marker id="ah-green-rev" markerheight="6" markerwidth="8" orient="auto" refx="0" refy="3"><polygon fill="#76b900" points="8 0,0 3,8 6"></polygon></marker>
+<marker id="ah-white" markerheight="6" markerwidth="8" orient="auto" refx="8" refy="3"><polygon fill="#fff" points="0 0,8 3,0 6"></polygon></marker>
+<filter id="glow">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<femerge><femergenode in="blur"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+</filter>
+</defs>
+</svg>
 </div>
-
+<!-- request flow diagram -->
+<div class="flow-section" id="flowSection">
+<h3>Request traversal — forward pass</h3>
+<svg id="flowViz" viewbox="0 0 900 120" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+<div class="legend" id="legend"></div>
+<div class="caption" id="caption"></div>
+</div>
 </div><!-- .container -->
 
-<script>
+</main><script>
 // ═══════════════════════════════════════════════════════════════════
 // Layout constants
 // ═══════════════════════════════════════════════════════════════════
@@ -719,6 +716,5 @@ function toggleFlow() {
 
 // init
 renderStrategy('dp');
-</script>
-</body>
+</script><footer class="footer shell"><div class="footer-top"><span>Independent infrastructure for open models.</span><a href="mailto:providers@tokenlabs.run">Get in touch <span aria-hidden="true">↗</span></a></div><details class="explore"><summary>Experiments &amp; resources</summary><nav aria-label="Research and resources"><a href="labs.html">Experiment notebook</a><a href="benchmark-results.html">Benchmark results</a><a href="methodology.html">Methodology</a><a href="models.html">API guide</a><a href="https://github.com/tokenlabs-run/token-labs">Source code ↗</a></nav></details><div class="legal"><span>© Token Labs</span><nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="data-policy.html">Data policy</a><a href="terms.html">Terms</a></nav></div></footer></body>
 </html>
