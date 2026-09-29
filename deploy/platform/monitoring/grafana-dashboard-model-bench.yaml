@@ -10,7 +10,11 @@ data:
     {
       "uid": "token-labs-gpu",
       "title": "Token Labs — GPU Deep Dive",
-      "tags": ["token-labs", "gpu", "dcgm"],
+      "tags": [
+        "token-labs",
+        "gpu",
+        "dcgm"
+      ],
       "schemaVersion": 39,
       "version": 1,
       "refresh": "30s",
@@ -19,13 +23,27 @@ data:
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
       "links": [],
-      "time": {"from": "now-1h", "to": "now"},
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
       "timepicker": {},
       "templating": {
         "list": [
           {
-            "current": {},
-            "datasource": {"type": "prometheus", "uid": "prometheus"},
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
             "definition": "label_values(DCGM_FI_DEV_GPU_UTIL, Hostname)",
             "hide": 0,
             "includeAll": true,
@@ -44,8 +62,19 @@ data:
             "type": "query"
           },
           {
-            "current": {},
-            "datasource": {"type": "prometheus", "uid": "prometheus"},
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
             "definition": "label_values(DCGM_FI_DEV_GPU_UTIL{Hostname=~\"$node\"}, gpu)",
             "hide": 0,
             "includeAll": true,
@@ -65,24 +94,45 @@ data:
           }
         ]
       },
-      "annotations": {"list": []},
+      "annotations": {
+        "list": []
+      },
       "panels": [
         {
           "id": 1,
           "type": "row",
           "title": "GPU Compute",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          }
         },
         {
           "id": 2,
           "type": "timeseries",
           "title": "GPU Utilization",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 1},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -100,17 +150,30 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 80},
-                  {"color": "red", "value": 95}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 95
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "DCGM_FI_DEV_GPU_UTIL{Hostname=~\"$node\", gpu=~\"$gpu\"}",
               "refId": "A",
               "legendFormat": "{{Hostname}} GPU{{gpu}}"
@@ -121,12 +184,26 @@ data:
           "id": 3,
           "type": "timeseries",
           "title": "SM Clock",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
           "description": "SM clock drops indicate thermal throttling",
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 1},
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -141,14 +218,23 @@ data:
               },
               "thresholds": {
                 "mode": "absolute",
-                "steps": [{"color": "green", "value": null}]
-              }
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "DCGM_FI_DEV_SM_CLOCK{Hostname=~\"$node\", gpu=~\"$gpu\"}",
               "refId": "A",
               "legendFormat": "{{Hostname}} GPU{{gpu}}"
@@ -160,17 +246,36 @@ data:
           "type": "row",
           "title": "Power & Thermal",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 9
+          }
         },
         {
           "id": 5,
           "type": "timeseries",
           "title": "Power Draw",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -185,14 +290,23 @@ data:
               },
               "thresholds": {
                 "mode": "absolute",
-                "steps": [{"color": "green", "value": null}]
-              }
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "DCGM_FI_DEV_POWER_USAGE{Hostname=~\"$node\", gpu=~\"$gpu\"}",
               "refId": "A",
               "legendFormat": "{{Hostname}} GPU{{gpu}}"
@@ -203,11 +317,25 @@ data:
           "id": 6,
           "type": "timeseries",
           "title": "GPU Temperature",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -223,17 +351,30 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 70},
-                  {"color": "red", "value": 80}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 70
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "DCGM_FI_DEV_GPU_TEMP{Hostname=~\"$node\", gpu=~\"$gpu\"}",
               "refId": "A",
               "legendFormat": "{{Hostname}} GPU{{gpu}}"
@@ -245,17 +386,36 @@ data:
           "type": "row",
           "title": "Memory",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 18}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          }
         },
         {
           "id": 8,
           "type": "timeseries",
           "title": "Memory Bandwidth Utilization",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 19},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 19
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -273,17 +433,30 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 80},
-                  {"color": "red", "value": 95}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 95
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "DCGM_FI_DEV_MEM_COPY_UTIL{Hostname=~\"$node\", gpu=~\"$gpu\"}",
               "refId": "A",
               "legendFormat": "{{Hostname}} GPU{{gpu}}"
@@ -292,144 +465,108 @@ data:
         },
         {
           "id": 9,
-          "type": "timeseries",
-          "title": "GPU Memory Used",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 19},
+          "type": "text",
+          "title": "GPU Memory Capacity Telemetry",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 19
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "decmbytes",
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 10,
-                "showPoints": "never",
-                "spanNulls": false,
-                "lineInterpolation": "linear"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [{"color": "green", "value": null}]
-              }
-            },
-            "overrides": []
-          },
-          "targets": [
-            {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "DCGM_FI_DEV_FB_USED{Hostname=~\"$node\", gpu=~\"$gpu\"}",
-              "refId": "A",
-              "legendFormat": "used ({{Hostname}} GPU{{gpu}})"
-            },
-            {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "DCGM_FI_DEV_FB_FREE{Hostname=~\"$node\", gpu=~\"$gpu\"}",
-              "refId": "B",
-              "legendFormat": "free ({{Hostname}} GPU{{gpu}})"
-            }
-          ]
+            "mode": "markdown",
+            "content": "The current Spark DCGM exporters do not expose `DCGM_FI_DEV_FB_USED` or `DCGM_FI_DEV_FB_FREE`. Dedicated framebuffer occupancy is unavailable here. KV cache occupancy is shown in the inference dashboard and is not total GPU memory usage."
+          }
         },
         {
           "id": 10,
           "type": "row",
           "title": "Interconnect (NVLink)",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 27}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 27
+          }
         },
         {
           "id": 11,
-          "type": "timeseries",
-          "title": "NVLink TX Bandwidth",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
+          "type": "text",
+          "title": "NVLink Telemetry Unavailable",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 28
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "Bps",
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 10,
-                "showPoints": "never",
-                "spanNulls": false,
-                "lineInterpolation": "linear"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [{"color": "green", "value": null}]
-              }
-            },
-            "overrides": []
-          },
-          "targets": [
-            {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "DCGM_FI_DEV_NVLINK_BANDWIDTH_TOTAL{Hostname=~\"$node\", gpu=~\"$gpu\"}",
-              "refId": "A",
-              "legendFormat": "{{Hostname}} GPU{{gpu}} NVLink TX"
-            }
-          ]
+            "mode": "markdown",
+            "content": "The current exporters do not expose `DCGM_FI_DEV_NVLINK_BANDWIDTH_TOTAL`. The deployed cross-node Mooncake connection uses TCP, not NVLink. See **Inference Operations → KV Transfer Tokens Received** for transfer activity."
+          }
         },
         {
           "id": 12,
-          "type": "timeseries",
-          "title": "PCIe TX Bandwidth",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
+          "type": "text",
+          "title": "PCIe Throughput Telemetry Unavailable",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 28
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
-          },
-          "fieldConfig": {
-            "defaults": {
-              "unit": "Bps",
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 2,
-                "fillOpacity": 10,
-                "showPoints": "never",
-                "spanNulls": false,
-                "lineInterpolation": "linear"
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [{"color": "green", "value": null}]
-              }
-            },
-            "overrides": []
-          },
-          "targets": [
-            {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "DCGM_FI_DEV_PCIE_TX_THROUGHPUT{Hostname=~\"$node\", gpu=~\"$gpu\"}",
-              "refId": "A",
-              "legendFormat": "{{Hostname}} GPU{{gpu}}"
-            }
-          ]
+            "mode": "markdown",
+            "content": "The current exporters do not expose `DCGM_FI_DEV_PCIE_TX_THROUGHPUT`. No throughput value is inferred or substituted. Enable supported hardware telemetry before adding a PCIe throughput graph."
+          }
         },
         {
           "id": 13,
           "type": "row",
           "title": "Correlation: GPU vs Inference",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 36}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 36
+          }
         },
         {
           "id": 14,
           "type": "timeseries",
           "title": "GPU Util vs vLLM KV Cache",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 37},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 37
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -444,14 +581,26 @@ data:
               },
               "thresholds": {
                 "mode": "absolute",
-                "steps": [{"color": "green", "value": null}]
-              }
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": [
               {
-                "matcher": {"id": "byFrameRefID", "options": "B"},
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "B"
+                },
                 "properties": [
-                  {"id": "unit", "value": "percentunit"},
+                  {
+                    "id": "unit",
+                    "value": "percentunit"
+                  },
                   {
                     "id": "custom.axisPlacement",
                     "value": "right"
@@ -463,9 +612,15 @@ data:
                 ]
               },
               {
-                "matcher": {"id": "byFrameRefID", "options": "A"},
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
                 "properties": [
-                  {"id": "unit", "value": "percent"},
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
                   {
                     "id": "custom.axisPlacement",
                     "value": "left"
@@ -480,16 +635,22 @@ data:
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "DCGM_FI_DEV_GPU_UTIL{Hostname=~\"$node\"}",
               "refId": "A",
               "legendFormat": "{{Hostname}} GPU util %"
             },
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "vllm:gpu_cache_usage_perc{namespace=\"token-labs\"}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * vllm:kv_cache_usage_perc{namespace=\"token-labs\",node=~\"$node\"}",
               "refId": "B",
-              "legendFormat": "{{model_name}} KV cache %"
+              "legendFormat": "{{model_name}} {{role}} KV cache %"
             }
           ]
         }

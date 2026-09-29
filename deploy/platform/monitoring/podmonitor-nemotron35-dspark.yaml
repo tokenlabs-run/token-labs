@@ -1,14 +1,6 @@
-# PodMonitor for the nemotron35-dspark llm-d vs dynamo comparison.
-#
-# Why a PodMonitor and not a ServiceMonitor like the others in this directory:
-# the llm-d-modelservice chart creates the `nemotron35-llm-d` Service with NO
-# labels, so a ServiceMonitor selector cannot match it. The *pods* are labelled,
-# and dynamo will create its own Service shape anyway -- selecting pods on a
-# token-labs-owned label keeps one monitor working across both stacks.
-#
-# `release: kube-prometheus-stack` is mandatory: the Prometheus instance sets
-# podMonitorSelector.matchLabels to exactly that, so a monitor without it is
-# silently ignored (no error, no target, no metrics).
+# PodMonitor for the llm-d side of the nemotron35-dspark comparison.
+# Dynamo pods use podmonitor-dynamo.yaml and are explicitly excluded here.
+# The release label is required by the Prometheus PodMonitor selector.
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
@@ -20,16 +12,13 @@ spec:
   namespaceSelector:
     matchNames: [token-labs]
   selector:
+    # Dynamo pods are covered by the generic token-labs-dynamo monitor.
+    matchExpressions:
+      - key: nvidia.com/dynamo-component-type
+        operator: DoesNotExist
     matchLabels:
       token-labs/scenario: nemotron35-dspark
-  # Two endpoints because the stacks expose metrics on different ports:
-  #   llm-d decode      -> 8000   (vLLM's own OpenAI server)
-  #   dynamo frontend   -> 8000   (dynamo HTTP frontend)
-  #   dynamo agg worker -> 9090   ("system" port; this is where the 401 vllm:*
-  #                                engine series live -- NOT on 8000)
-  # A pod only produces a target for a port it actually declares, so listing
-  # both is safe: each pod contributes exactly the endpoints it has. Scraping
-  # only 8000 (the original config) silently missed every Dynamo engine metric.
+  # Match declared llm-d metrics ports.
   podMetricsEndpoints:
   - targetPort: 8000
     path: /metrics

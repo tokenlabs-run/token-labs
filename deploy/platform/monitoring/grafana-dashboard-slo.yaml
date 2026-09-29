@@ -10,7 +10,10 @@ data:
     {
       "uid": "token-labs-slo",
       "title": "Token Labs — SLO & Error Budget",
-      "tags": ["token-labs", "slo"],
+      "tags": [
+        "token-labs",
+        "slo"
+      ],
       "schemaVersion": 39,
       "version": 1,
       "refresh": "30s",
@@ -19,13 +22,27 @@ data:
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
       "links": [],
-      "time": {"from": "now-6h", "to": "now"},
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
       "timepicker": {},
       "templating": {
         "list": [
           {
-            "current": {},
-            "datasource": {"type": "prometheus", "uid": "prometheus"},
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
             "definition": "label_values(vllm:num_requests_running{namespace=\"token-labs\"}, model_name)",
             "hide": 0,
             "includeAll": true,
@@ -45,23 +62,42 @@ data:
           }
         ]
       },
-      "annotations": {"list": []},
+      "annotations": {
+        "list": []
+      },
       "panels": [
         {
           "id": 1,
           "type": "row",
           "title": "SLO Status",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          }
         },
         {
           "id": 2,
           "type": "stat",
-          "title": "Model Availability (1h)",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 5, "w": 6, "x": 0, "y": 1},
+          "title": "Worker Scrape Availability (1h)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 1
+          },
           "options": {
-            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
             "colorMode": "background",
             "graphMode": "none",
             "textMode": "auto",
@@ -74,31 +110,57 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "red", "value": null},
-                  {"color": "yellow", "value": 0.995},
-                  {"color": "green", "value": 0.999}
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.995
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.999
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "max by (model_name) (token_labs:pod_available:rate1h)",
-              "refId": "A",
-              "legendFormat": "{{model_name}}"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "token_labs:pod_available:rate1h",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
             }
-          ]
+          ],
+          "description": "Fraction of observed scrapes that succeeded, per worker. Not end-to-end model availability. History starts when scraping begins."
         },
         {
           "id": 3,
           "type": "gauge",
-          "title": "Error Budget Remaining (30d)",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 5, "w": 6, "x": 6, "y": 1},
+          "title": "Scrape Error Budget (observed 30d)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 6,
+            "y": 1
+          },
           "options": {
-            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
             "orientation": "auto",
             "showThresholdLabels": false,
             "showThresholdMarkers": true
@@ -111,31 +173,57 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "red", "value": null},
-                  {"color": "yellow", "value": 0.25},
-                  {"color": "green", "value": 0.5}
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.25
+                  },
+                  {
+                    "color": "green",
+                    "value": 0.5
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "clamp_min(1 - (1 - avg(avg_over_time(token_labs:pod_available:bool[30d]))) / 0.005, 0)",
               "refId": "A",
               "legendFormat": "error budget remaining"
             }
-          ]
+          ],
+          "description": "Computed from available scrape history, up to 30 days. Newly monitored workers do not yet have 30 days of data. Not a public API SLO."
         },
         {
           "id": 4,
           "type": "stat",
           "title": "Current Error Rate",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 5, "w": 6, "x": 12, "y": 1},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 12,
+            "y": 1
+          },
           "options": {
-            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
             "colorMode": "background",
             "graphMode": "none",
             "textMode": "auto",
@@ -148,31 +236,57 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 0.01},
-                  {"color": "red", "value": 0.05}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.01
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.05
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "max(token_labs:error_rate:rate5m{model_name=~\"$model\"})",
               "refId": "A",
               "legendFormat": "error rate"
             }
-          ]
+          ],
+          "description": "Engine error fraction for completed decode/aggregate requests over 5m. Undefined during zero traffic; idle is not a measured 0% error rate."
         },
         {
           "id": 5,
           "type": "stat",
-          "title": "Pod Ready Count",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 5, "w": 6, "x": 18, "y": 1},
+          "title": "Worker Scrapes Up",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 18,
+            "y": 1
+          },
           "options": {
-            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
             "colorMode": "background",
             "graphMode": "none",
             "textMode": "auto",
@@ -185,20 +299,33 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "red", "value": null},
-                  {"color": "yellow", "value": 1},
-                  {"color": "green", "value": 2}
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  },
+                  {
+                    "color": "green",
+                    "value": 2
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "sum(kube_pod_status_ready{namespace=\"token-labs\", condition=\"true\"} * on(pod) group_left() kube_pod_labels{namespace=\"token-labs\", label_llm_d_ai_inference_serving=\"true\"})",
-              "refId": "A",
-              "legendFormat": "ready pods"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "sum(token_labs:pod_available:bool)",
+              "legendFormat": "workers",
+              "refId": "A"
             }
           ]
         },
@@ -207,17 +334,36 @@ data:
           "type": "row",
           "title": "Burn Rate & TTFT",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 6
+          }
         },
         {
           "id": 7,
           "type": "timeseries",
-          "title": "Availability Burn Rate (1h)",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
+          "title": "Worker Scrape Failure Fraction (1h)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 7
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -233,19 +379,29 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "red", "value": 0.072}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.072
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
-              "expr": "1 - max by (model_name) (token_labs:pod_available:rate1h)",
-              "refId": "A",
-              "legendFormat": "{{model_name}} burn rate"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "1 - token_labs:pod_available:rate1h",
+              "legendFormat": "{{pod}}",
+              "refId": "A"
             }
           ]
         },
@@ -253,11 +409,25 @@ data:
           "id": 8,
           "type": "timeseries",
           "title": "TTFT p99 by Model",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 7
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -273,20 +443,33 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 1},
-                  {"color": "red", "value": 3}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 3
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "token_labs:ttft_p99:rate5m{model_name=~\"$model\"}",
               "refId": "A",
-              "legendFormat": "{{model_name}}"
+              "legendFormat": "{{model_name}} {{role}}"
             }
           ]
         },
@@ -295,17 +478,36 @@ data:
           "type": "row",
           "title": "KV Cache & Error Rate",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 15}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          }
         },
         {
           "id": 10,
           "type": "timeseries",
           "title": "KV Cache Utilization",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -321,20 +523,33 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 0.8},
-                  {"color": "red", "value": 0.9}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.8
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.9
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "token_labs:kv_cache_usage:current{model_name=~\"$model\"}",
               "refId": "A",
-              "legendFormat": "{{model_name}}"
+              "legendFormat": "{{model_name}} {{role}}"
             }
           ]
         },
@@ -342,11 +557,25 @@ data:
           "id": 11,
           "type": "timeseries",
           "title": "Error Rate",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 16
+          },
           "options": {
-            "tooltip": {"mode": "multi", "sort": "none"},
-            "legend": {"displayMode": "list", "placement": "bottom"}
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            }
           },
           "fieldConfig": {
             "defaults": {
@@ -362,83 +591,146 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 0.01},
-                  {"color": "red", "value": 0.05}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 0.01
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.05
+                  }
                 ]
-              }
+              },
+              "noValue": "No samples / idle"
             },
             "overrides": []
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "token_labs:error_rate:rate5m{model_name=~\"$model\"}",
               "refId": "A",
-              "legendFormat": "{{model_name}} error rate"
+              "legendFormat": "{{model_name}} {{role}}"
             }
-          ]
+          ],
+          "description": "Engine error fraction for completed decode/aggregate requests over 5m. Undefined during zero traffic; idle is not a measured 0% error rate."
         },
         {
           "id": 12,
           "type": "row",
           "title": "Active Alerts",
           "collapsed": false,
-          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 24}
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 24
+          }
         },
         {
           "id": 13,
           "type": "table",
           "title": "Firing Alerts",
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
-          "gridPos": {"h": 8, "w": 24, "x": 0, "y": 25},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 25
+          },
           "options": {
             "cellHeight": "sm",
-            "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false},
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
             "showHeader": true
           },
           "fieldConfig": {
             "defaults": {
               "custom": {
                 "align": "auto",
-                "cellOptions": {"type": "auto"},
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "red", "value": 1}
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
                 ]
               },
               "mappings": [
                 {
                   "type": "value",
                   "options": {
-                    "1": {"text": "FIRING", "color": "red", "index": 0}
+                    "1": {
+                      "text": "FIRING",
+                      "color": "red",
+                      "index": 0
+                    }
                   }
                 }
-              ]
+              ],
+              "noValue": "No samples / idle"
             },
             "overrides": [
               {
-                "matcher": {"id": "byName", "options": "Value"},
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
                 "properties": [
                   {
                     "id": "custom.cellOptions",
-                    "value": {"type": "color-background"}
+                    "value": {
+                      "type": "color-background"
+                    }
                   }
                 ]
               },
               {
-                "matcher": {"id": "byName", "options": "__name__"},
-                "properties": [{"id": "custom.hidden", "value": true}]
+                "matcher": {
+                  "id": "byName",
+                  "options": "__name__"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "ALERTS{alertstate=\"firing\"}",
               "refId": "A",
               "instant": true,
@@ -449,7 +741,10 @@ data:
             {
               "id": "organize",
               "options": {
-                "excludeByName": {"__name__": true, "Time": false},
+                "excludeByName": {
+                  "__name__": true,
+                  "Time": false
+                },
                 "renameByName": {
                   "alertname": "Alert",
                   "severity": "Severity",

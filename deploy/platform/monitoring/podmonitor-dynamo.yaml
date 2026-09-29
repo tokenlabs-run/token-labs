@@ -1,0 +1,39 @@
+# Token Labs owns this monitor independently of the Dynamo Helm release.
+# Prometheus selects monitors carrying release=kube-prometheus-stack.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: token-labs-dynamo
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [token-labs]
+  selector:
+    matchLabels:
+      nvidia.com/metrics-enabled: "true"
+    matchExpressions:
+      - key: nvidia.com/dynamo-component-type
+        operator: In
+        values: [frontend, worker, decode, prefill]
+  podMetricsEndpoints:
+    # Each pod contributes only the named port it actually declares.
+    - port: system
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      relabelings: &dynamoLabels
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+        - targetLabel: stack
+          replacement: dynamo
+        - sourceLabels: [__meta_kubernetes_pod_label_nvidia_com_dynamo_component_type]
+          targetLabel: role
+        - sourceLabels: [__meta_kubernetes_pod_label_nvidia_com_dynamo_graph_deployment_name]
+          targetLabel: workload
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      relabelings: *dynamoLabels
