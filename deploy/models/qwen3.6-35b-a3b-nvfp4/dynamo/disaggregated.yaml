@@ -1,11 +1,11 @@
 apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeployment
 metadata:
-  name: qwen3-30b-control-dynamo-disagg
+  name: qwen36-35b-control-dynamo-disagg
   labels:
     app.kubernetes.io/name: vllm-disagg-gb10-dspark
     app.kubernetes.io/part-of: dynamo
-    token-labs/scenario: qwen3-30b-control
+    token-labs/scenario: qwen36-35b-control
   namespace: token-labs
 spec:
   backendFramework: vllm
@@ -23,7 +23,7 @@ spec:
               effect: NoSchedule
           containers:
             - name: main
-              image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.3.1
+              image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.0
               imagePullPolicy: IfNotPresent
               command:
                 - python3
@@ -41,7 +41,7 @@ spec:
                 - name: HF_HOME
                   value: /model-cache
                 - name: HF_HUB_OFFLINE
-                  value: '1'
+                  value: '0'
                 - name: HF_MODULES_CACHE
                   value: /tmp/hf_modules
                 - name: NCCL_IB_DISABLE
@@ -85,7 +85,7 @@ spec:
                 sizeLimit: 40Gi
           containers:
             - name: main
-              image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.3.1
+              image: elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d
               imagePullPolicy: IfNotPresent
               workingDir: /workspace/
               command:
@@ -94,23 +94,30 @@ spec:
                 - -m
                 - dynamo.vllm
                 - --model
-                - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+                - nvidia/Qwen3.6-35B-A3B-NVFP4
                 - --served-model-name
-                - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+                - nvidia/Qwen3.6-35B-A3B-NVFP4
                 - --trust-remote-code
                 - --tensor-parallel-size
                 - "1"
                 - --max-model-len
-                - "32768"
+                - "262144"
                 - --max-num-seqs
-                - "1"
+                - "4"
+                - --max-num-batched-tokens
+                - "8192"
                 - --gpu-memory-utilization
                 - "0.85"
                 - --enable-prefix-caching
+                - --enable-chunked-prefill
                 - --dyn-tool-call-parser
-                - "hermes"
+                - "qwen3_coder"
+                - --dyn-reasoning-parser
+                - "qwen3"
                 - --kv-transfer-config
-                - '{"kv_connector":"NixlConnector","kv_role":"kv_producer"}'
+                - '{"kv_connector": "MooncakeConnector", "kv_role": "kv_producer", "kv_connector_extra_config":
+                  {"mooncake_protocol": "tcp"}}'
+                # - '{"kv_connector":"NixlConnector","kv_role":"kv_producer"}'
                 - --disaggregation-mode
                 - prefill
               env:
@@ -121,7 +128,7 @@ spec:
                 - name: HF_HOME
                   value: /model-cache
                 - name: HF_HUB_OFFLINE
-                  value: '1'
+                  value: '0'
                 - name: HF_MODULES_CACHE
                   value: /tmp/hf_modules
                 - name: TRITON_CACHE_DIR
@@ -132,6 +139,8 @@ spec:
                   value: /tmp/vllm-cache
                 - name: VLLM_OMNI_USE_QUACK_FP8
                   value: "0"
+                - name: VLLM_SSM_CONV_STATE_LAYOUT
+                  value: DS
                 - name: VLLM_WORKER_MULTIPROC_METHOD
                   value: "spawn"
                 - name: NIXL_LOG_LEVEL
@@ -140,6 +149,20 @@ spec:
                   value: '0'
                 - name: NCCL_IB_DISABLE
                   value: "1"
+                - name: VLLM_MOONCAKE_BOOTSTRAP_PORT
+                  value: '8998'
+                - name: VLLM_HOST_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
+                - name: MC_FORCE_TCP
+                  value: '1'
+                - name: VLLM_LOGGING_LEVEL
+                  value: DEBUG
+                - name: DYN_VLLM_MOONCAKE_BOOTSTRAP_ADVERTISE_HOST
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
               resources:
                 requests:
                   cpu: "4"
@@ -186,7 +209,7 @@ spec:
                 sizeLimit: 40Gi
           containers:
             - name: main
-              image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.3.1
+              image: elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d
               imagePullPolicy: IfNotPresent
               workingDir: /workspace/
               command:
@@ -195,23 +218,30 @@ spec:
                 - -m
                 - dynamo.vllm
                 - --model
-                - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+                - nvidia/Qwen3.6-35B-A3B-NVFP4
                 - --served-model-name
-                - Qwen/Qwen3-30B-A3B-Instruct-2507-FP8
+                - nvidia/Qwen3.6-35B-A3B-NVFP4
                 - --trust-remote-code
                 - --tensor-parallel-size
                 - "1"
                 - --max-model-len
-                - "32768"
+                - "262144"
                 - --max-num-seqs
-                - "1"
+                - "4"
+                - --max-num-batched-tokens
+                - "8192"
                 - --gpu-memory-utilization
                 - "0.85"
                 - --enable-prefix-caching
+                - --enable-chunked-prefill
                 - --dyn-tool-call-parser
-                - "hermes"
+                - "qwen3_coder"
+                - --dyn-reasoning-parser
+                - "qwen3"
                 - --kv-transfer-config
-                - '{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
+                # - '{"kv_connector":"NixlConnector","kv_role":"kv_consumer"}'
+                - '{"kv_connector": "MooncakeConnector", "kv_role": "kv_consumer", "kv_connector_extra_config":
+                  {"mooncake_protocol": "tcp"}}'
                 - --disaggregation-mode
                 - decode
               env:
@@ -222,7 +252,7 @@ spec:
                 - name: HF_HOME
                   value: /model-cache
                 - name: HF_HUB_OFFLINE
-                  value: '1'
+                  value: '0'
                 - name: HF_MODULES_CACHE
                   value: /tmp/hf_modules
                 - name: TRITON_CACHE_DIR
@@ -233,6 +263,8 @@ spec:
                   value: /tmp/vllm-cache
                 - name: VLLM_OMNI_USE_QUACK_FP8
                   value: "0"
+                - name: VLLM_SSM_CONV_STATE_LAYOUT
+                  value: DS
                 - name: VLLM_WORKER_MULTIPROC_METHOD
                   value: "spawn"
                 - name: NIXL_LOG_LEVEL
@@ -241,6 +273,16 @@ spec:
                   value: '0'
                 - name: NCCL_IB_DISABLE
                   value: "1"
+                - name: VLLM_MOONCAKE_BOOTSTRAP_PORT
+                  value: '8998'
+                - name: VLLM_HOST_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
+                - name: MC_FORCE_TCP
+                  value: '1'
+                - name: VLLM_LOGGING_LEVEL
+                  value: DEBUG
               resources:
                 requests:
                   cpu: "4"
