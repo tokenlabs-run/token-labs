@@ -1,6 +1,8 @@
 # Model Aggregator — merges /v1/models from all inference backends
 # Runs on controller node (no GPU needed). Gateway /v1/models route points here.
-# Dynamically discovers backends via label: token-labs/model=true on Services.
+# Discovers serving Services restricted by MODEL_BACKEND_SERVICES.
+# The stable Service selects the GLM candidate. Future changes require
+# a separate candidate; do not update the active Deployment template in place.
 
 ---
 apiVersion: v1
@@ -39,19 +41,19 @@ roleRef:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: model-aggregator
+  name: model-aggregator-glm47-candidate
   namespace: token-labs
   labels:
-    app: model-aggregator
+    app: model-aggregator-glm47-candidate
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: model-aggregator
+      app: model-aggregator-glm47-candidate
   template:
     metadata:
       labels:
-        app: model-aggregator
+        app: model-aggregator-glm47-candidate
     spec:
       serviceAccountName: model-aggregator
       nodeSelector:
@@ -73,7 +75,7 @@ spec:
           name: http
         env:
         - name: MODEL_BACKEND_SERVICES
-          value: "qwen3-30b-control-dynamo-disagg-frontend"
+          value: "glm47-flash-dynamo-disagg-frontend"
         - name: OPENROUTER_MODEL_DOCUMENT_PATH
           value: /etc/openrouter/models.json
         - name: OPENROUTER_MAX_CONCURRENCY
@@ -127,7 +129,23 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: model-aggregator
+    app: model-aggregator-glm47-candidate
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+
+---
+# Direct access for candidate validation and rollback diagnostics.
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-aggregator-glm47-candidate
+  namespace: token-labs
+spec:
+  type: ClusterIP
+  selector:
+    app: model-aggregator-glm47-candidate
   ports:
   - name: http
     port: 8000
