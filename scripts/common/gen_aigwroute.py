@@ -356,7 +356,7 @@ spec:
         hostname: {m.backend_host}
         port: {m.backend_port}
 ---
-apiVersion: aigateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIServiceBackend
 metadata:
   name: {m.slug}
@@ -380,6 +380,8 @@ spec:
             - type: Exact
               name: x-ai-eg-model
               value: {json.dumps(m.served_name)}
+      timeouts:
+        request: 3600s
       backendRefs:
         - name: {m.slug}"""
         for m in models
@@ -387,7 +389,7 @@ spec:
 
     parts.append(
         f"""---
-apiVersion: aigateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIGatewayRoute
 metadata:
   name: {ROUTE_NAME}
@@ -395,8 +397,6 @@ metadata:
   labels:
     {MANAGED_BY_LABEL}: {MANAGED_BY_VALUE}
 spec:
-  schema:
-    name: OpenAI
   # Declared once here so token accounting applies uniformly to every model and
   # both serving stacks.
   llmRequestCosts:
@@ -406,7 +406,7 @@ spec:
       type: OutputToken
     - metadataKey: llm_total_token
       type: TotalToken
-  targetRefs:
+  parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
       name: {GATEWAY_NAME}

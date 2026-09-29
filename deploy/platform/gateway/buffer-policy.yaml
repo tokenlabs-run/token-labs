@@ -10,3 +10,19 @@ spec:
     name: token-labs-gateway
   connection:
     bufferLimit: "10Mi"
+
+---
+# AI request bodies include tool schemas and conversation history. The backend
+# policy above does not raise the downstream listener's default 32 KiB buffer.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: llm-client-buffer-policy
+  namespace: token-labs
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: token-labs-gateway
+  connection:
+    bufferLimit: "10Mi"

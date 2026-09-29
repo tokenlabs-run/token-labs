@@ -8,7 +8,16 @@ this layer advertises.
 | --- | --- |
 | `gateway.yaml`, `gatewayclass.yaml`, `envoyproxy-infra.yaml` | The Gateway itself |
 | `aigatewayroute-models.yaml` | **Generated.** Every model's Service/Backend/AIServiceBackend + the single AIGatewayRoute |
-| `buffer-policy.yaml`, `cors-policy.yaml`, `extproc-streaming-policy.yaml` | Traffic policy |
+| `buffer-policy.yaml`, `cors-policy.yaml` | Traffic policy |
+
+## Upgrading the gateway charts
+
+See [the Helm upgrade procedure](upgrades/README.md) for version discovery,
+values comparison, CRD migration checks, and production blue/green requirements.
+It includes the 2026-09-22 authorized maintenance record, exact Kubernetes and
+chart targets, recovery artifacts, and validation results. The record ends during the Kubernetes 1.37.0 follow-up; verify live versions
+before planning further maintenance. A normal Helm rolling update does
+not establish zero downtime.
 
 ## Deploying a model
 

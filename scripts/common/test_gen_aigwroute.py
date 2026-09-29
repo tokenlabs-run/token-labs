@@ -27,6 +27,11 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIn("http:frontend:8080/proxy/v1/models", calls[-1].args[2])
         rendered = g.render(models, "token-labs", pathlib.Path("/tmp/routes.yaml"))
         self.assertIn("port: 8080", rendered)
+        self.assertIn("apiVersion: aigateway.envoyproxy.io/v1beta1", rendered)
+        self.assertIn("  parentRefs:", rendered)
+        self.assertNotIn("  targetRefs:", rendered)
+        self.assertNotIn("  schema:", rendered.split("kind: AIGatewayRoute\n", 1)[1])
+        self.assertIn("        request: 3600s", rendered)
         self.assertNotIn("kind: Service\n", rendered)
 
     def test_null_endpoints_not_probed(self):

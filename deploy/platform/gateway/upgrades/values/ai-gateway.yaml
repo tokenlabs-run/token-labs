@@ -1,0 +1,8 @@
+# Reviewed overrides for chart 1.1.0; CRDs are upgraded separately.
+controller:
+  nodeSelector:
+    kubernetes.io/hostname: controller
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+    operator: Exists
