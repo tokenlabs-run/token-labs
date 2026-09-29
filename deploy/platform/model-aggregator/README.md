@@ -10,7 +10,7 @@ Every 28 seconds the aggregator lists Services in its own namespace and queries
 `/v1/models` on llm-d decode services, Dynamo frontends, and any other serving
 Service labeled `token-labs/model=true`. `MODEL_BACKEND_SERVICES` optionally limits
 those candidates to comma-separated Service names in the same namespace. Production
-currently allows only `qwen3-30b-control-dynamo-disagg-frontend`; inactive and
+currently allows only `glm47-flash-dynamo-disagg-frontend`; inactive and
 experimental Services are not probed or used for chat routing. Update the allowlist
 through a separate aggregator candidate when the approved serving Service changes.
 An empty/unset allowlist restores automatic discovery. An unavailable allowlisted
@@ -27,7 +27,10 @@ Validate every edit against OpenRouter's current provider schema before deploy.
 The response is served exactly as checked in and does not depend on live model
 discovery. Update `is_ready` explicitly when enabling or disabling OpenRouter
 traffic. Pricing is deliberately omitted until
-commercial terms are approved; never publish placeholder prices.
+commercial terms are approved; never publish placeholder prices. The static
+catalog is currently empty: retired Qwen entries were removed, and GLM provider
+metadata has not been approved. Live `/v1/models` and authenticated
+`/openrouter/v1/models` advertise GLM from backend discovery.
 
 OpenRouter should use `https://api.tokenlabs.run/openrouter/v1` as its API base.
 Both `/models` and `/chat/completions` under that base require a bearer key from
@@ -46,3 +49,25 @@ Inference routes and SecurityPolicies are unchanged.
 
 Run tests with `python -m unittest discover -s deploy/platform/model-aggregator`
 in an environment with FastAPI and httpx installed.
+
+## GLM-only rollout — 2026-09-29
+
+The stable `model-aggregator` Service now selects
+`app=model-aggregator-glm47-candidate`. The previous
+`model-aggregator-candidate` Deployment remains ready for rollback. Its failed
+pod `model-aggregator-candidate-7fc65dcfd7-5bnwr` was deleted; the healthy pod
+was retained.
+
+Validation: 14 aggregator tests and seven gateway-generator tests passed. The
+new candidate uses the same application code as the previous live instance.
+Candidate health, GLM-only discovery, authenticated completion, and streaming
+passed before the selector switch. After cutover, public `/v1/models` and
+authenticated `/openrouter/v1/models` returned only `glm-4.7-flash`; public
+non-streaming and streaming completions returned HTTP 200, with `[DONE]` on
+the stream. `/openrouter/models` returned the intentionally empty static catalog.
+No GPU worker template was changed or restarted. These are functional checks,
+not a model quality or load-capacity certification.
+
+Rollback changes only the stable Service selector back to
+`app=model-aggregator-candidate`; that restores the previous Qwen allowlist and
+static catalog as well, so review the model inventory before rolling back.
