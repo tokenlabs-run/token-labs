@@ -20,26 +20,13 @@ spec:
     interval: 30s
     rules:
 
-    # Serving availability: 1 if the engine answered its scrape, 0 if not.
-    #
-    # This used to be kube_pod_status_ready filtered on
-    # pod=~"ms-deepseek-r1-32b.*|ms-nemotron-nano-nvfp4.*". Those deployments
-    # are long gone, so the rule silently produced no series and every panel
-    # built on it ("Model Availability", "Error Budget Remaining", "Burn Rate")
-    # read "No data" while looking perfectly healthy.
-    #
-    # Two changes make it rot-resistant:
-    #  1. `up` for the PodMonitor job instead of a hardcoded pod-name regex --
-    #     membership is now decided by the token-labs/scenario label, so new or
-    #     renamed pods are picked up automatically.
-    #  2. `up` also means something stronger for an inference SLO than
-    #     pod-ready: the process is actually answering, not merely scheduled.
-    #
-    # Grouped by `stack` so llm-d and dynamo get independent budgets.
+    # Scrape availability per worker, not public inference availability.
+    # Stable monitor jobs select current pods without hardcoded deployment names.
+    # Preserve namespace and role labels for alerts and dashboard grouping.
     - record: token_labs:pod_available:bool
       expr: |
-        max by (pod, stack, node) (
-          up{job=~".*nemotron35-dspark.*"}
+        min by (pod, namespace, stack, node, role, workload) (
+          up{namespace="token-labs",job=~"monitoring/token-labs-dynamo|monitoring/nemotron35-dspark-comparison",role!="frontend"}
         )
 
     # 5-min availability ratio per pod (for burn rate calc)
@@ -61,7 +48,7 @@ spec:
     - record: token_labs:ttft_p99:rate5m
       expr: |
         histogram_quantile(0.99,
-          sum by (le, model_name) (
+          sum by (le, model_name, role) (
             rate(vllm:time_to_first_token_seconds_bucket{namespace="token-labs"}[5m])
           )
         )
@@ -81,12 +68,12 @@ spec:
     # ratio is genuinely undefined and should read "no data", not 0%.
     - record: token_labs:error_rate:rate5m
       expr: |
-        sum by (model_name, stack) (
-          rate(vllm:request_success_total{finished_reason="error"}[5m])
+        sum by (model_name, stack, role) (
+          rate(vllm:request_success_total{namespace="token-labs",role!="prefill",finished_reason="error"}[5m])
         )
         /
-        sum by (model_name, stack) (
-          rate(vllm:request_success_total[5m])
+        sum by (model_name, stack, role) (
+          rate(vllm:request_success_total{namespace="token-labs",role!="prefill"}[5m])
         )
 
     # KV cache utilization — per vLLM model
@@ -112,10 +99,10 @@ spec:
         slo: availability
         team: token-labs
       annotations:
-        summary: "Model pod {{ $labels.pod }} is not ready"
+        summary: "Worker metrics scrape failed for {{ $labels.pod }}"
         description: >
-          Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has been
-          not ready for > 2 minutes. SLO target: 99.5% availability.
+          Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has not answered
+          metrics scrapes for > 2 minutes. SLO target: 99.5% availability.
           Error budget is being consumed at maximum rate.
         runbook: "https://github.com/elizabetht/token-labs/blob/main/postmortems/"
 
