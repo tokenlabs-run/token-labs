@@ -35,7 +35,8 @@ def main():
             elif mode == 'interrupted':
                 route.fulfill(content_type='text/event-stream', body='data: {"choices":[]}\n\n')
             else:
-                delta = {'choices': [{'delta': {'content': '<script>unsafe()</script> Hello'}}]}
+                delta = {'choices': [{'delta': {'content': '<script>unsafe()</script> Hello'},
+                                      'finish_reason': 'length' if mode == 'limited' else 'stop'}]}
                 route.fulfill(content_type='text/event-stream', body='data: '+json.dumps(delta)+'\r\n\r\ndata: [DONE]\r\n\r\n')
 
         page.route('https://api.tokenlabs.run/**', api)
@@ -64,9 +65,14 @@ def main():
         page.locator('#prompt').press('Enter')
         page.wait_for_function('document.querySelector("#status").textContent === "Response complete."')
         assert len(requests[-1]['messages']) == 3
+        assert requests[-1]['chat_template_kwargs'] == {'enable_thinking': False}
         page.locator('#clear').click()
         assert page.locator('.message').count() == 0
         assert page.evaluate('localStorage.length === 0 && sessionStorage.length === 0')
+        mode = 'limited'
+        page.locator('#prompt').fill('Test output limit')
+        page.locator('#send').click()
+        page.wait_for_function('document.querySelector("#status").textContent.includes("Output limit reached")')
         mode = 'unauthorized'
         page.locator('#prompt').fill('Test errors')
         page.locator('#send').click()
