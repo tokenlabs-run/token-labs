@@ -1,15 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Token Labs · Benchmark Dashboard</title>
-  <script src="chart.umd.min.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Token Labs · Benchmark Dashboard</title>
+<script src="chart.umd.min.js"></script>
+<style>@scope (.resource-content) {
+
     /* ── Reset & Variables ───────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
+    :scope {
       --bg:           #0d0d0d;
       --bg-card:      #1a1a1a;
       --bg-card2:     #222222;
@@ -30,9 +32,9 @@
       --radius-sm:    6px;
     }
 
-    html { scroll-behavior: smooth; }
+    :scope { scroll-behavior: smooth; }
 
-    body {
+    :scope {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -510,552 +512,504 @@
       table.registry th:nth-child(n+4),
       table.registry td:nth-child(n+4) { display: none; }
     }
-  </style>
-</head>
-<body>
+
+}</style>
+<link href="assets/site.css" rel="stylesheet"/><link href="assets/resources.css" rel="stylesheet"/><script defer="True" src="assets/resources.js"></script></head>
+<body class="resource-page"><a class="skip" href="#main">Skip to content</a><header class="header shell"><a aria-label="Token Labs home" class="brand" href="index.html"><span aria-hidden="true" class="brand-mark">t.</span>token labs</a><nav aria-label="Main navigation"><a href="playground.html">Playground</a><a href="dashboards.html">Dashboards</a></nav></header><main class="shell resource-content" id="main"><p class="resource-breadcrumb"><a href="labs.html">Experiments &amp; resources</a></p>
 <div class="page">
-
-  <a class="back-link" href="index.html">
-    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M10 3 5 8l5 5M5 8h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Back to Token Labs
-  </a>
-
-  <!-- ── Hero ────────────────────────────────────────────── -->
-  <header class="hero">
-    <div class="hero-inner">
-      <div>
-        <h1 class="hero-title">Token Labs<br><span>Benchmark Dashboard</span></h1>
-        <p class="hero-sub">Reproducible inference performance across modern accelerator platforms — real data, open lab.</p>
-        <div class="hero-badges">
-          <span class="hw-badge">
-            <svg viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 6h4M6 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            AMD Instinct MI300X
-          </span>
-          <span class="hw-badge">192 GiB HBM3</span>
-          <span class="hw-badge">ROCm · gfx942</span>
-          <span class="hw-badge">NVIDIA DGX Spark · GB10</span>
-          <span class="updated-badge" id="last-updated">Updated 2026-08-29</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- ── Summary Stats ────────────────────────────────────── -->
-  <div class="section">
-    <p class="section-desc" style="margin-bottom:1rem;"><strong style="color:var(--green);">Published findings appear first.</strong> These counters describe the open lab notebook, including planned work and documented failures; they are not a publication score. <a href="labs.html">Browse study notes</a>.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:2.5rem;">
-      <div class="card" data-statcard="total" style="padding:1rem 1.25rem;">
-        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Notebook experiments</div>
-        <div style="font-size:1.8rem;font-weight:700;color:var(--text);" id="stat-total">14</div>
-      </div>
-      <div class="card" data-statcard="done" style="padding:1rem 1.25rem;">
-        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Completed</div>
-        <div style="font-size:1.8rem;font-weight:700;color:var(--green);" id="stat-done">2</div>
-      </div>
-      <div class="card" data-statcard="pending" style="padding:1rem 1.25rem;">
-        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">In Progress / Pending</div>
-        <div style="font-size:1.8rem;font-weight:700;color:var(--yellow);" id="stat-pending">4</div>
-      </div>
-      <div class="card" data-statcard="queued" style="padding:1rem 1.25rem;">
-        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Queued</div>
-        <div style="font-size:1.8rem;font-weight:700;color:var(--text-muted);" id="stat-queued">6</div>
-      </div>
-      <div class="card" data-statcard="failed" style="padding:1rem 1.25rem;">
-        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Documented failures</div>
-        <div style="font-size:1.8rem;font-weight:700;color:var(--red);" id="stat-failed">2</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- NVIDIA DGX Spark: Dynamo vs llm-d P/D -->
-  <div class="section" id="dgx-spark-dynamo-pd">
-    <div class="section-title">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 on two DGX Sparks — Dynamo vs llm-d P/D</div>
-    <p class="section-desc">Matched disaggregated runs with prefill pinned to <span class="mono">spark-01</span> and decode to <span class="mono">spark-02</span>. NVIDIA AIPerf 0.12.0, streaming chat, seed 42, exact-length synthetic prompts, one concurrency wave per point (two requests at c=1), fp8 KV, and DSpark speculative decoding. Prefix caching was disabled on both Dynamo and llm-d workers. Both paths performed remote prefill and transferred KV with NIXL; Dynamo used its frontend and llm-d used the decode-sidecar path.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">729.76 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32</div></div>
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">llm-d peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">595.51 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32 · prefix cache off</div></div>
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Reliability</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">36 / 36</div><div style="font-size:.78rem;color:var(--text-muted);">zero request errors</div></div>
-    </div>
-    <div class="table-wrap" style="margin-bottom:1rem;"><table><thead><tr><th>ISL / OSL</th><th>c</th><th>Dynamo tok/s</th><th>llm-d tok/s</th><th>Difference</th></tr></thead><tbody>
-      <tr><td><span class="mono">1K / 8K</span></td><td>32</td><td>729.76</td><td>595.51</td><td>Dynamo +22.5%</td></tr>
-      <tr><td><span class="mono">8K / 8K</span></td><td>32</td><td>629.86</td><td>526.60</td><td>Dynamo +19.6%</td></tr>
-      <tr><td><span class="mono">8K / 1K</span></td><td>32</td><td>270.74</td><td>220.97</td><td>Dynamo +22.5%</td></tr>
-    </tbody></table></div>
-    <div style="margin-top:1.5rem;">
-      <div class="section-title" style="font-size:1.1rem;">Prefix-cache-off P/D Pareto curves</div>
-      <p class="section-desc">Up and to the right is better: total output throughput is plotted against per-user output throughput. Select a workload to compare all six concurrency points.</p>
-      <div class="tab-row" id="pd-pareto-tabs"></div>
-      <div class="fw-chart-wrap"><canvas id="pd-pareto-chart" height="300"></canvas></div>
-      <div id="pd-pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
-    </div>
-    <p class="section-desc" style="margin-bottom:0;">Machine-readable 18-row matrices: <a href="nemotron35-dynamo-pd-spark.json">Dynamo</a>, <a href="nemotron35-llmd-pd-spark.json">llm-d</a>, and <a href="nemotron35-pd-comparison-spark.json">combined comparison</a>. This prefix-cache-off rerun supersedes the earlier cached Dynamo dataset. All 36 current comparison cells completed without request errors. Actual output lengths can differ slightly from requested lengths because of tokenizer and stop-token behavior. Request metrics are authoritative; sidecar server-counter resets produced telemetry warnings without benchmark request failures.</p>
-  </div>
-
-  <!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
-  <div class="section" id="mi300x-qwen38">
-    <div class="section-title">Qwen3.8-27B on AMD MI300X — aggregated single-replica controls</div>
-    <p class="section-desc">
-      <strong style="color:var(--yellow);">Single-replica control.</strong>
-      Aggregated vLLM serving on separate 1&times; AMD Instinct MI300X instances. NVIDIA AIPerf 0.12.0,
+<!-- ── Hero ────────────────────────────────────────────── -->
+<header class="hero">
+<div class="hero-inner">
+<div>
+<h1 class="hero-title">Benchmark results</h1>
+<p class="hero-sub">Reproducible inference performance across modern accelerator platforms — real data, open lab.</p>
+</div>
+</div>
+</header>
+<!-- ── Summary Stats ────────────────────────────────────── -->
+<details class="report-group"><summary>Notebook overview</summary><div class="section">
+<p class="section-desc" style="margin-bottom:1rem;"><strong style="color:var(--green);">Published findings appear first.</strong> These counters describe the open lab notebook, including planned work and documented failures; they are not a publication score. <a href="labs.html">Browse study notes</a>.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:2.5rem;">
+<div class="card" data-statcard="total" style="padding:1rem 1.25rem;">
+<div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Notebook experiments</div>
+<div id="stat-total" style="font-size:1.8rem;font-weight:700;color:var(--text);">14</div>
+</div>
+<div class="card" data-statcard="done" style="padding:1rem 1.25rem;">
+<div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Completed</div>
+<div id="stat-done" style="font-size:1.8rem;font-weight:700;color:var(--green);">2</div>
+</div>
+<div class="card" data-statcard="pending" style="padding:1rem 1.25rem;">
+<div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">In Progress / Pending</div>
+<div id="stat-pending" style="font-size:1.8rem;font-weight:700;color:var(--yellow);">4</div>
+</div>
+<div class="card" data-statcard="queued" style="padding:1rem 1.25rem;">
+<div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Queued</div>
+<div id="stat-queued" style="font-size:1.8rem;font-weight:700;color:var(--text-muted);">6</div>
+</div>
+<div class="card" data-statcard="failed" style="padding:1rem 1.25rem;">
+<div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem;">Documented failures</div>
+<div id="stat-failed" style="font-size:1.8rem;font-weight:700;color:var(--red);">2</div>
+</div>
+</div>
+</div></details>
+<!-- NVIDIA DGX Spark: Dynamo vs llm-d P/D -->
+<details class="report-group"><summary>nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 on two DGX Sparks — Dynamo vs llm-d P/D</summary><div class="section" id="dgx-spark-dynamo-pd">
+<div class="section-title">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 on two DGX Sparks — Dynamo vs llm-d P/D</div>
+<p class="section-desc">Matched disaggregated runs with prefill pinned to <span class="mono">spark-01</span> and decode to <span class="mono">spark-02</span>. NVIDIA AIPerf 0.12.0, streaming chat, seed 42, exact-length synthetic prompts, one concurrency wave per point (two requests at c=1), fp8 KV, and DSpark speculative decoding. Prefix caching was disabled on both Dynamo and llm-d workers. Both paths performed remote prefill and transferred KV with NIXL; Dynamo used its frontend and llm-d used the decode-sidecar path.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
+<div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">729.76 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32</div></div>
+<div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">llm-d peak · 1K/8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">595.51 tok/s</div><div style="font-size:.78rem;color:var(--text-muted);">c=32 · prefix cache off</div></div>
+<div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Reliability</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">36 / 36</div><div style="font-size:.78rem;color:var(--text-muted);">zero request errors</div></div>
+</div>
+<div class="table-wrap" style="margin-bottom:1rem;"><table><thead><tr><th>ISL / OSL</th><th>c</th><th>Dynamo tok/s</th><th>llm-d tok/s</th><th>Difference</th></tr></thead><tbody>
+<tr><td><span class="mono">1K / 8K</span></td><td>32</td><td>729.76</td><td>595.51</td><td>Dynamo +22.5%</td></tr>
+<tr><td><span class="mono">8K / 8K</span></td><td>32</td><td>629.86</td><td>526.60</td><td>Dynamo +19.6%</td></tr>
+<tr><td><span class="mono">8K / 1K</span></td><td>32</td><td>270.74</td><td>220.97</td><td>Dynamo +22.5%</td></tr>
+</tbody></table></div>
+<div style="margin-top:1.5rem;">
+<div class="section-title" style="font-size:1.1rem;">Prefix-cache-off P/D Pareto curves</div>
+<p class="section-desc">Up and to the right is better: total output throughput is plotted against per-user output throughput. Select a workload to compare all six concurrency points.</p>
+<div class="tab-row" id="pd-pareto-tabs"></div>
+<div class="fw-chart-wrap"><canvas height="300" id="pd-pareto-chart"></canvas></div>
+<div id="pd-pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
+</div>
+<p class="section-desc" style="margin-bottom:0;">Machine-readable 18-row matrices: <a href="nemotron35-dynamo-pd-spark.json">Dynamo</a>, <a href="nemotron35-llmd-pd-spark.json">llm-d</a>, and <a href="nemotron35-pd-comparison-spark.json">combined comparison</a>. This prefix-cache-off rerun supersedes the earlier cached Dynamo dataset. All 36 current comparison cells completed without request errors. Actual output lengths can differ slightly from requested lengths because of tokenizer and stop-token behavior. Request metrics are authoritative; sidecar server-counter resets produced telemetry warnings without benchmark request failures.</p>
+</div></details>
+<!-- ── AMD MI300X: Dynamo vs llm-d ─────────────────────── -->
+<details class="report-group"><summary>Qwen3.8-27B on AMD MI300X — aggregated single-replica controls</summary><div class="section" id="mi300x-qwen38">
+<div class="section-title">Qwen3.8-27B on AMD MI300X — aggregated single-replica controls</div>
+<p class="section-desc">
+<strong style="color:var(--yellow);">Single-replica control.</strong>
+      Aggregated vLLM serving on separate 1× AMD Instinct MI300X instances. NVIDIA AIPerf 0.12.0,
       streaming chat, concurrency 4, four measured requests per point, fixed token lengths, seed 42.
-      Dynamo path: frontend &rarr; vLLM worker. llm-d path: Envoy &rarr; EPP &rarr; vLLM.
+      Dynamo path: frontend → vLLM worker. llm-d path: Envoy → EPP → vLLM.
       Use these results for per-replica capacity and wrapper overhead only; they do not test
       multi-worker routing, load balancing, horizontal scaling, or failover.
     </p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
-      <div class="card" style="padding:1rem 1.25rem;">
-        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Decode-heavy · 1K/8K</div>
-        <div style="font-size:1.55rem;font-weight:700;color:var(--green);">Dynamo +58.8%</div>
-        <div style="font-size:.78rem;color:var(--text-muted);">132.06 vs 83.17 output tok/s</div>
-      </div>
-      <div class="card" style="padding:1rem 1.25rem;">
-        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Long-context · 8K/8K</div>
-        <div style="font-size:1.55rem;font-weight:700;color:var(--blue);">Throughput parity</div>
-        <div style="font-size:.78rem;color:var(--text-muted);">83.71 vs 83.27 output tok/s</div>
-      </div>
-      <div class="card" style="padding:1rem 1.25rem;">
-        <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Prefill-heavy · 8K/1K</div>
-        <div style="font-size:1.55rem;font-weight:700;color:var(--purple);">llm-d +9.7%</div>
-        <div style="font-size:.78rem;color:var(--text-muted);">105.28 vs 95.97 output tok/s</div>
-      </div>
-    </div>
-    <div class="card" style="padding:0;overflow-x:auto;">
-      <table class="registry" aria-label="MI300X AIPerf comparison">
-        <thead><tr><th>ISL / OSL</th><th>Framework</th><th>Output tok/s</th><th>Avg TTFT</th><th>Avg ITL</th><th>Avg latency</th></tr></thead>
-        <tbody>
-          <tr><td rowspan="2"><span class="mono">1K / 8K</span></td><td>Dynamo agg</td><td class="text-green">132.06</td><td>546.63 ms</td><td>30.22 ms</td><td>248.06 s</td></tr>
-          <tr><td>llm-d agg</td><td>83.17</td><td>804.06 ms</td><td>48.00 ms</td><td>393.91 s</td></tr>
-          <tr><td rowspan="2"><span class="mono">8K / 8K</span></td><td>Dynamo agg</td><td class="text-green">83.71</td><td>5,238.68 ms</td><td>47.14 ms</td><td>391.37 s</td></tr>
-          <tr><td>llm-d agg</td><td>83.27</td><td>4,882.57 ms</td><td>47.44 ms</td><td>393.44 s</td></tr>
-          <tr><td rowspan="2"><span class="mono">8K / 1K</span></td><td>Dynamo agg</td><td>95.97</td><td class="text-green">390.90 ms</td><td>41.31 ms</td><td>42.65 s</td></tr>
-          <tr><td>llm-d agg</td><td class="text-green">105.28</td><td>411.18 ms</td><td class="text-green">37.61 ms</td><td class="text-green">38.89 s</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="section-desc" style="margin-top:1rem;margin-bottom:.5rem;">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
+<div class="card" style="padding:1rem 1.25rem;">
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Decode-heavy · 1K/8K</div>
+<div style="font-size:1.55rem;font-weight:700;color:var(--green);">Dynamo +58.8%</div>
+<div style="font-size:.78rem;color:var(--text-muted);">132.06 vs 83.17 output tok/s</div>
+</div>
+<div class="card" style="padding:1rem 1.25rem;">
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Long-context · 8K/8K</div>
+<div style="font-size:1.55rem;font-weight:700;color:var(--blue);">Throughput parity</div>
+<div style="font-size:.78rem;color:var(--text-muted);">83.71 vs 83.27 output tok/s</div>
+</div>
+<div class="card" style="padding:1rem 1.25rem;">
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">Prefill-heavy · 8K/1K</div>
+<div style="font-size:1.55rem;font-weight:700;color:var(--purple);">llm-d +9.7%</div>
+<div style="font-size:.78rem;color:var(--text-muted);">105.28 vs 95.97 output tok/s</div>
+</div>
+</div>
+<div class="card" style="padding:0;overflow-x:auto;">
+<table aria-label="MI300X AIPerf comparison" class="registry">
+<thead><tr><th>ISL / OSL</th><th>Framework</th><th>Output tok/s</th><th>Avg TTFT</th><th>Avg ITL</th><th>Avg latency</th></tr></thead>
+<tbody>
+<tr><td rowspan="2"><span class="mono">1K / 8K</span></td><td>Dynamo agg</td><td class="text-green">132.06</td><td>546.63 ms</td><td>30.22 ms</td><td>248.06 s</td></tr>
+<tr><td>llm-d agg</td><td>83.17</td><td>804.06 ms</td><td>48.00 ms</td><td>393.91 s</td></tr>
+<tr><td rowspan="2"><span class="mono">8K / 8K</span></td><td>Dynamo agg</td><td class="text-green">83.71</td><td>5,238.68 ms</td><td>47.14 ms</td><td>391.37 s</td></tr>
+<tr><td>llm-d agg</td><td>83.27</td><td>4,882.57 ms</td><td>47.44 ms</td><td>393.44 s</td></tr>
+<tr><td rowspan="2"><span class="mono">8K / 1K</span></td><td>Dynamo agg</td><td>95.97</td><td class="text-green">390.90 ms</td><td>41.31 ms</td><td>42.65 s</td></tr>
+<tr><td>llm-d agg</td><td class="text-green">105.28</td><td>411.18 ms</td><td class="text-green">37.61 ms</td><td class="text-green">38.89 s</td></tr>
+</tbody>
+</table>
+</div>
+<p class="section-desc" style="margin-top:1rem;margin-bottom:.5rem;">
       Versions: Dynamo 1.4.2 with vLLM 0.28.1rc1.dev43; llm-d with vLLM 0.28.0. Both used
       <span class="mono">--max-model-len 32768</span>, GPU memory utilization 0.90, exact output lengths,
       and the same model. Four requests per point make this a controlled snapshot rather than a statistically robust capacity study.
     </p>
-    <p class="section-desc" style="margin-bottom:0;">Raw summary: <a href="mi300x-qwen38-aiperf.json">mi300x-qwen38-aiperf.json</a></p>
-  </div>
-
-  <!-- ── AMD MI300X: partial P/D comparison ──────────────── -->
-  <div class="section" id="mi300x-qwen38-disagg">
-    <div class="section-title">Qwen/Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d P/D (partial)</div>
-    <p class="section-desc">
-      <strong style="color:var(--yellow);">Partial run · capacity interrupted.</strong>
+<p class="section-desc" style="margin-bottom:0;">Raw summary: <a href="mi300x-qwen38-aiperf.json">mi300x-qwen38-aiperf.json</a></p>
+</div></details>
+<!-- ── AMD MI300X: partial P/D comparison ──────────────── -->
+<details class="report-group"><summary>Qwen/Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d P/D (partial)</summary><div class="section" id="mi300x-qwen38-disagg">
+<div class="section-title">Qwen/Qwen3.8-27B on AMD MI300X — Dynamo vs llm-d P/D (partial)</div>
+<p class="section-desc">
+<strong style="color:var(--yellow);">Partial run · capacity interrupted.</strong>
       Two MI300X workers per system, one prefill and one decode. Dynamo has 18/18 validated points;
       5/18 llm-d points were recovered before the RunPod host became unavailable. Missing cells are
       pending and will be replaced when MI300X capacity returns.
     </p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo P/D</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">18 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">validated · zero failures</div></div>
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">llm-d P/D recovered</div><div style="font-size:1.55rem;font-weight:700;color:var(--yellow);">5 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">clean-cache · zero failures</div></div>
-      <div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Measured 1K / 8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">Within 1.0%</div><div style="font-size:.78rem;color:var(--text-muted);">through c=16</div></div>
-    </div>
-    <div class="card" style="padding:0;overflow-x:auto;margin-bottom:1rem;">
-      <table class="registry" aria-label="Partial MI300X P/D comparison">
-        <thead><tr><th>ISL / OSL</th><th>c</th><th>Dynamo tok/s</th><th>llm-d tok/s</th><th>llm-d mean TTFT</th><th>llm-d mean ITL</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td rowspan="6"><span class="mono">1K / 8K</span></td><td>1</td><td>66.02</td><td>65.50</td><td>1,314.20 ms</td><td>15.11 ms</td><td>Measured</td></tr>
-          <tr><td>2</td><td>123.57</td><td>122.48</td><td>2,424.61 ms</td><td>16.03 ms</td><td>Measured</td></tr>
-          <tr><td>4</td><td>213.55</td><td>211.64</td><td>4,640.94 ms</td><td>18.34 ms</td><td>Measured</td></tr>
-          <tr><td>8</td><td>356.17</td><td>355.50</td><td>9,180.36 ms</td><td>21.39 ms</td><td>Measured</td></tr>
-          <tr><td>16</td><td>620.59</td><td>616.07</td><td>17,645.34 ms</td><td>23.60 ms</td><td>Measured</td></tr>
-          <tr><td>32</td><td>1,007.86</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td rowspan="6"><span class="mono">8K / 8K</span></td><td>1</td><td>61.93</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>2</td><td>114.22</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>4</td><td>192.02</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>8</td><td>310.49</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>16</td><td>494.70</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>32</td><td>738.25</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td rowspan="6"><span class="mono">8K / 1K</span></td><td>1</td><td>51.65</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>2</td><td>82.13</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>4</td><td>121.75</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>8</td><td>170.24</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>16</td><td>217.73</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-          <tr><td>32</td><td>254.97</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--yellow);">Pending</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="section-desc" style="margin-bottom:.5rem;">Validation: producer/consumer roles, matching NIXL compatibility hash, a successful 195.812 MiB remote KV transfer, and 0.0% local prefix-cache hits. Four additional jobs completed but their numeric artifacts were not recovered, so they remain pending.</p>
-    <p class="section-desc" style="margin-bottom:0;">Machine-readable data: <a href="mi300x-qwen38-disagg-partial.json">mi300x-qwen38-disagg-partial.json</a></p>
-  </div>
-
-  <!-- ── NVIDIA DGX Spark: Dynamo vs llm-d Pareto ────────── -->
-  <div class="section" id="dgx-spark-pareto">
-    <div class="section-title">Nemotron 3.5 on NVIDIA DGX Spark — aggregated single-replica controls</div>
-    <p class="section-desc">
-      <strong style="color:var(--yellow);">Single-replica control.</strong>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem;">
+<div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Dynamo P/D</div><div style="font-size:1.55rem;font-weight:700;color:var(--green);">18 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">validated · zero failures</div></div>
+<div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">llm-d P/D recovered</div><div style="font-size:1.55rem;font-weight:700;color:var(--yellow);">5 / 18</div><div style="font-size:.78rem;color:var(--text-muted);">clean-cache · zero failures</div></div>
+<div class="card" style="padding:1rem 1.25rem;"><div style="font-size:.72rem;text-transform:uppercase;color:var(--text-muted);">Measured 1K / 8K</div><div style="font-size:1.55rem;font-weight:700;color:var(--blue);">Within 1.0%</div><div style="font-size:.78rem;color:var(--text-muted);">through c=16</div></div>
+</div>
+<div class="card" style="padding:0;overflow-x:auto;margin-bottom:1rem;">
+<table aria-label="Partial MI300X P/D comparison" class="registry">
+<thead><tr><th>ISL / OSL</th><th>c</th><th>Dynamo tok/s</th><th>llm-d tok/s</th><th>llm-d mean TTFT</th><th>llm-d mean ITL</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td rowspan="6"><span class="mono">1K / 8K</span></td><td>1</td><td>66.02</td><td>65.50</td><td>1,314.20 ms</td><td>15.11 ms</td><td>Measured</td></tr>
+<tr><td>2</td><td>123.57</td><td>122.48</td><td>2,424.61 ms</td><td>16.03 ms</td><td>Measured</td></tr>
+<tr><td>4</td><td>213.55</td><td>211.64</td><td>4,640.94 ms</td><td>18.34 ms</td><td>Measured</td></tr>
+<tr><td>8</td><td>356.17</td><td>355.50</td><td>9,180.36 ms</td><td>21.39 ms</td><td>Measured</td></tr>
+<tr><td>16</td><td>620.59</td><td>616.07</td><td>17,645.34 ms</td><td>23.60 ms</td><td>Measured</td></tr>
+<tr><td>32</td><td>1,007.86</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td rowspan="6"><span class="mono">8K / 8K</span></td><td>1</td><td>61.93</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>2</td><td>114.22</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>4</td><td>192.02</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>8</td><td>310.49</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>16</td><td>494.70</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>32</td><td>738.25</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td rowspan="6"><span class="mono">8K / 1K</span></td><td>1</td><td>51.65</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>2</td><td>82.13</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>4</td><td>121.75</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>8</td><td>170.24</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>16</td><td>217.73</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+<tr><td>32</td><td>254.97</td><td>—</td><td>—</td><td>—</td><td style="color:var(--yellow);">Pending</td></tr>
+</tbody>
+</table>
+</div>
+<p class="section-desc" style="margin-bottom:.5rem;">Validation: producer/consumer roles, matching NIXL compatibility hash, a successful 195.812 MiB remote KV transfer, and 0.0% local prefix-cache hits. Four additional jobs completed but their numeric artifacts were not recovered, so they remain pending.</p>
+<p class="section-desc" style="margin-bottom:0;">Machine-readable data: <a href="mi300x-qwen38-disagg-partial.json">mi300x-qwen38-disagg-partial.json</a></p>
+</div></details>
+<!-- ── NVIDIA DGX Spark: Dynamo vs llm-d Pareto ────────── -->
+<details class="report-group"><summary>Nemotron 3.5 on NVIDIA DGX Spark — aggregated single-replica controls</summary><div class="section" id="dgx-spark-pareto">
+<div class="section-title">Nemotron 3.5 on NVIDIA DGX Spark — aggregated single-replica controls</div>
+<p class="section-desc">
+<strong style="color:var(--yellow);">Single-replica control.</strong>
       Same model, same weights, same KV dtype, same speculative decoder — only the serving
       framework differs. Measured with NVIDIA AIPerf from the controller node, hitting each
       backend directly (no gateway in the path).
       Model: <span class="mono">nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</span> ·
       modelopt_fp4 weights · fp8 KV · dspark spec-decode (3 tokens) · TP=1 · DGX Spark GB10 ·
-      ISL 1024 / OSL 256 · concurrency 1&ndash;32
+      ISL 1024 / OSL 256 · concurrency 1–32
       · one model replica per arm. This curve measures per-replica capacity and wrapper
       overhead, not multi-worker routing or horizontal scaling.
     </p>
-    <p class="section-desc" style="margin-top:-0.35rem;">
+<p class="section-desc" style="margin-top:-0.35rem;">
       Up and to the right is better: <strong>y</strong> is what the box produces in total,
       <strong>x</strong> is what a single user feels. Raising concurrency walks each curve
       up and to the left — you buy aggregate throughput with per-user speed.
     </p>
-    <div class="tab-row" id="pareto-tabs"></div>
-    <div class="fw-chart-wrap">
-      <canvas id="pareto-chart" height="300"></canvas>
-    </div>
-    <div id="pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
-  </div>
-
-  <!-- ── Experiment Registry ──────────────────────────────── -->
-  <div class="section" id="experiment-registry">
-    <div class="section-title">Experiment Registry</div>
-    <p class="section-desc">All planned and completed experiments. Click any row to expand hypothesis and notes.</p>
-    <div class="card" style="padding:0;">
-      <div class="registry-table-wrap">
-        <table class="registry" id="registry-table">
-          <thead>
-            <tr>
-              <th style="width:32%">Experiment</th>
-              <th>Framework</th>
-              <th>Status</th>
-              <th>Throughput<br><span style="font-weight:400;text-transform:none;letter-spacing:0">(tok/s, c=32)</span></th>
-              <th>TTFT p50<br><span style="font-weight:400;text-transform:none;letter-spacing:0">(ms)</span></th>
-              <th>ITL p50<br><span style="font-weight:400;text-transform:none;letter-spacing:0">(ms)</span></th>
-            </tr>
-          </thead>
-          <tbody id="registry-body">
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Optimization Journey ────────────────────────────────── -->
-  <div class="section" id="section-ablation">
-    <div class="section-title">Optimization Journey — Ablation Study</div>
-    <p class="section-desc"><strong style="color:var(--yellow);">Lab notebook · not a published finding.</strong> Estimated deltas remain visible as hypotheses until the matched runs complete.</p>
-    <p class="section-desc">
+<div class="tab-row" id="pareto-tabs"></div>
+<div class="fw-chart-wrap">
+<canvas height="300" id="pareto-chart"></canvas>
+</div>
+<div id="pareto-table-wrap" style="margin-top:1.5rem;overflow-x:auto;"></div>
+</div></details>
+<!-- ── Experiment Registry ──────────────────────────────── -->
+<details class="report-group"><summary>Experiment Registry</summary><div class="section" id="experiment-registry">
+<div class="section-title">Experiment Registry</div>
+<p class="section-desc">All planned and completed experiments. Click any row to expand hypothesis and notes.</p>
+<div class="card" style="padding:0;">
+<div class="registry-table-wrap">
+<table class="registry" id="registry-table">
+<thead>
+<tr>
+<th style="width:32%">Experiment</th>
+<th>Framework</th>
+<th>Status</th>
+<th>Throughput<br/><span style="font-weight:400;text-transform:none;letter-spacing:0">(tok/s, c=32)</span></th>
+<th>TTFT p50<br/><span style="font-weight:400;text-transform:none;letter-spacing:0">(ms)</span></th>
+<th>ITL p50<br/><span style="font-weight:400;text-transform:none;letter-spacing:0">(ms)</span></th>
+</tr>
+</thead>
+<tbody id="registry-body">
+</tbody>
+</table>
+</div>
+</div>
+</div></details>
+<!-- ── Optimization Journey ────────────────────────────────── -->
+<details class="report-group"><summary>Optimization Journey — Ablation Study</summary><div class="section" id="section-ablation">
+<div class="section-title">Optimization Journey — Ablation Study</div>
+<p class="section-desc"><strong style="color:var(--yellow);">Lab notebook · not a published finding.</strong> Estimated deltas remain visible as hypotheses until the matched runs complete.</p>
+<p class="section-desc">
       Progressive optimization stack on <span class="mono">Qwen/Qwen2.5-7B-Instruct</span> · vLLM standalone → llm-d ·
       DGX Spark GB10 · spark-01 · ~150 tok input / 256 tok output · all concurrency levels (c=1, c=8, c=32)
     </p>
-
-    <!-- Main scatter: throughput vs TTFT -->
-    <div class="journey-main">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
-        <div class="journey-title" style="margin-bottom:0;">Throughput vs TTFT p50 — Optimization Frontier</div>
-        <div class="tab-row" id="scatter-c-tabs" style="margin-bottom:0;">
-          <button class="tab-btn" data-c="1">c=1</button>
-          <button class="tab-btn" data-c="8">c=8</button>
-          <button class="tab-btn active" data-c="32">c=32</button>
-        </div>
-      </div>
-      <div id="journey-scatter-wrap" style="position:relative;height:340px;">
-        <canvas id="journey-scatter" style="display:none;"></canvas>
-      </div>
-      <p class="journey-note">Each point = one experiment. Path shows cumulative optimization journey. Select concurrency level above to switch view. Bottom-right = optimal (high throughput, low TTFT).</p>
-    </div>
-
-    <!-- Secondary: throughput bar + TTFT bar (grouped by concurrency) -->
-    <div class="journey-grid">
-      <div class="journey-side">
-        <div class="journey-title">Output Throughput (tok/s) — all concurrency levels</div>
-        <div id="journey-tput-wrap" style="position:relative;height:260px;">
-          <canvas id="journey-tput" style="display:none;"></canvas>
-        </div>
-      </div>
-      <div class="journey-side">
-        <div class="journey-title">TTFT p50 (ms) — all concurrency levels — lower is better</div>
-        <div id="journey-ttft-wrap" style="position:relative;height:260px;">
-          <canvas id="journey-ttft" style="display:none;"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Technique Impact (Delta Waterfall) ───────────────────── -->
-  <div class="section" id="section-technique-impact">
-    <div class="section-title">Technique Impact — Incremental Gain per Step</div>
-    <p class="section-desc">
+<!-- Main scatter: throughput vs TTFT -->
+<div class="journey-main">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+<div class="journey-title" style="margin-bottom:0;">Throughput vs TTFT p50 — Optimization Frontier</div>
+<div class="tab-row" id="scatter-c-tabs" style="margin-bottom:0;">
+<button class="tab-btn" data-c="1">c=1</button>
+<button class="tab-btn" data-c="8">c=8</button>
+<button class="tab-btn active" data-c="32">c=32</button>
+</div>
+</div>
+<div id="journey-scatter-wrap" style="position:relative;height:340px;">
+<canvas id="journey-scatter" style="display:none;"></canvas>
+</div>
+<p class="journey-note">Each point = one experiment. Path shows cumulative optimization journey. Select concurrency level above to switch view. Bottom-right = optimal (high throughput, low TTFT).</p>
+</div>
+<!-- Secondary: throughput bar + TTFT bar (grouped by concurrency) -->
+<div class="journey-grid">
+<div class="journey-side">
+<div class="journey-title">Output Throughput (tok/s) — all concurrency levels</div>
+<div id="journey-tput-wrap" style="position:relative;height:260px;">
+<canvas id="journey-tput" style="display:none;"></canvas>
+</div>
+</div>
+<div class="journey-side">
+<div class="journey-title">TTFT p50 (ms) — all concurrency levels — lower is better</div>
+<div id="journey-ttft-wrap" style="position:relative;height:260px;">
+<canvas id="journey-ttft" style="display:none;"></canvas>
+</div>
+</div>
+</div>
+</div></details>
+<!-- ── Technique Impact (Delta Waterfall) ───────────────────── -->
+<details class="report-group"><summary>Technique Impact — Incremental Gain per Step</summary><div class="section" id="section-technique-impact">
+<div class="section-title">Technique Impact — Incremental Gain per Step</div>
+<p class="section-desc">
       Marginal throughput and TTFT improvement each optimization adds vs the previous step.
       Model: <span class="mono">Qwen/Qwen2.5-7B-Instruct</span> · spark-01 GB10 · c=32 · ~150 tok input / 256 tok output
     </p>
-    <div class="technique-impact-wrap">
-      <div id="technique-impact-body">
-        <div class="pending-overlay" style="height:280px;" id="technique-impact-pending">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+<div class="technique-impact-wrap">
+<div id="technique-impact-body">
+<div class="pending-overlay" id="technique-impact-pending" style="height:280px;">
+<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
           Showing estimated deltas — actual results pending
         </div>
-        <canvas id="technique-impact-canvas" style="display:none;height:280px;"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ISL/OSL Performance Charts ───────────────────────── -->
-  <div class="section">
-    <div class="section-title">ISL/OSL Performance Sweep</div>
-    <p class="section-desc">
+<canvas id="technique-impact-canvas" style="display:none;height:280px;"></canvas>
+</div>
+</div>
+</div></details>
+<!-- ── ISL/OSL Performance Charts ───────────────────────── -->
+<details class="report-group"><summary>ISL/OSL Performance Sweep</summary><div class="section">
+<div class="section-title">ISL/OSL Performance Sweep</div>
+<p class="section-desc">
       Throughput vs latency curves across concurrency levels (c=1,4,8,16,32) and input/output length combinations.
       Model: <span class="mono">Qwen/Qwen2.5-7B-Instruct</span> · Full-stack config (exp9) · DGX Spark GB10 · spark-02
     </p>
-
-    <div class="filter-bar" id="isl-osl-filters">
-      <div class="filter-group">
-        <span class="filter-label">ISL / OSL</span>
-        <select class="filter-select" id="isl-osl-combo-select">
-          <option value="all">All combos</option>
-          <option value="ISL128/OSL128">ISL128 / OSL128</option>
-          <option value="ISL128/OSL512">ISL128 / OSL512</option>
-          <option value="ISL1024/OSL128">ISL1024 / OSL128</option>
-          <option value="ISL1024/OSL512">ISL1024 / OSL512</option>
-          <option value="ISL4096/OSL512">ISL4096 / OSL512</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Y-Axis Metric</span>
-        <select class="filter-select" id="isl-osl-ymetric-select">
-          <option value="throughput_per_gpu" selected>Throughput / GPU (tok/s/GPU)</option>
-          <option value="ttft_p50_ms">TTFT p50 (ms)</option>
-          <option value="itl_p50_ms">ITL p50 (ms)</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">X-Axis</span>
-        <select class="filter-select" id="isl-osl-xmode-select">
-          <option value="throughput_per_user" selected>Throughput / User (tok/s/user)</option>
-          <option value="throughput">Total Throughput (tok/s)</option>
-          <option value="concurrency">Concurrency</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="chart-single">
-      <canvas id="isl-osl-chart"></canvas>
-    </div>
-    <div class="legend" id="isl-osl-legend" style="padding:0 0.25rem;"></div>
-  </div>
-
-  <!-- ── Nemotron-120B NVFP4 ISL/OSL Sweep ───────────────────── -->
-  <div class="section" id="section-nemotron-120b">
-    <div class="section-title">Nemotron-120B NVFP4 — ISL/OSL Performance Sweep</div>
-    <p class="section-desc">
+<div class="filter-bar" id="isl-osl-filters">
+<div class="filter-group">
+<span class="filter-label">ISL / OSL</span>
+<select class="filter-select" id="isl-osl-combo-select">
+<option value="all">All combos</option>
+<option value="ISL128/OSL128">ISL128 / OSL128</option>
+<option value="ISL128/OSL512">ISL128 / OSL512</option>
+<option value="ISL1024/OSL128">ISL1024 / OSL128</option>
+<option value="ISL1024/OSL512">ISL1024 / OSL512</option>
+<option value="ISL4096/OSL512">ISL4096 / OSL512</option>
+</select>
+</div>
+<div class="filter-group">
+<span class="filter-label">Y-Axis Metric</span>
+<select class="filter-select" id="isl-osl-ymetric-select">
+<option selected="" value="throughput_per_gpu">Throughput / GPU (tok/s/GPU)</option>
+<option value="ttft_p50_ms">TTFT p50 (ms)</option>
+<option value="itl_p50_ms">ITL p50 (ms)</option>
+</select>
+</div>
+<div class="filter-group">
+<span class="filter-label">X-Axis</span>
+<select class="filter-select" id="isl-osl-xmode-select">
+<option selected="" value="throughput_per_user">Throughput / User (tok/s/user)</option>
+<option value="throughput">Total Throughput (tok/s)</option>
+<option value="concurrency">Concurrency</option>
+</select>
+</div>
+</div>
+<div class="chart-single">
+<canvas id="isl-osl-chart"></canvas>
+</div>
+<div class="legend" id="isl-osl-legend" style="padding:0 0.25rem;"></div>
+</div></details>
+<!-- ── Nemotron-120B NVFP4 ISL/OSL Sweep ───────────────────── -->
+<details class="report-group"><summary>Nemotron-120B NVFP4 — ISL/OSL Performance Sweep</summary><div class="section" id="section-nemotron-120b">
+<div class="section-title">Nemotron-120B NVFP4 — ISL/OSL Performance Sweep</div>
+<p class="section-desc">
       Throughput vs latency across concurrency levels (c=1,2,4,8) and input/output length combinations.
       Model: <span class="mono">nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4</span> ·
       NVFP4 (Marlin backend, fp8 KV cache) · vllm-cu130-nightly · DGX Spark GB10 · spark-01 · single B200 · 2026-04-15
     </p>
-
-    <div class="filter-bar" id="nemotron-filters">
-      <div class="filter-group">
-        <span class="filter-label">ISL / OSL</span>
-        <select class="filter-select" id="nemotron-combo-select">
-          <option value="all">All combos</option>
-          <option value="ISL128/OSL128">ISL128 / OSL128</option>
-          <option value="ISL512/OSL256">ISL512 / OSL256</option>
-          <option value="ISL1024/OSL512">ISL1024 / OSL512</option>
-          <option value="ISL2048/OSL512">ISL2048 / OSL512</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Y-Axis Metric</span>
-        <select class="filter-select" id="nemotron-ymetric-select">
-          <option value="throughput_per_gpu" selected>Throughput / GPU (tok/s/GPU)</option>
-          <option value="ttft_p50_ms">TTFT p50 (ms)</option>
-          <option value="itl_p50_ms">ITL p50 (ms)</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">X-Axis</span>
-        <select class="filter-select" id="nemotron-xmode-select">
-          <option value="throughput_per_user" selected>Throughput / User (tok/s/user)</option>
-          <option value="throughput">Total Throughput (tok/s)</option>
-          <option value="concurrency">Concurrency</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="chart-single">
-      <canvas id="nemotron-chart"></canvas>
-    </div>
-    <div class="legend" id="nemotron-legend" style="padding:0 0.25rem;"></div>
-
-    <!-- Key metrics summary table -->
-    <div class="card" style="margin-top:1.25rem;overflow-x:auto;">
-      <div style="font-size:0.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:0.75rem;">Peak Numbers at Max Concurrency (c=8)</div>
-      <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border-light);">
-            <th style="text-align:left;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">ISL/OSL</th>
-            <th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">Peak Throughput</th>
-            <th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">TTFT p50 (c=1)</th>
-            <th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">TTFT p99 (c=8)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL128/OSL128</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">79.7 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">341 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">1,127 ms</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL512/OSL256</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">64.1 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">538 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">3,373 ms</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL1024/OSL512</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">57.6 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">813 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">6,083 ms</td>
-          </tr>
-          <tr>
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL2048/OSL512</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">49.0 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">1,663 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">11,990 ms</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ── Qwen3.5-27B GPTQ-Int4 ISL/OSL Sweep ────────────────── -->
-  <div class="section" id="section-qwen35-27b">
-    <div class="section-title">Qwen3.5-27B GPTQ-Int4 — ISL/OSL Performance Sweep</div>
-    <p class="section-desc">
+<div class="filter-bar" id="nemotron-filters">
+<div class="filter-group">
+<span class="filter-label">ISL / OSL</span>
+<select class="filter-select" id="nemotron-combo-select">
+<option value="all">All combos</option>
+<option value="ISL128/OSL128">ISL128 / OSL128</option>
+<option value="ISL512/OSL256">ISL512 / OSL256</option>
+<option value="ISL1024/OSL512">ISL1024 / OSL512</option>
+<option value="ISL2048/OSL512">ISL2048 / OSL512</option>
+</select>
+</div>
+<div class="filter-group">
+<span class="filter-label">Y-Axis Metric</span>
+<select class="filter-select" id="nemotron-ymetric-select">
+<option selected="" value="throughput_per_gpu">Throughput / GPU (tok/s/GPU)</option>
+<option value="ttft_p50_ms">TTFT p50 (ms)</option>
+<option value="itl_p50_ms">ITL p50 (ms)</option>
+</select>
+</div>
+<div class="filter-group">
+<span class="filter-label">X-Axis</span>
+<select class="filter-select" id="nemotron-xmode-select">
+<option selected="" value="throughput_per_user">Throughput / User (tok/s/user)</option>
+<option value="throughput">Total Throughput (tok/s)</option>
+<option value="concurrency">Concurrency</option>
+</select>
+</div>
+</div>
+<div class="chart-single">
+<canvas id="nemotron-chart"></canvas>
+</div>
+<div class="legend" id="nemotron-legend" style="padding:0 0.25rem;"></div>
+<!-- Key metrics summary table -->
+<div class="card" style="margin-top:1.25rem;overflow-x:auto;">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:0.75rem;">Peak Numbers at Max Concurrency (c=8)</div>
+<table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+<thead>
+<tr style="border-bottom:1px solid var(--border-light);">
+<th style="text-align:left;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">ISL/OSL</th>
+<th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">Peak Throughput</th>
+<th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">TTFT p50 (c=1)</th>
+<th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">TTFT p99 (c=8)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL128/OSL128</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">79.7 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">341 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">1,127 ms</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL512/OSL256</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">64.1 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">538 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">3,373 ms</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL1024/OSL512</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">57.6 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">813 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">6,083 ms</td>
+</tr>
+<tr>
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:#ef4444;">ISL2048/OSL512</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">49.0 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">1,663 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">11,990 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></details>
+<!-- ── Qwen3.5-27B GPTQ-Int4 ISL/OSL Sweep ────────────────── -->
+<details class="report-group"><summary>Qwen3.5-27B GPTQ-Int4 — ISL/OSL Performance Sweep</summary><div class="section" id="section-qwen35-27b">
+<div class="section-title">Qwen3.5-27B GPTQ-Int4 — ISL/OSL Performance Sweep</div>
+<p class="section-desc">
       Throughput vs latency across concurrency levels (c=1,8,32) and input/output length combinations.
       Model: <span class="mono">Qwen/Qwen3.5-27B-GPTQ-Int4</span> ·
       GPTQ-Int4 (Marlin backend, enforce-eager) · vllm-cu130-nightly · DGX Spark GB10 · spark-01 · single B200 · 2026-04-17
     </p>
-
-    <div class="filter-bar" id="qwen35-filters">
-      <div class="filter-group">
-        <span class="filter-label">ISL / OSL</span>
-        <select class="filter-select" id="qwen35-combo-select">
-          <option value="all">All combos</option>
-          <option value="ISL1024/OSL1024">ISL1024 / OSL1024</option>
-          <option value="ISL4096/OSL1024">ISL4096 / OSL1024</option>
-          <option value="ISL1024/OSL4096">ISL1024 / OSL4096</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Y-Axis Metric</span>
-        <select class="filter-select" id="qwen35-ymetric-select">
-          <option value="throughput_per_gpu" selected>Throughput / GPU (tok/s/GPU)</option>
-          <option value="ttft_p50_ms">TTFT p50 (ms)</option>
-          <option value="itl_p50_ms">ITL p50 (ms)</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">X-Axis</span>
-        <select class="filter-select" id="qwen35-xmode-select">
-          <option value="throughput_per_user" selected>Throughput / User (tok/s/user)</option>
-          <option value="throughput">Total Throughput (tok/s)</option>
-          <option value="concurrency">Concurrency</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="chart-single">
-      <canvas id="qwen35-chart"></canvas>
-    </div>
-    <div class="legend" id="qwen35-legend" style="padding:0 0.25rem;"></div>
-
-    <!-- Key metrics summary table -->
-    <div class="card" style="margin-top:1.25rem;overflow-x:auto;">
-      <div style="font-size:0.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:0.75rem;">Peak Numbers at Max Concurrency (c=32)</div>
-      <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border-light);">
-            <th style="text-align:left;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">ISL/OSL</th>
-            <th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">Peak Throughput</th>
-            <th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">TTFT p50 (c=1)</th>
-            <th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">ITL p50 (c=32)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">ISL1024/OSL1024</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">104.1 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">1,197 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">179 ms</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">ISL4096/OSL1024</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">83.1 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">3,278 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">207 ms</td>
-          </tr>
-          <tr>
-            <td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">ISL1024/OSL4096</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">59.6 tok/s</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">459 ms</td>
-            <td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">134 ms</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ── Framework Comparison ─────────────────────────────── -->
-  <div class="section">
-    <div class="section-title">Serving Framework Comparison</div>
-    <p class="section-desc">
+<div class="filter-bar" id="qwen35-filters">
+<div class="filter-group">
+<span class="filter-label">ISL / OSL</span>
+<select class="filter-select" id="qwen35-combo-select">
+<option value="all">All combos</option>
+<option value="ISL1024/OSL1024">ISL1024 / OSL1024</option>
+<option value="ISL4096/OSL1024">ISL4096 / OSL1024</option>
+<option value="ISL1024/OSL4096">ISL1024 / OSL4096</option>
+</select>
+</div>
+<div class="filter-group">
+<span class="filter-label">Y-Axis Metric</span>
+<select class="filter-select" id="qwen35-ymetric-select">
+<option selected="" value="throughput_per_gpu">Throughput / GPU (tok/s/GPU)</option>
+<option value="ttft_p50_ms">TTFT p50 (ms)</option>
+<option value="itl_p50_ms">ITL p50 (ms)</option>
+</select>
+</div>
+<div class="filter-group">
+<span class="filter-label">X-Axis</span>
+<select class="filter-select" id="qwen35-xmode-select">
+<option selected="" value="throughput_per_user">Throughput / User (tok/s/user)</option>
+<option value="throughput">Total Throughput (tok/s)</option>
+<option value="concurrency">Concurrency</option>
+</select>
+</div>
+</div>
+<div class="chart-single">
+<canvas id="qwen35-chart"></canvas>
+</div>
+<div class="legend" id="qwen35-legend" style="padding:0 0.25rem;"></div>
+<!-- Key metrics summary table -->
+<div class="card" style="margin-top:1.25rem;overflow-x:auto;">
+<div style="font-size:0.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:0.75rem;">Peak Numbers at Max Concurrency (c=32)</div>
+<table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+<thead>
+<tr style="border-bottom:1px solid var(--border-light);">
+<th style="text-align:left;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">ISL/OSL</th>
+<th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">Peak Throughput</th>
+<th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">TTFT p50 (c=1)</th>
+<th style="text-align:right;padding:0.5rem 0.75rem;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:.07em;">ITL p50 (c=32)</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">ISL1024/OSL1024</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">104.1 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">1,197 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">179 ms</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border);">
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">ISL4096/OSL1024</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">83.1 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">3,278 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">207 ms</td>
+</tr>
+<tr>
+<td style="padding:0.55rem 0.75rem;font-weight:600;color:var(--blue);">ISL1024/OSL4096</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">59.6 tok/s</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">459 ms</td>
+<td style="padding:0.55rem 0.75rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--text);">134 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></details>
+<!-- ── Framework Comparison ─────────────────────────────── -->
+<details class="report-group"><summary>Serving Framework Comparison</summary><div class="section">
+<div class="section-title">Serving Framework Comparison</div>
+<p class="section-desc">
       SGLang vs TensorRT-LLM (PyTorch backend) vs llm-d (disaggregated vLLM) on identical workloads.
       Model: <span class="mono">Qwen/Qwen2.5-7B-Instruct</span> · TP=1 · DGX Spark GB10 · 5 ISL/OSL combos × 5 concurrency levels
     </p>
-    <div class="tab-row" id="fw-tabs">
-      <button class="tab-btn active" data-combo="ISL128/OSL128">ISL128/OSL128</button>
-      <button class="tab-btn" data-combo="ISL128/OSL512">ISL128/OSL512</button>
-      <button class="tab-btn" data-combo="ISL1024/OSL128">ISL1024/OSL128</button>
-      <button class="tab-btn" data-combo="ISL1024/OSL512">ISL1024/OSL512</button>
-      <button class="tab-btn" data-combo="ISL4096/OSL512">ISL4096/OSL512</button>
-    </div>
-    <div class="fw-chart-wrap">
-      <div id="fw-chart-body">
-        <canvas id="fw-tput-chart" height="220"></canvas>
-        <canvas id="fw-ttft-chart" height="220" style="margin-top:1.5rem;"></canvas>
-        <canvas id="fw-itl-chart"  height="220" style="margin-top:1.5rem;"></canvas>
-      </div>
-    </div>
-    <div class="legend" id="fw-legend" style="margin-top:1rem;padding:0 0.25rem;"></div>
-  </div>
-
-  <!-- ── vLLM Optimization Waterfall ──────────────────────── -->
-  <div class="section">
-    <div class="section-title">vLLM Optimization Waterfall</div>
-    <p class="section-desc"><strong style="color:var(--yellow);">Lab notebook · data pending.</strong> No deployment recommendation is made from this section.</p>
-    <p class="section-desc">
+<div class="tab-row" id="fw-tabs">
+<button class="tab-btn active" data-combo="ISL128/OSL128">ISL128/OSL128</button>
+<button class="tab-btn" data-combo="ISL128/OSL512">ISL128/OSL512</button>
+<button class="tab-btn" data-combo="ISL1024/OSL128">ISL1024/OSL128</button>
+<button class="tab-btn" data-combo="ISL1024/OSL512">ISL1024/OSL512</button>
+<button class="tab-btn" data-combo="ISL4096/OSL512">ISL4096/OSL512</button>
+</div>
+<div class="fw-chart-wrap">
+<div id="fw-chart-body">
+<canvas height="220" id="fw-tput-chart"></canvas>
+<canvas height="220" id="fw-ttft-chart" style="margin-top:1.5rem;"></canvas>
+<canvas height="220" id="fw-itl-chart" style="margin-top:1.5rem;"></canvas>
+</div>
+</div>
+<div class="legend" id="fw-legend" style="margin-top:1rem;padding:0 0.25rem;"></div>
+</div></details>
+<!-- ── vLLM Optimization Waterfall ──────────────────────── -->
+<details class="report-group"><summary>vLLM Optimization Waterfall</summary><div class="section">
+<div class="section-title">vLLM Optimization Waterfall</div>
+<p class="section-desc"><strong style="color:var(--yellow);">Lab notebook · data pending.</strong> No deployment recommendation is made from this section.</p>
+<p class="section-desc">
       Throughput delta relative to baseline for each optimization.
       Green = improvement, red = regression.
       Model: <span class="mono">Qwen/Qwen2.5-7B-Instruct</span> · DGX Spark GB10 · enforce_eager → CUDA graphs
     </p>
-    <div class="waterfall-wrap">
-      <div id="waterfall-body">
-        <div class="pending-overlay" style="height:300px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+<div class="waterfall-wrap">
+<div id="waterfall-body">
+<div class="pending-overlay" style="height:300px;">
+<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
           Data pending — optimization experiments running
         </div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /.page -->
-
-<div class="page" style="padding-top:0;">
-  <footer>
-    <span>Token Labs · <a href="https://www.tokenlabs.run" target="_blank">tokenlabs.run</a></span>
-    <span>Hardware: AMD Instinct MI300X and NVIDIA DGX Spark</span>
-    <span>Data: <a href="mi300x-qwen38-aiperf.json">MI300X run</a> · <a href="benchmark-results.json">benchmark registry</a></span>
-  </footer>
 </div>
-
-<script>
+</div>
+</div></details>
+</div><!-- /.page -->
+<div class="page" style="padding-top:0;">
+</div>
+</main><script>
 // ── Ablation Study Data ───────────────────────────────────────────────────────
 // Model: Qwen/Qwen2.5-7B-Instruct · DGX Spark GB10 · spark-01
 // Each entry has levels[] with measurements at c=1, c=8, c=32.
@@ -1272,13 +1226,13 @@ function renderScatter(level) {
       scales: {
         x: {
           title: { display: true, text: "Output Throughput (tok/s)  →  higher is better", color: "#666", font: { size: 11 } },
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
           ticks: { color: "#666", font: { size: 11 } },
           border: { color: "#2a2a2a" },
         },
         y: {
           title: { display: true, text: "TTFT p50 (ms)  →  lower is better", color: "#666", font: { size: 11 } },
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
           ticks: { color: "#666", font: { size: 11 } },
           border: { color: "#2a2a2a" },
         },
@@ -1362,7 +1316,7 @@ function renderAblation() {
           border: { color: "#2a2a2a" },
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
           ticks: { color: "#666", font: { size: 10 } },
           border: { color: "#2a2a2a" },
         },
@@ -1410,7 +1364,7 @@ function renderAblation() {
           border: { color: "#2a2a2a" },
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
           ticks: { color: "#666", font: { size: 10 }, callback: v => `${v}ms` },
           border: { color: "#2a2a2a" },
         },
@@ -1484,7 +1438,7 @@ function renderTechniqueImpact() {
           border: { color: "#2a2a2a" },
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
           ticks: {
             color: "#666",
             font: { size: 11 },
@@ -1961,13 +1915,13 @@ function makeChartOptions(yField, yLabel, xMode, accentColor) {
     scales: {
       x: {
         title: { display: true, text: xLabelMap[xMode] || xMode, color: "#555", font: { size: 11 } },
-        grid: { color: "rgba(255,255,255,0.04)" },
+        grid: { color: "rgba(25,40,32,0.10)" },
         ticks: { color: "#666", font: { size: 11 } },
         border: { color: "#2a2a2a" },
       },
       y: {
         title: { display: true, text: `${yLabel} (${yUnit})  →  ${yDirection} is better`, color: "#555", font: { size: 11 } },
-        grid: { color: "rgba(255,255,255,0.04)" },
+        grid: { color: "rgba(25,40,32,0.10)" },
         ticks: { color: "#666", font: { size: 11 } },
         border: { color: "#2a2a2a" },
       },
@@ -2094,7 +2048,7 @@ function renderWaterfall() {
     // Show expected-delta preview as ghost bars
     body.innerHTML = `
       <div style="padding:0.5rem 0 1rem;font-size:0.78rem;color:var(--text-muted);display:flex;align-items:center;gap:0.5rem;">
-        <span style="background:rgba(255,255,255,0.05);border:1px solid var(--border-light);border-radius:4px;padding:.15rem .5rem;font-size:.7rem;">PREVIEW</span>
+        <span style="background:rgba(25,40,32,0.10);border:1px solid var(--border-light);border-radius:4px;padding:.15rem .5rem;font-size:.7rem;">PREVIEW</span>
         Showing expected deltas — actual results pending
       </div>
       <div id="waterfall-canvas-wrap">
@@ -2144,7 +2098,7 @@ function renderWaterfall() {
         },
         scales: {
           x: {
-            grid: { color: "rgba(255,255,255,0.04)" },
+            grid: { color: "rgba(25,40,32,0.10)" },
             ticks: { color: "#666", font: { size: 11 }, callback: v => `${v > 0 ? "+" : ""}${v}%` },
             border: { color: "#2a2a2a" },
           },
@@ -2350,10 +2304,10 @@ function renderFrameworkChart(activeCombo) {
             },
           },
           scales: {
-            x: { grid: { color: "rgba(255,255,255,0.04)" } },
+            x: { grid: { color: "rgba(25,40,32,0.10)" } },
             y: {
               title: { display: true, text: yLabel, color: "#888", font: { size: 11 } },
-              grid: { color: "rgba(255,255,255,0.04)" },
+              grid: { color: "rgba(25,40,32,0.10)" },
               beginAtZero: true,
             },
           },
@@ -2471,8 +2425,8 @@ function renderPdPareto(combo) {
         } } },
       },
       scales: {
-        x: { title: { display:true, text:"Per-user output throughput (tok/s/user) — higher is snappier" }, grid:{ color:"rgba(255,255,255,0.05)" } },
-        y: { title: { display:true, text:"Total output throughput (tok/s) — higher is more capacity" }, grid:{ color:"rgba(255,255,255,0.05)" }, beginAtZero:true },
+        x: { title: { display:true, text:"Per-user output throughput (tok/s/user) — higher is snappier" }, grid:{ color:"rgba(25,40,32,0.10)" } },
+        y: { title: { display:true, text:"Total output throughput (tok/s) — higher is more capacity" }, grid:{ color:"rgba(25,40,32,0.10)" }, beginAtZero:true },
       },
     },
   });
@@ -2645,11 +2599,11 @@ function renderPareto(combo) {
       scales: {
         x: {
           title: { display: true, text: "Per-user output throughput (tok/s/user) — higher is snappier" },
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
         },
         y: {
           title: { display: true, text: "Total output throughput (tok/s) — higher is more capacity" },
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: "rgba(25,40,32,0.10)" },
           beginAtZero: true,
         },
       },
@@ -2702,7 +2656,7 @@ function renderParetoTable(frameworks, byFw) {
 try {
   Chart.defaults.color = "#888";
   Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
-  Chart.defaults.borderColor = "rgba(255,255,255,0.05)";
+  Chart.defaults.borderColor = "rgba(25,40,32,0.10)";
   renderIslOslLegend();
   renderIslOslChart();
   renderNemotronLegend();
@@ -2718,6 +2672,5 @@ try {
 } catch (e) {
   console.error("Chart render failed:", e);
 }
-</script>
-</body>
+</script><footer class="footer shell"><div class="footer-top"><span>Independent infrastructure for open models.</span><a href="mailto:providers@tokenlabs.run">Get in touch <span aria-hidden="true">↗</span></a></div><details class="explore"><summary>Experiments &amp; resources</summary><nav aria-label="Research and resources"><a href="labs.html">Experiment notebook</a><a href="benchmark-results.html">Benchmark results</a><a href="methodology.html">Methodology</a><a href="models.html">API guide</a><a href="https://github.com/tokenlabs-run/token-labs">Source code ↗</a></nav></details><div class="legal"><span>© Token Labs</span><nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="data-policy.html">Data policy</a><a href="terms.html">Terms</a></nav></div></footer></body>
 </html>

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Token Labs · Lab Runs</title>
-  <style>
-    :root{--bg:#0a0a0a;--card:#171717;--card2:#202020;--border:#2b2b2b;--text:#f5f5f5;--muted:#a3a3a3;--dim:#737373;--green:#76b900;--blue:#4a9eff;--purple:#a855f7;--orange:#f5a623}
-    *{box-sizing:border-box;margin:0;padding:0} body{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6} a{color:inherit}
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Token Labs · Lab Runs</title>
+<style>@scope (.resource-content) {
+
+    :scope{--bg:#0a0a0a;--card:#171717;--card2:#202020;--border:#2b2b2b;--text:#f5f5f5;--muted:#a3a3a3;--dim:#737373;--green:#76b900;--blue:#4a9eff;--purple:#a855f7;--orange:#f5a623}
+    *{box-sizing:border-box;margin:0;padding:0} :scope{font-family:Inter,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6} a{color:inherit}
     nav{height:60px;padding:0 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:32px;position:sticky;top:0;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);z-index:10}
     .logo{text-decoration:none;font-weight:800;display:flex;align-items:center;gap:10px}.logo-mark{width:32px;height:32px;border-radius:8px;background:var(--green);color:#000;display:grid;place-items:center}
     .nav-links{display:flex;gap:6px}.nav-link{text-decoration:none;color:var(--muted);font-size:13px;padding:7px 14px;border-radius:8px}.nav-link:hover{background:var(--card)}.nav-link.active{color:var(--green);background:rgba(118,185,0,.12)}
@@ -19,55 +21,48 @@
     .open{margin-top:auto;padding-top:18px;color:var(--green);font-size:12px;font-weight:700}.data-row{margin-top:52px;padding:22px;border:1px solid var(--border);border-radius:14px;background:var(--card);display:flex;justify-content:space-between;align-items:center;gap:18px}.data-row p{color:var(--muted);font-size:13px}.data-links{display:flex;flex-wrap:wrap;gap:8px}.data-links a{text-decoration:none;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px}.data-links a:hover{border-color:var(--green);color:var(--green)}
     footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);color:var(--dim);font-size:12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     @media(max-width:650px){nav{padding:0 12px;gap:10px}.logo{font-size:0}.logo-mark{font-size:16px}.nav-links{overflow-x:auto}.nav-link{padding:7px 8px;white-space:nowrap}main{padding:42px 18px 64px}.data-row{align-items:flex-start;flex-direction:column}}
-  </style>
-</head>
-<body>
-<nav>
-  <a class="logo" href="index.html"><span class="logo-mark">T</span>TokenLabs</a>
-  <div class="nav-links"><a class="nav-link" href="index.html">Findings</a><a class="nav-link" href="benchmark-results.html">Dashboard</a><a class="nav-link" href="methodology.html">Methodology</a><a class="nav-link active" href="labs.html">Notebook</a></div>
-</nav>
-<main>
-  <div class="eyebrow">Open inference lab</div>
-  <h1>Runs, not claims.</h1>
-  <p class="lead">Reviewed studies first, controls and partial runs clearly labeled, and operational evidence kept separate. Every card says what kind of conclusion it can support.</p>
-  <div class="stats"><div class="stat"><strong>3</strong><span>Published studies</span></div><div class="stat"><strong>2</strong><span>Single-replica controls</span></div><div class="stat"><strong>1</strong><span>Partial study</span></div><div class="stat"><strong>Open</strong><span>Raw evidence</span></div></div>
 
-  <section>
-    <div class="section-head"><div><h2>Published studies</h2><p>Completed runs with bounded conclusions and reproducible evidence.</p></div><span class="platform">Reviewed</span></div>
-    <div class="grid">
-      <a class="run" href="h200-mi300x-dynamo-pd.html"><div class="meta">2026-08-30 · Heterogeneous P/D · Mooncake TCP</div><h3>Qwen3-30B-A3B FP8: H200 prefill → MI300X decode</h3><p>Dynamo and vLLM on both nodes across 21 exact-length points, prefix caching disabled, with independent KV transfer byte verification.</p><div class="chips"><span class="chip">21/21 complete</span><span class="chip blue">1,971 tok/s peak</span><span class="chip purple">202.4 GiB KV</span></div><span class="open">Open study and evidence &rarr;</span></a>
-      <a class="run" href="benchmark-results.html#dgx-spark-dynamo-pd"><div class="meta">2026-08-30 · Two-node P/D · DGX Spark</div><h3>Nemotron 3.5: Dynamo versus llm-d P/D</h3><p>Matched prefill/decode matrices across two Spark nodes at concurrency 1–32, with identical cache policy and zero request errors.</p><div class="chips"><span class="chip">36/36 complete</span><span class="chip blue">729.76 tok/s peak</span><span class="chip purple">Two-node study</span></div><span class="open">Open comparison &rarr;</span></a>
-      <a class="run" href="qwen35-27b-phase-a.html"><div class="meta">2026-04-17 · Model selection · DGX Spark</div><h3>Qwen3.5-27B framework and precision sweep</h3><p>vLLM and SGLang across BF16, FP8, and GPTQ-Int4, including documented unsupported configurations.</p><div class="chips"><span class="chip">9/9 complete</span><span class="chip blue">GPTQ-Int4 selected</span></div><span class="open">Read Phase A report &rarr;</span></a>
-    </div>
-  </section>
+}</style>
+<link href="assets/site.css" rel="stylesheet"/><link href="assets/resources.css" rel="stylesheet"/><script defer="True" src="assets/resources.js"></script></head>
+<body class="resource-page"><a class="skip" href="#main">Skip to content</a><header class="header shell"><a aria-label="Token Labs home" class="brand" href="index.html"><span aria-hidden="true" class="brand-mark">t.</span>token labs</a><nav aria-label="Main navigation"><a href="playground.html">Playground</a><a href="dashboards.html">Dashboards</a></nav></header><main class="shell resource-content" id="main"><p class="resource-breadcrumb"><a href="labs.html">Experiments &amp; resources</a></p>
 
-  <section>
-    <div class="section-head"><div><h2>Single-replica controls</h2><p>Per-replica capacity and wrapper overhead—not routing or horizontal scaling.</p></div><span class="platform">Control</span></div>
-    <div class="grid">
-      <a class="run control" href="benchmark-results.html#mi300x-qwen38"><div class="meta">2026-08-29 · Single-replica control · MI300X</div><h3>Qwen3.8-27B aggregated serving controls</h3><p>One model replica per arm at fixed concurrency. This isolates frontend/orchestration behavior; it does not test multi-worker routing.</p><div class="chips"><span class="chip orange">Control</span><span class="chip blue">1 replica / arm</span><span class="chip purple">c=4 snapshot</span></div><span class="open">Inspect control results &rarr;</span></a>
-      <a class="run control" href="benchmark-results.html#dgx-spark-pareto"><div class="meta">2026-08-28 · Single-replica control · DGX Spark</div><h3>Nemotron 3.5 aggregated serving controls</h3><p>One model replica per arm across concurrency 1–32. Use for per-replica throughput and wrapper overhead only.</p><div class="chips"><span class="chip orange">Control</span><span class="chip blue">1 replica / arm</span><span class="chip purple">1,280 requests</span></div><span class="open">Inspect control curve &rarr;</span></a>
-    </div>
-  </section>
+<div>
+<div class="eyebrow">Open inference lab</div>
+<h1>Experiments &amp; resources</h1>
+<p class="lead">Published studies, benchmark results, and working notes. Open a collection to explore the evidence.</p>
 
-  <section>
-    <div class="section-head"><div><h2>Partial and operational work</h2><p>Transparent notebook evidence, separated from reviewed findings.</p></div><span class="platform">Notebook</span></div>
-    <div class="grid">
-      <a class="run partial" href="benchmark-results.html#mi300x-qwen38-disagg"><div class="meta">2026-08-29 · Partial · Capacity interrupted</div><h3>Qwen3.8-27B P/D recovery set</h3><p>Dynamo completed 18/18 points; 5/18 llm-d points were recovered before the MI300X host became unavailable.</p><div class="chips"><span class="chip orange">Partial</span><span class="chip blue">No generalized winner</span></div><span class="open">Inspect partial evidence &rarr;</span></a>
-      <a class="run" href="benchmark-results.html#experiment-registry"><div class="meta">2026-04 · Optimization campaign</div><h3>Serving optimization and ISL/OSL sweeps</h3><p>Qwen2.5-7B, Nemotron-120B, and Qwen3.5-27B studies spanning prefix caching, chunked prefill, KV precision, and concurrency scaling.</p><div class="chips"><span class="chip blue">Multiple models</span><span class="chip purple">c=1–32</span></div><span class="open">Browse benchmark dashboard &rarr;</span></a>
-      <a class="run" href="overnight-run-2026-04-15.html"><div class="meta">2026-04-15 · Operations · Overnight run</div><h3>Observability, SLO, and failure simulation</h3><p>Fifteen operational tasks covering DCGM, OpenTelemetry, Grafana, alerting, traces, and inference failure drills.</p><div class="chips"><span class="chip">SLO Tier 1 passed</span><span class="chip orange">15 tasks</span></div><span class="open">Open run log &rarr;</span></a>
-    </div>
-  </section>
+<details class="report-group"><summary>Published studies</summary><section>
+<div class="section-head"><div><h2>Published studies</h2><p>Completed runs with bounded conclusions and reproducible evidence.</p></div><span class="platform">Reviewed</span></div>
+<div class="grid">
+<a class="run" href="h200-mi300x-dynamo-pd.html"><div class="meta">2026-08-30 · Heterogeneous P/D · Mooncake TCP</div><h3>Qwen3-30B-A3B FP8: H200 prefill → MI300X decode</h3><p>Dynamo and vLLM on both nodes across 21 exact-length points, prefix caching disabled, with independent KV transfer byte verification.</p><div class="chips"><span class="chip">21/21 complete</span><span class="chip blue">1,971 tok/s peak</span><span class="chip purple">202.4 GiB KV</span></div><span class="open">Open study and evidence →</span></a>
+<a class="run" href="benchmark-results.html#dgx-spark-dynamo-pd"><div class="meta">2026-08-30 · Two-node P/D · DGX Spark</div><h3>Nemotron 3.5: Dynamo versus llm-d P/D</h3><p>Matched prefill/decode matrices across two Spark nodes at concurrency 1–32, with identical cache policy and zero request errors.</p><div class="chips"><span class="chip">36/36 complete</span><span class="chip blue">729.76 tok/s peak</span><span class="chip purple">Two-node study</span></div><span class="open">Open comparison →</span></a>
+<a class="run" href="qwen35-27b-phase-a.html"><div class="meta">2026-04-17 · Model selection · DGX Spark</div><h3>Qwen3.5-27B framework and precision sweep</h3><p>vLLM and SGLang across BF16, FP8, and GPTQ-Int4, including documented unsupported configurations.</p><div class="chips"><span class="chip">9/9 complete</span><span class="chip blue">GPTQ-Int4 selected</span></div><span class="open">Read Phase A report →</span></a>
+</div>
+</section></details>
+<details class="report-group"><summary>Single-replica controls</summary><section>
+<div class="section-head"><div><h2>Single-replica controls</h2><p>Per-replica capacity and wrapper overhead—not routing or horizontal scaling.</p></div><span class="platform">Control</span></div>
+<div class="grid">
+<a class="run control" href="benchmark-results.html#mi300x-qwen38"><div class="meta">2026-08-29 · Single-replica control · MI300X</div><h3>Qwen3.8-27B aggregated serving controls</h3><p>One model replica per arm at fixed concurrency. This isolates frontend/orchestration behavior; it does not test multi-worker routing.</p><div class="chips"><span class="chip orange">Control</span><span class="chip blue">1 replica / arm</span><span class="chip purple">c=4 snapshot</span></div><span class="open">Inspect control results →</span></a>
+<a class="run control" href="benchmark-results.html#dgx-spark-pareto"><div class="meta">2026-08-28 · Single-replica control · DGX Spark</div><h3>Nemotron 3.5 aggregated serving controls</h3><p>One model replica per arm across concurrency 1–32. Use for per-replica throughput and wrapper overhead only.</p><div class="chips"><span class="chip orange">Control</span><span class="chip blue">1 replica / arm</span><span class="chip purple">1,280 requests</span></div><span class="open">Inspect control curve →</span></a>
+</div>
+</section></details>
+<details class="report-group"><summary>Partial and operational work</summary><section>
+<div class="section-head"><div><h2>Partial and operational work</h2><p>Transparent notebook evidence, separated from reviewed findings.</p></div><span class="platform">Notebook</span></div>
+<div class="grid">
+<a class="run partial" href="benchmark-results.html#mi300x-qwen38-disagg"><div class="meta">2026-08-29 · Partial · Capacity interrupted</div><h3>Qwen3.8-27B P/D recovery set</h3><p>Dynamo completed 18/18 points; 5/18 llm-d points were recovered before the MI300X host became unavailable.</p><div class="chips"><span class="chip orange">Partial</span><span class="chip blue">No generalized winner</span></div><span class="open">Inspect partial evidence →</span></a>
+<a class="run" href="benchmark-results.html#experiment-registry"><div class="meta">2026-04 · Optimization campaign</div><h3>Serving optimization and ISL/OSL sweeps</h3><p>Qwen2.5-7B, Nemotron-120B, and Qwen3.5-27B studies spanning prefix caching, chunked prefill, KV precision, and concurrency scaling.</p><div class="chips"><span class="chip blue">Multiple models</span><span class="chip purple">c=1–32</span></div><span class="open">Browse benchmark dashboard →</span></a>
+<a class="run" href="overnight-run-2026-04-15.html"><div class="meta">2026-04-15 · Operations · Overnight run</div><h3>Observability, SLO, and failure simulation</h3><p>Fifteen operational tasks covering DCGM, OpenTelemetry, Grafana, alerting, traces, and inference failure drills.</p><div class="chips"><span class="chip">SLO Tier 1 passed</span><span class="chip orange">15 tasks</span></div><span class="open">Open run log →</span></a>
+</div>
+</section></details>
+<details class="report-group"><summary>Quality and release checks</summary><section>
+<div class="section-head"><div><h2>Quality and release checks</h2><p>CI-fed model evaluation and baseline comparison.</p></div><span class="platform">Continuous</span></div>
+<div class="grid">
+<a class="run" href="accuracy-results.html"><div class="meta">CI/CD · Accuracy</div><h3>Instruction-following accuracy history</h3><p>IFEval results and accuracy history for optimized and quantized model releases.</p><span class="open">View accuracy results →</span></a>
+<a class="run" href="comparison-results.html"><div class="meta">CI/CD · Baseline comparison</div><h3>Model quality versus baseline</h3><p>Release checks flag acceptable, improved, or regressed model quality against the reference deployment.</p><span class="open">View baseline comparisons →</span></a>
+</div>
+</section></details>
 
-  <section>
-    <div class="section-head"><div><h2>Quality and release checks</h2><p>CI-fed model evaluation and baseline comparison.</p></div><span class="platform">Continuous</span></div>
-    <div class="grid">
-      <a class="run" href="accuracy-results.html"><div class="meta">CI/CD · Accuracy</div><h3>Instruction-following accuracy history</h3><p>IFEval results and accuracy history for optimized and quantized model releases.</p><span class="open">View accuracy results &rarr;</span></a>
-      <a class="run" href="comparison-results.html"><div class="meta">CI/CD · Baseline comparison</div><h3>Model quality versus baseline</h3><p>Release checks flag acceptable, improved, or regressed model quality against the reference deployment.</p><span class="open">View baseline comparisons &rarr;</span></a>
-    </div>
-  </section>
 
-  <div class="data-row"><div><strong>Detailed dashboard and raw data</strong><p>Inspect charts, experiment registry, and machine-readable result files.</p></div><div class="data-links"><a href="benchmark-results.html">Benchmark dashboard</a><a href="mi300x-qwen38-aiperf.json">MI300X JSON</a><a href="benchmark-results.json">Benchmark JSON</a></div></div>
-  <footer><span>Token Labs · Open-source inference experiments</span><span><a href="index.html">Explore endpoints</a> · <a href="provider-policies.html">Provider policies</a> · <a href="https://github.com/tokenlabs-run/token-labs">GitHub</a></span></footer>
-</main>
-</body>
+</div>
+</main><footer class="footer shell"><div class="footer-top"><span>Independent infrastructure for open models.</span><a href="mailto:providers@tokenlabs.run">Get in touch <span aria-hidden="true">↗</span></a></div><details class="explore"><summary>Experiments &amp; resources</summary><nav aria-label="Research and resources"><a href="labs.html">Experiment notebook</a><a href="benchmark-results.html">Benchmark results</a><a href="methodology.html">Methodology</a><a href="models.html">API guide</a><a href="https://github.com/tokenlabs-run/token-labs">Source code ↗</a></nav></details><div class="legal"><span>© Token Labs</span><nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="data-policy.html">Data policy</a><a href="terms.html">Terms</a></nav></div></footer></body>
 </html>
