@@ -30,6 +30,10 @@ Pinned Dynamo 1.5.0 frontends handle public requests and discover only their
 own graph namespace. Anthropic Messages support is explicitly enabled and
 is experimental in this runtime.
 Qwen uses NVIDIA's checkpoint with the Marlin MoE backend and FP8 KV cache.
+Its Dynamo worker sets `--dyn-default-thinking-mode disabled` for agent tool
+calls. Clients can explicitly opt into reasoning. Forced tools with thinking
+enabled need separate validation; the default-thinking path classified tool
+arguments as reasoning during initial checks.
 GLM keeps its original checkpoint and default cache precision.
 
 Do not apply pod-template changes to a publicly selected worker in place.

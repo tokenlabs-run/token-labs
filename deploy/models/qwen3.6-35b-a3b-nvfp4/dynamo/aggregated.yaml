@@ -33,8 +33,6 @@ spec:
           - --enable-anthropic-api
           - --namespace
           - token-labs-qwen36-nvfp4-dynamo-agg
-          - --dyn-chat-processor
-          - vllm
           env:
           - name: POD_UID
             valueFrom:
@@ -119,6 +117,8 @@ spec:
           - fp8
           - --attention-backend
           - flashinfer
+          - --dyn-default-thinking-mode
+          - disabled
           env:
           - name: HF_HOME
             value: /model-cache
