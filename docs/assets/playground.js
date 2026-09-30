@@ -2,6 +2,7 @@
 (() => {
   const API = 'https://api.tokenlabs.run';
   const $ = id => document.getElementById(id);
+  const modelLabel = id => id === 'glm-4.7-flash' ? 'zai-org/GLM-4.7-Flash' : id;
   let history = [];
   let controller = null;
   let loadingModels = false;
@@ -36,7 +37,7 @@
       const body = await response.json();
       if (!Array.isArray(body.data)) throw new Error('The model list could not be read. Try refreshing.');
       const ids = [...new Set(body.data.filter(model => typeof model?.id === 'string' && model.id.trim()).map(model => model.id))];
-      $('model').replaceChildren(...ids.map(id => new Option(id, id)));
+      $('model').replaceChildren(...ids.map(id => new Option(modelLabel(id), id)));
       if (!ids.length) $('model').add(new Option('No models available', ''));
       if (ids.includes(previous)) $('model').value = previous;
       if (previous && previous !== $('model').value) clear();
@@ -54,7 +55,7 @@
     const article = document.createElement('article');
     article.className = `message ${role}`;
     const label = document.createElement('h3');
-    label.textContent = role === 'user' ? 'You' : $('model').value;
+    label.textContent = role === 'user' ? 'You' : modelLabel($('model').value);
     const content = document.createElement('p');
     content.textContent = text;
     article.append(label, content);
