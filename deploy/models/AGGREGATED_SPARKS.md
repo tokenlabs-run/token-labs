@@ -7,7 +7,7 @@ future production changes follow MODEL_ROLLOUT_RUNBOOK.md.
 
 | Node | Served model ID | Native context limit |
 | --- | --- | --- |
-| spark-01 | `glm-4.7-flash` | 202752 |
+| spark-01 | `zai-org/GLM-4.7-Flash` | 202752 |
 | spark-02 | `nvidia/Qwen3.6-35B-A3B-NVFP4` | 262144 |
 
 Context includes input and output tokens. These are the pinned configurations'
@@ -58,7 +58,7 @@ Both models use `https://api.tokenlabs.run/v1/chat/completions`.
 ```sh
 curl --fail-with-body https://api.tokenlabs.run/v1/chat/completions \
   -H 'Content-Type: application/json' \
-  -d '{"model":"glm-4.7-flash","messages":[{"role":"user","content":"Write a Python function that adds two integers."}],"max_tokens":512,"chat_template_kwargs":{"enable_thinking":false}}'
+  -d '{"model":"zai-org/GLM-4.7-Flash","messages":[{"role":"user","content":"Write a Python function that adds two integers."}],"max_tokens":512,"chat_template_kwargs":{"enable_thinking":false}}'
 
 curl --fail-with-body https://api.tokenlabs.run/v1/chat/completions \
   -H 'Content-Type: application/json' \
@@ -75,7 +75,7 @@ Run the curl-based verifier for each native API prefix:
 
 ```sh
 python3 scripts/serving/check_agent_apis.py \
-  --base-url https://api.tokenlabs.run/models/glm --model glm-4.7-flash
+  --base-url https://api.tokenlabs.run/models/glm --model zai-org/GLM-4.7-Flash
 python3 scripts/serving/check_agent_apis.py \
   --base-url https://api.tokenlabs.run/models/qwen \
   --model nvidia/Qwen3.6-35B-A3B-NVFP4
@@ -106,7 +106,7 @@ Use the checked-in harness smoke command to exercise the actual installed CLI:
 scripts/serving/check_harness_client.sh codex \
   https://api.tokenlabs.run/models/qwen nvidia/Qwen3.6-35B-A3B-NVFP4
 scripts/serving/check_harness_client.sh claude \
-  https://api.tokenlabs.run/models/glm glm-4.7-flash
+  https://api.tokenlabs.run/models/glm zai-org/GLM-4.7-Flash
 ```
 
 For Codex, the script sets `model_context_window` to the model's native limit

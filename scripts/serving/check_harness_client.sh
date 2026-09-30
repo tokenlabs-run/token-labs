@@ -9,7 +9,7 @@ client=$1
 base_url=${2%/}
 model=$3
 case "$model" in
-  glm-4.7-flash) context=202752 ;;
+  zai-org/GLM-4.7-Flash) context=202752 ;;
   nvidia/Qwen3.6-35B-A3B-NVFP4) context=262144 ;;
   *) echo 'Unknown model context limit' >&2; exit 2 ;;
 esac
