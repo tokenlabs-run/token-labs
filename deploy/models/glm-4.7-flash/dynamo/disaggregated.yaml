@@ -1,3 +1,5 @@
+# Retired during the user-authorized maintenance migration on 2026-09-30.
+# Active GLM serving is defined in ../plain-vllm/aggregated.yaml.
 apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeployment
 metadata:
@@ -12,7 +14,7 @@ spec:
   components:
     - name: Frontend
       type: frontend
-      replicas: 1
+      replicas: 0
       podTemplate:
         spec:
           nodeSelector:
@@ -70,7 +72,7 @@ spec:
                 type: Directory
     - name: VllmPrefillWorker
       type: prefill
-      replicas: 1
+      replicas: 0
       sharedMemorySize: 40Gi
       podTemplate:
         spec:
@@ -181,7 +183,7 @@ spec:
             kubernetes.io/hostname: spark-02
     - name: VllmDecodeWorker
       type: decode
-      replicas: 1
+      replicas: 0
       sharedMemorySize: 40Gi
       podTemplate:
         spec:

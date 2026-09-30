@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glm47-flash-agg
+  namespace: token-labs
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: glm47-flash-agg
+  template:
+    metadata:
+      labels:
+        app: glm47-flash-agg
+        token-labs/model-id: glm47-flash-agg
+        token-labs/slot: blue
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: spark-01
+      terminationGracePeriodSeconds: 120
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: vllm
+        image: elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d
+        command:
+        - vllm
+        args:
+        - serve
+        - zai-org/GLM-4.7-Flash
+        - --revision
+        - 7dd20894a642a0aa287e9827cb1a1f7f91386b67
+        - --served-model-name
+        - glm-4.7-flash
+        - --host
+        - 0.0.0.0
+        - --port
+        - '8000'
+        - --trust-remote-code
+        - --tensor-parallel-size
+        - '1'
+        - --max-model-len
+        - '202752'
+        - --max-num-seqs
+        - '4'
+        - --gpu-memory-utilization
+        - '0.80'
+        - --enable-prefix-caching
+        - --enable-auto-tool-choice
+        - --tool-call-parser
+        - glm47
+        - --reasoning-parser
+        - glm45
+        env:
+        - name: HF_HOME
+          value: /model-cache
+        - name: HF_HUB_CACHE
+          value: /model-cache/hub
+        - name: HF_MODULES_CACHE
+          value: /tmp/hf_modules
+        - name: TRITON_CACHE_DIR
+          value: /tmp/triton
+        - name: VLLM_CACHE_ROOT
+          value: /tmp/vllm
+        - name: VLLM_WORKER_MULTIPROC_METHOD
+          value: spawn
+        - name: PYTHONUNBUFFERED
+          value: '1'
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            cpu: '4'
+            memory: 64Gi
+            nvidia.com/gpu: '1'
+          limits:
+            cpu: '12'
+            memory: 112Gi
+            nvidia.com/gpu: '1'
+        startupProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 360
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: cache
+          mountPath: /model-cache
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: cache
+        hostPath:
+          path: /home/nvidia/.cache/huggingface
+          type: Directory
+      - name: shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 16Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glm47-flash-agg
+  namespace: token-labs
+spec:
+  selector:
+    app: glm47-flash-agg
+    token-labs/model-id: glm47-flash-agg
+    token-labs/slot: blue
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
