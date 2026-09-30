@@ -22,7 +22,7 @@ def main():
     cases = [('chat', '/v1/chat/completions', common), ('chat-stream', '/v1/chat/completions', {**common, 'stream': True}), ('chat-tool', '/v1/chat/completions', {**common, 'messages': [{'role': 'user', 'content': 'Call get_weather for Paris.'}], 'tools': [{'type': 'function', 'function': function}], 'tool_choice': {'type': 'function', 'function': {'name': 'get_weather'}}})]
     if not args.chat_only:
         responses = {'model': args.model, 'input': 'Reply with exactly OK.', 'max_output_tokens': 256, 'store': False}
-        messages = {'model': args.model, 'messages': common['messages'], 'max_tokens': 256}
+        messages = {'model': args.model, 'messages': common['messages'], 'max_tokens': 512, 'temperature': 0, 'thinking': {'type': 'disabled'}}
         cases += [('responses', '/v1/responses', responses), ('responses-stream', '/v1/responses', {**responses, 'stream': True}), ('messages', '/v1/messages', messages), ('messages-stream', '/v1/messages', {**messages, 'stream': True})]
     if not args.chat_only:
         cases += [

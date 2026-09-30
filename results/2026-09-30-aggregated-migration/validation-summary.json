@@ -1,0 +1,221 @@
+{
+  "models": {
+    "glm-4.7-flash": {
+      "node": "spark-01",
+      "max_model_len": 202752
+    },
+    "nvidia/Qwen3.6-35B-A3B-NVFP4": {
+      "node": "spark-02",
+      "max_model_len": 262144
+    }
+  },
+  "public_api_tests": {
+    "glm-public-native.jsonl": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      },
+      {
+        "test": "responses",
+        "passed": true
+      },
+      {
+        "test": "responses-stream",
+        "passed": true
+      },
+      {
+        "test": "messages",
+        "passed": true
+      },
+      {
+        "test": "messages-stream",
+        "passed": true
+      },
+      {
+        "test": "responses-tool",
+        "passed": true
+      },
+      {
+        "test": "messages-tool",
+        "passed": true
+      }
+    ],
+    "qwen-public-native.jsonl": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      },
+      {
+        "test": "responses",
+        "passed": true
+      },
+      {
+        "test": "responses-stream",
+        "passed": true
+      },
+      {
+        "test": "messages",
+        "passed": true
+      },
+      {
+        "test": "messages-stream",
+        "passed": true
+      },
+      {
+        "test": "responses-tool",
+        "passed": true
+      },
+      {
+        "test": "messages-tool",
+        "passed": true
+      }
+    ],
+    "glm-public-chat.jsonl": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      }
+    ],
+    "qwen-public-chat.jsonl": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      }
+    ]
+  },
+  "context_boundary_tests": {
+    "glm-context-boundary.jsonl": [
+      {
+        "model": "glm-4.7-flash",
+        "input_tokens": 202751,
+        "expected_status": 200,
+        "status": 200,
+        "elapsed_seconds": 470.44
+      },
+      {
+        "model": "glm-4.7-flash",
+        "input_tokens": 202753,
+        "expected_status": 400,
+        "status": 400,
+        "elapsed_seconds": 0.09
+      }
+    ],
+    "qwen-context-boundary.jsonl": [
+      {
+        "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "input_tokens": 262143,
+        "expected_status": 200,
+        "status": 200,
+        "elapsed_seconds": 143.8
+      },
+      {
+        "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "input_tokens": 262145,
+        "expected_status": 400,
+        "status": 400,
+        "elapsed_seconds": 0.11
+      }
+    ]
+  },
+  "harness_clients": {
+    "claude-glm": {
+      "passed": true,
+      "result": "OK"
+    },
+    "codex-glm": {
+      "passed": true,
+      "turn": {
+        "type": "turn.completed",
+        "usage": {
+          "input_tokens": 119159,
+          "cached_input_tokens": 119152,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 53,
+          "reasoning_output_tokens": 50
+        }
+      }
+    },
+    "claude-qwen": {
+      "passed": true,
+      "result": "\n\nOK."
+    },
+    "codex-qwen": {
+      "passed": true,
+      "turn": {
+        "type": "turn.completed",
+        "usage": {
+          "input_tokens": 120659,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 20,
+          "reasoning_output_tokens": 16
+        }
+      }
+    }
+  },
+  "unit_tests": {
+    "aggregator": 14,
+    "gateway_generator": 7
+  },
+  "limitations": [
+    "Synthetic full-context tests verify allocation and boundary enforcement, not long-context answer quality.",
+    "Initial GLM Codex cold-prompt run exceeded 180 seconds. Retry passed with prefix cache reuse; checked-in client timeout is 600 seconds.",
+    "Codex reports missing custom-model metadata and uses fallback metadata; explicit context limits are set by the smoke script.",
+    "CLI tests are text-only; structured tool calls are tested separately through APIs.",
+    "No sustained-load capacity certification was performed."
+  ],
+  "worker_status": [
+    {
+      "pod": "glm47-flash-agg-86dcd56ddd-zsjgb",
+      "node": "spark-01",
+      "containers": [
+        {
+          "ready": true,
+          "restarts": 0
+        }
+      ]
+    },
+    {
+      "pod": "qwen36-nvfp4-agg-5c586f9477-w8h9r",
+      "node": "spark-02",
+      "containers": [
+        {
+          "ready": true,
+          "restarts": 0
+        }
+      ]
+    }
+  ]
+}

@@ -92,3 +92,22 @@ server limit and reserve space for generated tokens. Claude Code can select
 the model with `--model`; background model aliases must also point to a served
 model if enabled. Native API compatibility alone does not prove every harness
 feature, such as compaction or custom tool formats, is supported.
+
+Use the checked-in harness smoke command to exercise the actual installed CLI:
+
+```sh
+scripts/serving/check_harness_client.sh codex \
+  https://api.tokenlabs.run/models/qwen nvidia/Qwen3.6-35B-A3B-NVFP4
+scripts/serving/check_harness_client.sh claude \
+  https://api.tokenlabs.run/models/glm glm-4.7-flash
+```
+
+For Codex, the script sets `model_context_window` to the model's native limit
+and `model_auto_compact_token_limit` to 90% of that value. The installed Codex
+can warn that custom model metadata is unavailable and fall back to generic
+metadata. Claude Code may independently report a 200K context window. Server
+context limits do not automatically override client metadata.
+
+These text-only CLI checks do not exercise file editing, automatic compaction,
+or every tool format. API tool-call checks are separate. Cold prompts near the
+context limit can take minutes on a Spark; the client check allows ten minutes.
