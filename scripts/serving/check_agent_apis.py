@@ -11,6 +11,24 @@ import subprocess
 import tempfile
 
 
+def stream_succeeded(text, marker):
+    if marker not in text:
+        return False
+    for line in text.splitlines():
+        if not line.startswith('data:'):
+            continue
+        data = line[5:].strip()
+        if data == '[DONE]':
+            continue
+        event = json.loads(data)
+        if event.get('error') is not None or event.get('type') in ('error', 'response.failed'):
+            return False
+        response = event.get('response')
+        if isinstance(response, dict) and response.get('error') is not None:
+            return False
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base-url', required=True, help='URL before /v1')
@@ -43,10 +61,10 @@ def main():
         try:
             if 'stream' in name:
                 marker = '[DONE]' if name.startswith('chat') else ('response.completed' if name.startswith('responses') else 'message_stop')
-                success = success and marker in result.stdout and '"error"' not in result.stdout
+                success = success and stream_succeeded(result.stdout, marker)
             else:
                 data = json.loads(result.stdout)
-                success = success and 'error' not in data
+                success = success and data.get('error') is None
                 if name == 'chat-tool':
                     call = data['choices'][0]['message']['tool_calls'][0]['function']
                     success = success and call['name'] == 'get_weather' and json.loads(call['arguments'])['city'].lower() == 'paris'
