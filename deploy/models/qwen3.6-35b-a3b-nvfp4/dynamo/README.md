@@ -4,7 +4,7 @@ These candidate manifests serve `nvidia/Qwen3.6-35B-A3B-NVFP4`.
 
 | File | Graph | Runtime |
 | --- | --- | --- |
-| `aggregated.yaml` | `qwen36-35b-control-dynamo-agg` | Dynamo 1.3.1 |
+| `aggregated.yaml` | `qwen36-nvfp4-dynamo-agg` | Pinned Dynamo 1.5.0 frontend and custom vLLM 0.28.0 worker |
 | `disaggregated.yaml` | `qwen36-35b-control-dynamo-disagg` | Dynamo 1.5.0 frontend, pinned custom workers |
 
 The disaggregated candidate uses Mooncake TCP between spark-02 (prefill) and
