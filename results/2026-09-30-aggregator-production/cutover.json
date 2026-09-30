@@ -1,0 +1,65 @@
+{
+  "before_selector": {
+    "app": "model-aggregator-candidate"
+  },
+  "replacement_endpoints": [
+    {
+      "addresses": [
+        "10.244.0.179"
+      ],
+      "conditions": {
+        "ready": true,
+        "serving": true,
+        "terminating": false
+      },
+      "nodeName": "controller",
+      "targetRef": {
+        "kind": "Pod",
+        "name": "model-aggregator-cf948db94-6csbq",
+        "namespace": "token-labs",
+        "uid": "a31c316d-63e1-45c1-aae9-373799ac26cc"
+      }
+    }
+  ],
+  "catalog": {
+    "object": "list",
+    "data": [
+      {
+        "id": "glm-4.7-flash",
+        "object": "model",
+        "owned_by": "token-labs"
+      },
+      {
+        "id": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "object": "model",
+        "owned_by": "token-labs"
+      }
+    ]
+  },
+  "authenticated_chat": "both models HTTP 200",
+  "unauthenticated_chat": 401,
+  "chat_streaming_tool_checks": "both models passed",
+  "timestamp": 1790792517.0898523,
+  "after_selector": {
+    "app": "model-aggregator"
+  },
+  "public_checks": [
+    {
+      "model": "glm-4.7-flash",
+      "status": 200,
+      "response": "OK."
+    },
+    {
+      "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+      "status": 200,
+      "response": "OK."
+    }
+  ],
+  "removed_deployments_and_diagnostic_services": [
+    "model-aggregator-candidate",
+    "model-aggregator-glm47-candidate",
+    "model-aggregator-candidate-3"
+  ],
+  "cleanup_timestamp": 1790792641.9677804,
+  "drain_check": "No established connections to listening port 8000 in either retired running pod. Outbound periodic model discovery continues until shutdown."
+}

@@ -35,6 +35,13 @@ The retired Dynamo manifest has zero replicas and must not be used as the
 active deployment source.
 
 The model aggregator discovers Services labeled `token-labs/model=true`.
+The public `model-aggregator` Service selects Deployment `model-aggregator` on
+the controller. `model-aggregator-production` is its diagnostic Service. The
+retired `model-aggregator-candidate`, `model-aggregator-glm47-candidate`, and
+`model-aggregator-candidate-3` Deployments and diagnostic Services were removed
+after the production replacement passed chat, streaming, tool-call, and
+authentication checks and the former active pod had no client connections.
+This was a CPU aggregator rename; neither GPU model Deployment changed.
 It refreshes without a restart. Generate and review the direct gateway routes
 only after both workers pass diagnostic tests:
 

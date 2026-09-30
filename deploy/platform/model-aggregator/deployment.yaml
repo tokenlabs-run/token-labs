@@ -1,8 +1,8 @@
 # Model Aggregator — merges /v1/models from all inference backends
 # Runs on controller node (no GPU needed). Gateway /v1/models route points here.
 # Discovers live model IDs dynamically from eligible serving Services.
-# The stable Service selects the model-neutral candidate. Code changes require
-# a separate candidate; do not update the active Deployment template in place.
+# The stable Service selects the model-neutral production Deployment. Code changes
+# require a separate candidate; do not update the active template in place.
 
 ---
 apiVersion: v1
@@ -41,19 +41,19 @@ roleRef:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: model-aggregator-candidate
+  name: model-aggregator
   namespace: token-labs
   labels:
-    app: model-aggregator-candidate
+    app: model-aggregator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: model-aggregator-candidate
+      app: model-aggregator
   template:
     metadata:
       labels:
-        app: model-aggregator-candidate
+        app: model-aggregator
     spec:
       serviceAccountName: model-aggregator
       nodeSelector:
@@ -129,23 +129,23 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: model-aggregator-candidate
+    app: model-aggregator
   ports:
   - name: http
     port: 8000
     targetPort: 8000
 
 ---
-# Direct access for candidate validation and rollback diagnostics.
+# Direct access for production validation, independent of the public Service selector.
 apiVersion: v1
 kind: Service
 metadata:
-  name: model-aggregator-candidate
+  name: model-aggregator-production
   namespace: token-labs
 spec:
   type: ClusterIP
   selector:
-    app: model-aggregator-candidate
+    app: model-aggregator
   ports:
   - name: http
     port: 8000
@@ -174,9 +174,6 @@ spec:
     - path:
         type: Exact
         value: /openrouter/models
-    - path:
-        type: Exact
-        value: /v1/chat/completions
     - path:
         type: Exact
         value: /openrouter/v1/chat/completions
