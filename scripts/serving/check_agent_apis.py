@@ -45,7 +45,7 @@ def main():
     if not args.chat_only:
         cases += [
             ('responses-tool', '/v1/responses', {'model': args.model, 'input': 'Call get_weather for Paris.', 'max_output_tokens': 512, 'store': False, 'tools': [{'type': 'function', **function}], 'tool_choice': {'type': 'function', 'name': 'get_weather'}}),
-            ('messages-tool', '/v1/messages', {'model': args.model, 'messages': [{'role': 'user', 'content': 'Call get_weather for Paris.'}], 'max_tokens': 512, 'tools': [{'name': function['name'], 'description': function['description'], 'input_schema': function['parameters']}], 'tool_choice': {'type': 'tool', 'name': 'get_weather'}}),
+            ('messages-tool', '/v1/messages', {'model': args.model, 'thinking': {'type': 'disabled'}, 'messages': [{'role': 'user', 'content': 'Call get_weather for Paris.'}], 'max_tokens': 512, 'tools': [{'name': function['name'], 'description': function['description'], 'input_schema': function['parameters']}], 'tool_choice': {'type': 'tool', 'name': 'get_weather'}}),
         ]
     failures = []
     for name, path, body in cases:

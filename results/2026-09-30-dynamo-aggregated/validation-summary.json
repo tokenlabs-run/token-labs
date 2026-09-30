@@ -1,0 +1,201 @@
+{
+  "api_checks": {
+    "glm-direct": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      },
+      {
+        "test": "responses",
+        "passed": true
+      },
+      {
+        "test": "responses-stream",
+        "passed": true
+      },
+      {
+        "test": "messages",
+        "passed": true
+      },
+      {
+        "test": "messages-stream",
+        "passed": true
+      },
+      {
+        "test": "responses-tool",
+        "passed": true
+      },
+      {
+        "test": "messages-tool",
+        "passed": true
+      }
+    ],
+    "glm-public": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      },
+      {
+        "test": "responses",
+        "passed": true
+      },
+      {
+        "test": "responses-stream",
+        "passed": true
+      },
+      {
+        "test": "messages",
+        "passed": true
+      },
+      {
+        "test": "messages-stream",
+        "passed": true
+      },
+      {
+        "test": "responses-tool",
+        "passed": true
+      },
+      {
+        "test": "messages-tool",
+        "passed": true
+      }
+    ],
+    "qwen-direct": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      },
+      {
+        "test": "responses",
+        "passed": true
+      },
+      {
+        "test": "responses-stream",
+        "passed": true
+      },
+      {
+        "test": "messages",
+        "passed": true
+      },
+      {
+        "test": "messages-stream",
+        "passed": true
+      },
+      {
+        "test": "responses-tool",
+        "passed": true
+      },
+      {
+        "test": "messages-tool",
+        "passed": true
+      }
+    ],
+    "qwen-public": [
+      {
+        "test": "chat",
+        "passed": true
+      },
+      {
+        "test": "chat-stream",
+        "passed": true
+      },
+      {
+        "test": "chat-tool",
+        "passed": true
+      },
+      {
+        "test": "responses",
+        "passed": true
+      },
+      {
+        "test": "responses-stream",
+        "passed": true
+      },
+      {
+        "test": "messages",
+        "passed": true
+      },
+      {
+        "test": "messages-stream",
+        "passed": true
+      },
+      {
+        "test": "responses-tool",
+        "passed": true
+      },
+      {
+        "test": "messages-tool",
+        "passed": true
+      }
+    ]
+  },
+  "harness_checks": {
+    "glm_claude": {
+      "passed": true,
+      "response": "OK"
+    },
+    "glm_codex": {
+      "passed": false,
+      "error": "Responses function tool names are ambiguous after namespace flattening"
+    },
+    "qwen_claude": {
+      "passed": false,
+      "error": "System message must be at the beginning"
+    }
+  },
+  "limitations": [
+    "Forced Messages tool calls require explicit thinking disabled.",
+    "Configured context limits advertised; full-boundary tests not rerun through Dynamo.",
+    "No sustained-load performance certification."
+  ],
+  "models": {
+    "glm": {
+      "object": "list",
+      "data": [
+        {
+          "id": "zai-org/GLM-4.7-Flash",
+          "object": "model",
+          "created": 1790796331,
+          "owned_by": "nvidia",
+          "context_window": 202752
+        }
+      ]
+    },
+    "qwen": {
+      "object": "list",
+      "data": [
+        {
+          "id": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+          "object": "model",
+          "created": 1790796331,
+          "owned_by": "nvidia",
+          "context_window": 262144
+        }
+      ]
+    }
+  }
+}

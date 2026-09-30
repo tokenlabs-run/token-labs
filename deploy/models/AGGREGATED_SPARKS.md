@@ -33,7 +33,9 @@ Qwen uses NVIDIA's checkpoint with the Marlin MoE backend and FP8 KV cache.
 Its Dynamo worker sets `--dyn-default-thinking-mode disabled` for agent tool
 calls. Clients can explicitly opt into reasoning. Forced tools with thinking
 enabled need separate validation; the default-thinking path classified tool
-arguments as reasoning during initial checks.
+arguments as reasoning during initial checks. For Anthropic forced tool calls,
+send `"thinking":{"type":"disabled"}` explicitly. Automatic tool selection
+and forced non-thinking tool calls were verified.
 GLM keeps its original checkpoint and default cache precision.
 
 Do not apply pod-template changes to a publicly selected worker in place.
@@ -125,3 +127,16 @@ context limits do not automatically override client metadata.
 These text-only CLI checks do not exercise file editing, automatic compaction,
 or every tool format. API tool-call checks are separate. Cold prompts near the
 context limit can take minutes on a Spark; the client check allows ten minutes.
+
+## Dynamo client validation
+
+The 2026-09-30 Dynamo deployment passed the GLM native API smoke checks and a
+text-only Claude Code request. The installed Codex client currently receives
+HTTP 400 from Dynamo: `Responses function tool names are ambiguous after
+namespace flattening`. Basic Responses API success does not establish
+compatibility with that Codex tool configuration. Claude Code with Qwen also
+returns HTTP 400: `System message must be at the beginning`. Both client
+compatibility issues remain unresolved; do not infer CLI readiness from the
+passing synthetic API checks.
+The earlier plain-vLLM client and full-context results do not certify the
+Dynamo frontend. Context limits here are configured and advertised values.
