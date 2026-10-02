@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-token-labs-hardware
+  namespace: monitoring
+  labels:
+    grafana_dashboard: '1'
+data:
+  token-labs-hardware.json: "{\n  \"uid\": \"token-labs-hardware\",\n  \"title\": \"Token Labs / GB10 hardware health\",\n\
+    \  \"schemaVersion\": 39,\n  \"version\": 1,\n  \"refresh\": \"30s\",\n  \"time\": {\n    \"from\": \"now-1h\",\n    \"\
+    to\": \"now\"\n  },\n  \"tags\": [\n    \"token-labs\",\n    \"operator\"\n  ],\n  \"panels\": [\n    {\n      \"id\"\
+    : 1,\n      \"type\": \"timeseries\",\n      \"title\": \"DCGM telemetry available; 0 = unavailable\",\n      \"description\"\
+    : \"\",\n      \"gridPos\": {\n        \"x\": 0,\n        \"y\": 0,\n        \"w\": 12,\n        \"h\": 8\n      },\n\
+    \      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"targets\"\
+    : [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"(token_labs:dcgm_up:bool and on(node) token_labs:hardware_expected:info)\
+    \ or on(node) (0 * token_labs:hardware_expected:info)\",\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n\
+    \      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"short\"\n        },\n        \"overrides\"\
+    : []\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\": \"timeseries\",\n      \"title\": \"HOST telemetry available;\
+    \ 0 = unavailable\",\n      \"description\": \"\",\n      \"gridPos\": {\n        \"x\": 12,\n        \"y\": 0,\n    \
+    \    \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\"\
+    : \"prometheus\"\n      },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"(token_labs:host_up:bool\
+    \ and on(node) token_labs:hardware_expected:info) or on(node) (0 * token_labs:hardware_expected:info)\",\n          \"\
+    legendFormat\": \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n      \
+    \    \"unit\": \"short\"\n        },\n        \"overrides\": []\n      }\n    },\n    {\n      \"id\": 3,\n      \"type\"\
+    : \"timeseries\",\n      \"title\": \"gpu utilization percent\",\n      \"description\": \"Physical device / host metric.\
+    \ No tenant attribution. Missing series remain no data. PCIe replay is not PCIe AER.\",\n      \"gridPos\": {\n      \
+    \  \"x\": 0,\n        \"y\": 8,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\"\
+    : \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n          \"refId\": \"\
+    A\",\n          \"expr\": \"token_labs:gpu_utilization_percent\",\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n\
+    \        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"percent\"\n        },\n\
+    \        \"overrides\": []\n      }\n    },\n    {\n      \"id\": 4,\n      \"type\": \"timeseries\",\n      \"title\"\
+    : \"gpu temperature celsius\",\n      \"description\": \"Physical device / host metric. No tenant attribution. Missing\
+    \ series remain no data. PCIe replay is not PCIe AER.\",\n      \"gridPos\": {\n        \"x\": 12,\n        \"y\": 8,\n\
+    \        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"\
+    uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"\
+    token_labs:gpu_temperature_celsius\",\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"\
+    fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"celsius\"\n        },\n        \"overrides\": []\n  \
+    \    }\n    },\n    {\n      \"id\": 5,\n      \"type\": \"timeseries\",\n      \"title\": \"gpu power watts\",\n    \
+    \  \"description\": \"Physical device / host metric. No tenant attribution. Missing series remain no data. PCIe replay\
+    \ is not PCIe AER.\",\n      \"gridPos\": {\n        \"x\": 0,\n        \"y\": 16,\n        \"w\": 12,\n        \"h\"\
+    : 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n\
+    \      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"token_labs:gpu_power_watts\",\n \
+    \         \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\"\
+    : {\n          \"unit\": \"watt\"\n        },\n        \"overrides\": []\n      }\n    },\n    {\n      \"id\": 6,\n \
+    \     \"type\": \"timeseries\",\n      \"title\": \"gpu sm clock mhz\",\n      \"description\": \"Physical device / host\
+    \ metric. No tenant attribution. Missing series remain no data. PCIe replay is not PCIe AER.\",\n      \"gridPos\": {\n\
+    \        \"x\": 12,\n        \"y\": 16,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n   \
+    \     \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n        \
+    \  \"refId\": \"A\",\n          \"expr\": \"token_labs:gpu_sm_clock_mhz\",\n          \"legendFormat\": \"{{node}} {{UUID}}\"\
+    \n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"MHz\"\n        },\n  \
+    \      \"overrides\": []\n      }\n    },\n    {\n      \"id\": 7,\n      \"type\": \"timeseries\",\n      \"title\":\
+    \ \"gpu pcie replays total\",\n      \"description\": \"Physical device / host metric. No tenant attribution. Missing\
+    \ series remain no data. PCIe replay is not PCIe AER.\",\n      \"gridPos\": {\n        \"x\": 0,\n        \"y\": 24,\n\
+    \        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"\
+    uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"\
+    token_labs:gpu_pcie_replays_total\",\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"\
+    fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"short\"\n        },\n        \"overrides\": []\n    \
+    \  }\n    },\n    {\n      \"id\": 8,\n      \"type\": \"timeseries\",\n      \"title\": \"host memory available:ratio\"\
+    ,\n      \"description\": \"Physical device / host metric. No tenant attribution. Missing series remain no data. PCIe\
+    \ replay is not PCIe AER.\",\n      \"gridPos\": {\n        \"x\": 12,\n        \"y\": 24,\n        \"w\": 12,\n     \
+    \   \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n\
+    \      },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"token_labs:host_memory_available:ratio\"\
+    ,\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\"\
+    : {\n          \"unit\": \"percentunit\"\n        },\n        \"overrides\": []\n      }\n    },\n    {\n      \"id\"\
+    : 9,\n      \"type\": \"timeseries\",\n      \"title\": \"host oom kills:increase5m\",\n      \"description\": \"Physical\
+    \ device / host metric. No tenant attribution. Missing series remain no data. PCIe replay is not PCIe AER.\",\n      \"\
+    gridPos\": {\n        \"x\": 0,\n        \"y\": 32,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\"\
+    : {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n \
+    \         \"refId\": \"A\",\n          \"expr\": \"token_labs:host_oom_kills:increase5m\",\n          \"legendFormat\"\
+    : \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"\
+    short\"\n        },\n        \"overrides\": []\n      }\n    },\n    {\n      \"id\": 10,\n      \"type\": \"timeseries\"\
+    ,\n      \"title\": \"host receive drops:rate5m\",\n      \"description\": \"Physical device / host metric. No tenant\
+    \ attribution. Missing series remain no data. PCIe replay is not PCIe AER.\",\n      \"gridPos\": {\n        \"x\": 12,\n\
+    \        \"y\": 32,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\"\
+    ,\n        \"uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n         \
+    \ \"expr\": \"token_labs:host_receive_drops:rate5m\",\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n\
+    \      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"pps\"\n        },\n        \"overrides\"\
+    : []\n      }\n    },\n    {\n      \"id\": 11,\n      \"type\": \"timeseries\",\n      \"title\": \"host receive bytes:rate5m\"\
+    ,\n      \"description\": \"Physical device / host metric. No tenant attribution. Missing series remain no data. PCIe\
+    \ replay is not PCIe AER.\",\n      \"gridPos\": {\n        \"x\": 0,\n        \"y\": 40,\n        \"w\": 12,\n      \
+    \  \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n \
+    \     },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"token_labs:host_receive_bytes:rate5m\"\
+    ,\n          \"legendFormat\": \"{{node}} {{UUID}}\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\"\
+    : {\n          \"unit\": \"Bps\"\n        },\n        \"overrides\": []\n      }\n    },\n    {\n      \"id\": 12,\n \
+    \     \"type\": \"timeseries\",\n      \"title\": \"Missing GPU fields\",\n      \"description\": \"No firing series means\
+    \ no firing alert, not proof of every hardware capability.\",\n      \"gridPos\": {\n        \"x\": 12,\n        \"y\"\
+    : 40,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n  \
+    \      \"uid\": \"prometheus\"\n      },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\"\
+    : \"ALERTS{alertname=\\\"TokenLabsGPUFieldMissing\\\",alertstate=\\\"firing\\\"}\",\n          \"legendFormat\": \"{{node}}\
+    \ {{UUID}}\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"short\"\n\
+    \        },\n        \"overrides\": []\n      }\n    }\n  ],\n  \"annotations\": {\n    \"list\": []\n  },\n  \"templating\"\
+    : {\n    \"list\": []\n  }\n}"

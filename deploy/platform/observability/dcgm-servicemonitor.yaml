@@ -14,5 +14,12 @@ spec:
       app: nvidia-dcgm-exporter
   endpoints:
   - port: gpu-metrics
-    interval: 60s
+    interval: 15s
     path: /metrics
+    scrapeTimeout: 10s
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+    - targetLabel: cluster
+      replacement: token-labs

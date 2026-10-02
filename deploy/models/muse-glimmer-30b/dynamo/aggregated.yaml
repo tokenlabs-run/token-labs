@@ -1,8 +1,11 @@
-# Aggregated Dynamo: each worker performs both prefill and decode.
+# Deployed aggregated graph: one worker performs both prefill and decode.
+# Requires independent spare capacity on spark-01; shared GPUs do not isolate memory.
+# Frontend image is preloaded on controller; it is not published to a registry.
+# Follow ../../MODEL_ROLLOUT_RUNBOOK.md; never update an active graph in place.
 apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeployment
 metadata:
-  name: qwen36-nvfp4-dynamo-agg
+  name: muse-glimmer-30b-dynamo-agg
   namespace: token-labs
   labels:
     app.kubernetes.io/part-of: dynamo
@@ -22,9 +25,8 @@ spec:
           effect: NoSchedule
         containers:
         - name: main
-          # Dynamo 19a728bc54f51261ad3ff2ba9efd6c9b0bd26e66; parser 8d729bff3e533ff85f364979838368429aa832a9.
-          image: elizabetht/dynamo-frontend@sha256:f8f545ec6e2737545004056dee85259622ae9966230c56382e9eb7bdb7a01756
-          imagePullPolicy: IfNotPresent
+          image: localhost/dynamo-frontend:muse-pr316-69f3f02
+          imagePullPolicy: Never
           command:
           - python3
           args:
@@ -33,7 +35,7 @@ spec:
           - --trust-remote-code
           - --enable-anthropic-api
           - --namespace
-          - token-labs-qwen36-nvfp4-dynamo-agg
+          - token-labs-muse-glimmer-30b-dynamo-agg
           env:
           - name: POD_UID
             valueFrom:
@@ -41,10 +43,6 @@ spec:
                 fieldPath: metadata.uid
           - name: DYN_HTTP_BODY_LIMIT_MB
             value: '200'
-          - name: DYN_ENABLE_EXPERIMENTAL_PARSERS_V2
-            value: "1"
-          - name: DYN_LOG
-            value: "info,dynamo_llm=trace"
           - name: HF_HOME
             value: /model-cache
           - name: HF_HUB_OFFLINE
@@ -82,7 +80,7 @@ spec:
     podTemplate:
       spec:
         nodeSelector:
-          kubernetes.io/hostname: spark-02
+          kubernetes.io/hostname: spark-01
         terminationGracePeriodSeconds: 120
         tolerations:
         - key: nvidia.com/gpu
@@ -97,33 +95,31 @@ spec:
           - dynamo.vllm
           args:
           - --model
-          - nvidia/Qwen3.6-35B-A3B-NVFP4
+          - meta-models/Muse-Glimmer-30B
           - --revision
-          - 1355db6a052410cfd62085d94b58866fd0f2c3c5
+          - a4e59da52a7bc87ae7251dd5545c0dd437c44b68
           - --served-model-name
-          - nvidia/Qwen3.6-35B-A3B-NVFP4
-          - --trust-remote-code
+          - meta-models/Muse-Glimmer-30B
           - --tensor-parallel-size
           - '1'
+          - --dtype
+          - bfloat16
           - --max-model-len
-          - '262144'
+          - '32768'
           - --max-num-seqs
           - '4'
           - --gpu-memory-utilization
           - '0.80'
           - --enable-prefix-caching
+          # DFlash block size 16 includes the last accepted token: draft 15 tokens.
+          - --speculative-config
+          - '{"method": "dflash", "model": "meta-models/Muse-Glimmer-30B-assistant", "revision": "e8192f3a8f617f74be2ce220360c89ef4789f39f", "num_speculative_tokens": 15}'
+          - --generation-config
+          - auto
           - --dyn-tool-call-parser
-          - qwen3_coder
+          - muse_glimmer
           - --dyn-reasoning-parser
-          - qwen3
-          - --moe-backend
-          - marlin
-          - --kv-cache-dtype
-          - fp8
-          - --attention-backend
-          - flashinfer
-          - --dyn-default-thinking-mode
-          - disabled
+          - muse_glimmer
           env:
           - name: HF_HOME
             value: /model-cache
@@ -139,6 +135,10 @@ spec:
             value: spawn
           - name: PYTHONUNBUFFERED
             value: '1'
+          - name: DYN_LOG
+            value: "info,dynamo_llm=trace"
+          - name: DYNAMO_PARSERS_DEBUG
+            value: "1"
           - name: POD_UID
             valueFrom:
               fieldRef:

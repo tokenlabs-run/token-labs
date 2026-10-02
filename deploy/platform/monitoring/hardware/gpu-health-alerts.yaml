@@ -1,0 +1,191 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: token-labs-hardware
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: token-labs.hardware.recording
+    interval: 30s
+    rules:
+    - record: token_labs:hardware_expected:info
+      expr: label_replace(vector(1), "node", "spark-01", "", "") or label_replace(vector(1), "node", "spark-02",
+        "", "")
+      labels: &id001
+        cluster: token-labs
+        service: hardware-observability
+    - record: token_labs:dcgm_up:bool
+      expr: max by (node) (up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node=~"spark-0[12]"})
+      labels: *id001
+    - record: token_labs:host_up:bool
+      expr: max by (node) (up{job="node-exporter"} * on (namespace,pod) group_left(node) kube_pod_info{node=~"spark-0[12]"})
+      labels: *id001
+    - record: token_labs:gpu_utilization_percent
+      expr: max by (node, UUID) (DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node=~"spark-0[12]"} >= 0 < 1e12)
+      labels: *id001
+    - record: token_labs:gpu_temperature_celsius
+      expr: max by (node, UUID) (DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node=~"spark-0[12]"} >= 0 < 1e12)
+      labels: *id001
+    - record: token_labs:gpu_power_watts
+      expr: max by (node, UUID) (DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node=~"spark-0[12]"} >= 0 <
+        1e12)
+      labels: *id001
+    - record: token_labs:gpu_sm_clock_mhz
+      expr: max by (node, UUID) (DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node=~"spark-0[12]"} >= 0 < 1e12)
+      labels: *id001
+    - record: token_labs:gpu_pcie_replays_total
+      expr: max by (node, UUID) (DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node=~"spark-0[12]"}
+        >= 0 < 1e12)
+      labels: *id001
+    - record: token_labs:host_memory_available:ratio
+      expr: max by (node) (label_replace((node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"})
+        * on(instance) group_left(nodename) node_uname_info{job="node-exporter",nodename=~"spark-0[12]"}, "node",
+        "$1", "nodename", "(.*)"))
+      labels: *id001
+    - record: token_labs:host_oom_kills:increase5m
+      expr: max by (node) (label_replace((increase(node_vmstat_oom_kill{job="node-exporter"}[5m])) * on(instance)
+        group_left(nodename) node_uname_info{job="node-exporter",nodename=~"spark-0[12]"}, "node", "$1", "nodename",
+        "(.*)"))
+      labels: *id001
+    - record: token_labs:host_receive_drops:rate5m
+      expr: max by (node) (label_replace((sum by(instance) (rate(node_network_receive_drop_total{job="node-exporter",device=~"en.*"}[5m])))
+        * on(instance) group_left(nodename) node_uname_info{job="node-exporter",nodename=~"spark-0[12]"}, "node",
+        "$1", "nodename", "(.*)"))
+      labels: *id001
+    - record: token_labs:host_receive_bytes:rate5m
+      expr: max by (node) (label_replace((sum by(instance) (rate(node_network_receive_bytes_total{job="node-exporter",device=~"en.*"}[5m])))
+        * on(instance) group_left(nodename) node_uname_info{job="node-exporter",nodename=~"spark-0[12]"}, "node",
+        "$1", "nodename", "(.*)"))
+      labels: *id001
+  - name: token-labs.hardware.alerts
+    rules:
+    - alert: TokenLabsDCGMTelemetryUnavailable
+      expr: token_labs:hardware_expected:info unless on(cluster,node) (token_labs:dcgm_up:bool == 1)
+      for: 2m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+      annotations:
+        summary: dcgm telemetry unavailable on {{ $labels.node }}
+        description: Check exporter pod, Service endpoints, ServiceMonitor selection and Prometheus target error.
+          Missing targets are unknown, not healthy. Do not restart inference or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsHOSTTelemetryUnavailable
+      expr: token_labs:hardware_expected:info unless on(cluster,node) (token_labs:host_up:bool == 1)
+      for: 2m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+      annotations:
+        summary: host telemetry unavailable on {{ $labels.node }}
+        description: Check exporter pod, Service endpoints, ServiceMonitor selection and Prometheus target error.
+          Missing targets are unknown, not healthy. Do not restart inference or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsGPUFieldMissing
+      expr: (token_labs:hardware_expected:info and on(cluster,node) (token_labs:dcgm_up:bool == 1)) unless on(cluster,node)
+        token_labs:gpu_utilization_percent
+      for: 5m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_GPU_UTIL
+      annotations:
+        summary: GPU field missing on {{ $labels.node }}
+        description: DCGM_FI_DEV_GPU_UTIL was verified on this GB10. Check collector configuration and exporter
+          logs; unsupported/sentinel values are not health evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsGPUFieldMissing
+      expr: (token_labs:hardware_expected:info and on(cluster,node) (token_labs:dcgm_up:bool == 1)) unless on(cluster,node)
+        token_labs:gpu_temperature_celsius
+      for: 5m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_GPU_TEMP
+      annotations:
+        summary: GPU field missing on {{ $labels.node }}
+        description: DCGM_FI_DEV_GPU_TEMP was verified on this GB10. Check collector configuration and exporter
+          logs; unsupported/sentinel values are not health evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsGPUFieldMissing
+      expr: (token_labs:hardware_expected:info and on(cluster,node) (token_labs:dcgm_up:bool == 1)) unless on(cluster,node)
+        token_labs:gpu_power_watts
+      for: 5m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_POWER_USAGE
+      annotations:
+        summary: GPU field missing on {{ $labels.node }}
+        description: DCGM_FI_DEV_POWER_USAGE was verified on this GB10. Check collector configuration and exporter
+          logs; unsupported/sentinel values are not health evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsGPUFieldMissing
+      expr: (token_labs:hardware_expected:info and on(cluster,node) (token_labs:dcgm_up:bool == 1)) unless on(cluster,node)
+        token_labs:gpu_sm_clock_mhz
+      for: 5m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_SM_CLOCK
+      annotations:
+        summary: GPU field missing on {{ $labels.node }}
+        description: DCGM_FI_DEV_SM_CLOCK was verified on this GB10. Check collector configuration and exporter
+          logs; unsupported/sentinel values are not health evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsGPUFieldMissing
+      expr: (token_labs:hardware_expected:info and on(cluster,node) (token_labs:dcgm_up:bool == 1)) unless on(cluster,node)
+        token_labs:gpu_pcie_replays_total
+      for: 5m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_PCIE_REPLAY_COUNTER
+      annotations:
+        summary: GPU field missing on {{ $labels.node }}
+        description: DCGM_FI_DEV_PCIE_REPLAY_COUNTER was verified on this GB10. Check collector configuration and
+          exporter logs; unsupported/sentinel values are not health evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsHostOOMObserved
+      expr: token_labs:host_oom_kills:increase5m > 0
+      for: 0m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+      annotations:
+        summary: Host OOM observed on {{ $labels.node }}
+        description: Inspect kernel logs and memory pressure; correlate with inference latency. This is a recent
+          counter increase, not a lifetime total. Observe only; preserve production capacity.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - alert: TokenLabsGPUReplayObserved
+      expr: increase(token_labs:gpu_pcie_replays_total[5m]) > 0
+      for: 2m
+      labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+      annotations:
+        summary: PCIe replays observed on {{ $labels.node }}
+        description: The emitted PCIe replay counter increased recently. Correlate with host network and inference
+          latency, then inspect driver diagnostics. This is not PCIe AER evidence or proof of GPU failure. Observe
+          only; do not reset the GPU or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md

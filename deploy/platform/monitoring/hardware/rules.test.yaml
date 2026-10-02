@@ -1,0 +1,353 @@
+rule_files:
+- rules.yaml
+evaluation_interval: 30s
+tests:
+- name: healthy zero utilization is valid
+  interval: 30s
+  input_series:
+  - &id001
+    series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-01"}
+    values: 1+0x30
+  - &id012
+    series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-02"}
+    values: 1+0x30
+  - &id002
+    series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - &id003
+    series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 46+0x30
+  - &id004
+    series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 12+0x30
+  - &id005
+    series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 2405+0x30
+  - &id006
+    series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - &id007
+    series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 0+0x30
+  - &id008
+    series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 46+0x30
+  - &id009
+    series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 12+0x30
+  - &id010
+    series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 2405+0x30
+  - &id011
+    series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 0+0x30
+  alert_rule_test:
+  - eval_time: 8m
+    alertname: TokenLabsDCGMTelemetryUnavailable
+    exp_alerts: []
+  - eval_time: 8m
+    alertname: TokenLabsGPUFieldMissing
+    exp_alerts: []
+- name: all targets disappear
+  interval: 30s
+  input_series: []
+  alert_rule_test:
+  - eval_time: 8m
+    alertname: TokenLabsDCGMTelemetryUnavailable
+    exp_alerts:
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        node: spark-01
+      exp_annotations:
+        summary: dcgm telemetry unavailable on spark-01
+        description: Check exporter pod, Service endpoints, ServiceMonitor selection
+          and Prometheus target error. Missing targets are unknown, not healthy. Do
+          not restart inference or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        node: spark-02
+      exp_annotations:
+        summary: dcgm telemetry unavailable on spark-02
+        description: Check exporter pod, Service endpoints, ServiceMonitor selection
+          and Prometheus target error. Missing targets are unknown, not healthy. Do
+          not restart inference or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+  - eval_time: 8m
+    alertname: TokenLabsGPUFieldMissing
+    exp_alerts: []
+- name: one scrape fails
+  interval: 30s
+  input_series:
+  - *id001
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-02"}
+    values: 0+0x30
+  - *id002
+  - *id003
+  - *id004
+  - *id005
+  - *id006
+  - *id007
+  - *id008
+  - *id009
+  - *id010
+  - *id011
+  alert_rule_test:
+  - eval_time: 8m
+    alertname: TokenLabsDCGMTelemetryUnavailable
+    exp_alerts:
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        node: spark-02
+      exp_annotations:
+        summary: dcgm telemetry unavailable on spark-02
+        description: Check exporter pod, Service endpoints, ServiceMonitor selection
+          and Prometheus target error. Missing targets are unknown, not healthy. Do
+          not restart inference or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+  - eval_time: 8m
+    alertname: TokenLabsGPUFieldMissing
+    exp_alerts: []
+- name: partial successful scrape loses utilization
+  interval: 30s
+  input_series:
+  - *id001
+  - *id012
+  - *id002
+  - *id003
+  - *id004
+  - *id005
+  - *id006
+  - *id008
+  - *id009
+  - *id010
+  - *id011
+  alert_rule_test:
+  - eval_time: 8m
+    alertname: TokenLabsGPUFieldMissing
+    exp_alerts:
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_GPU_UTIL
+        node: spark-02
+      exp_annotations:
+        summary: GPU field missing on spark-02
+        description: DCGM_FI_DEV_GPU_UTIL was verified on this GB10. Check collector
+          configuration and exporter logs; unsupported/sentinel values are not health
+          evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+- name: sentinel is unavailable
+  interval: 30s
+  input_series:
+  - *id001
+  - *id012
+  - *id002
+  - *id003
+  - *id004
+  - *id005
+  - *id006
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 9223372036854775794+0x30
+  - *id008
+  - *id009
+  - *id010
+  - *id011
+  alert_rule_test:
+  - eval_time: 8m
+    alertname: TokenLabsGPUFieldMissing
+    exp_alerts:
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        metric: DCGM_FI_DEV_GPU_UTIL
+        node: spark-02
+      exp_annotations:
+        summary: GPU field missing on spark-02
+        description: DCGM_FI_DEV_GPU_UTIL was verified on this GB10. Check collector
+          configuration and exporter logs; unsupported/sentinel values are not health
+          evidence.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+- name: historical OOM does not alert
+  interval: 30s
+  input_series:
+  - series: node_vmstat_oom_kill{job="node-exporter",instance="host:9100"}
+    values: 12+0x30
+  - series: node_uname_info{job="node-exporter",instance="host:9100",nodename="spark-02"}
+    values: 1+0x30
+  alert_rule_test:
+  - eval_time: 6m
+    alertname: TokenLabsHostOOMObserved
+    exp_alerts: []
+  - eval_time: 12m
+    alertname: TokenLabsHostOOMObserved
+    exp_alerts: []
+- name: new OOM alerts
+  interval: 30s
+  input_series:
+  - series: node_vmstat_oom_kill{job="node-exporter",instance="host:9100"}
+    values: 0+0x8 1+0x22
+  - series: node_uname_info{job="node-exporter",instance="host:9100",nodename="spark-02"}
+    values: 1+0x30
+  alert_rule_test:
+  - eval_time: 6m
+    alertname: TokenLabsHostOOMObserved
+    exp_alerts:
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        node: spark-02
+      exp_annotations:
+        summary: Host OOM observed on spark-02
+        description: Inspect kernel logs and memory pressure; correlate with inference
+          latency. This is a recent counter increase, not a lifetime total. Observe
+          only; preserve production capacity.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+  - eval_time: 12m
+    alertname: TokenLabsHostOOMObserved
+    exp_alerts: []
+- name: counter reset does not alert
+  interval: 30s
+  input_series:
+  - series: node_vmstat_oom_kill{job="node-exporter",instance="host:9100"}
+    values: 12+0x8 0+0x22
+  - series: node_uname_info{job="node-exporter",instance="host:9100",nodename="spark-02"}
+    values: 1+0x30
+  alert_rule_test:
+  - eval_time: 6m
+    alertname: TokenLabsHostOOMObserved
+    exp_alerts: []
+  - eval_time: 12m
+    alertname: TokenLabsHostOOMObserved
+    exp_alerts: []
+- name: replay increments
+  interval: 30s
+  input_series:
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-01"}
+    values: 1+0x30
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-02"}
+    values: 1+0x30
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 46+0x30
+  - series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 12+0x30
+  - series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 2405+0x30
+  - series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 46+0x30
+  - series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 12+0x30
+  - series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 2405+0x30
+  - series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 0+0x8 5+0x22
+  alert_rule_test:
+  - eval_time: 7m
+    alertname: TokenLabsGPUReplayObserved
+    exp_alerts:
+    - exp_labels:
+        cluster: token-labs
+        service: hardware-observability
+        severity: warning
+        team: token-labs
+        node: spark-02
+        UUID: spark-02-gpu
+      exp_annotations:
+        summary: PCIe replays observed on spark-02
+        description: The emitted PCIe replay counter increased recently. Correlate
+          with host network and inference latency, then inspect driver diagnostics.
+          This is not PCIe AER evidence or proof of GPU failure. Observe only; do
+          not reset the GPU or drain the node.
+        runbook_url: https://github.com/elizabetht/token-labs/blob/main/deploy/platform/monitoring/hardware/README.md
+  - eval_time: 12m
+    alertname: TokenLabsGPUReplayObserved
+    exp_alerts: []
+- name: replay historical value
+  interval: 30s
+  input_series:
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-01"}
+    values: 1+0x30
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-02"}
+    values: 1+0x30
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 46+0x30
+  - series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 12+0x30
+  - series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 2405+0x30
+  - series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 46+0x30
+  - series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 12+0x30
+  - series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 2405+0x30
+  - series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 5+0x30
+  alert_rule_test:
+  - eval_time: 7m
+    alertname: TokenLabsGPUReplayObserved
+    exp_alerts: []
+  - eval_time: 12m
+    alertname: TokenLabsGPUReplayObserved
+    exp_alerts: []
+- name: replay reset
+  interval: 30s
+  input_series:
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-01"}
+    values: 1+0x30
+  - series: up{job="nvidia-dcgm-exporter",namespace="gpu-operator",node="spark-02"}
+    values: 1+0x30
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 46+0x30
+  - series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 12+0x30
+  - series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 2405+0x30
+  - series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-01",UUID="spark-01-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_UTIL{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 0+0x30
+  - series: DCGM_FI_DEV_GPU_TEMP{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 46+0x30
+  - series: DCGM_FI_DEV_POWER_USAGE{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 12+0x30
+  - series: DCGM_FI_DEV_SM_CLOCK{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 2405+0x30
+  - series: DCGM_FI_DEV_PCIE_REPLAY_COUNTER{job="nvidia-dcgm-exporter",node="spark-02",UUID="spark-02-gpu"}
+    values: 5+0x8 0+0x22
+  alert_rule_test:
+  - eval_time: 7m
+    alertname: TokenLabsGPUReplayObserved
+    exp_alerts: []
+  - eval_time: 12m
+    alertname: TokenLabsGPUReplayObserved
+    exp_alerts: []

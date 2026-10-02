@@ -5,6 +5,7 @@ kind: Kustomization
 # kube-prometheus-stack (managed by Flux in the monitoring namespace).
 #
 # Resources here:
+#   - dcgm-servicemonitor.yaml: node-attributed GPU exporter scrape.
 #   - grafana-dashboard.yaml: ConfigMap with grafana_dashboard=1 label so
 #     the kube-prometheus-stack Grafana sidecar auto-provisions our dashboard.
 #   - scrape-secret.yaml: additionalScrapeConfigs Secret referenced by the
@@ -14,6 +15,7 @@ kind: Kustomization
 # provides Alertmanager, node-exporter, kube-state-metrics, and all K8s dashboards.
 
 resources:
+  - dcgm-servicemonitor.yaml
   - grafana-dashboard.yaml
   - scrape-secret.yaml
 
