@@ -1,0 +1,32 @@
+# Diagnostic Services never receive public traffic.
+apiVersion: v1
+kind: Service
+metadata:
+  name: muse-glimmer-30b-frontend-blue
+  namespace: token-labs
+  labels:
+    token-labs/frontend-role: diagnostic
+spec:
+  selector:
+    token-labs/model-id: muse-glimmer-30b-frontend
+    token-labs/slot: blue
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: muse-glimmer-30b-frontend-green
+  namespace: token-labs
+  labels:
+    token-labs/frontend-role: diagnostic
+spec:
+  selector:
+    token-labs/model-id: muse-glimmer-30b-frontend
+    token-labs/slot: green
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

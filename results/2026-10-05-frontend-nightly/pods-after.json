@@ -1,0 +1,3083 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-09-02T21:53:21Z"
+                },
+                "creationTimestamp": "2026-10-05T17:14:09Z",
+                "generateName": "model-aggregator-cf948db94-",
+                "generation": 1,
+                "labels": {
+                    "app": "model-aggregator",
+                    "pod-template-hash": "cf948db94"
+                },
+                "name": "model-aggregator-cf948db94-bghnl",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps/v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "ReplicaSet",
+                        "name": "model-aggregator-cf948db94",
+                        "uid": "ec24452d-0ac4-49e8-aab6-2fd62e128e6b"
+                    }
+                ],
+                "resourceVersion": "112735312",
+                "uid": "48c31165-8f67-4bcd-8da9-586d36d08ab9"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "pip install fastapi uvicorn httpx --quiet\nuvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app\n"
+                        ],
+                        "command": [
+                            "/bin/sh",
+                            "-c"
+                        ],
+                        "env": [
+                            {
+                                "name": "MODEL_BACKEND_SERVICES"
+                            },
+                            {
+                                "name": "OPENROUTER_MODEL_DOCUMENT_PATH",
+                                "value": "/etc/openrouter/models.json"
+                            },
+                            {
+                                "name": "OPENROUTER_MAX_CONCURRENCY",
+                                "value": "16"
+                            },
+                            {
+                                "name": "OPENROUTER_API_KEY",
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "key": "api-key",
+                                        "name": "openrouter-provider-auth",
+                                        "optional": true
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "python:3.11-slim",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": 8000,
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 30,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "aggregator",
+                        "ports": [
+                            {
+                                "containerPort": 8000,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": 8000,
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 30,
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "500m",
+                                "memory": "256Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/app",
+                                "name": "code"
+                            },
+                            {
+                                "mountPath": "/etc/openrouter",
+                                "name": "openrouter-model-document",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-45gct",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "controller",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "controller"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "model-aggregator",
+                "serviceAccountName": "model-aggregator",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "node-role.kubernetes.io/control-plane",
+                        "operator": "Exists"
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "configMap": {
+                            "defaultMode": 420,
+                            "name": "model-aggregator-code-6c9m9ddt89"
+                        },
+                        "name": "code"
+                    },
+                    {
+                        "configMap": {
+                            "defaultMode": 420,
+                            "name": "openrouter-model-document-g67d8h62m2"
+                        },
+                        "name": "openrouter-model-document"
+                    },
+                    {
+                        "name": "kube-api-access-45gct",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:29Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:29Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:20:08Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:20:08Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:29Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "100m",
+                            "memory": "128Mi"
+                        },
+                        "containerID": "containerd://9ca767c81ec241ffc06993de2e152c37c280b51c4a0f5d1955626ed497bd388b",
+                        "image": "docker.io/library/python:3.11-slim",
+                        "imageID": "docker.io/library/python@sha256:6f31d6e9ba2b0a787a3f81c37b004155b87b9efa1b771182bd550c1615745be5",
+                        "lastState": {},
+                        "name": "aggregator",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "500m",
+                                "memory": "256Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-05T17:19:37Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0
+                                ],
+                                "uid": 0
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/app",
+                                "name": "code"
+                            },
+                            {
+                                "mountPath": "/etc/openrouter",
+                                "name": "openrouter-model-document",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-45gct",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.75",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.75"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "10.244.0.226",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.226"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "500m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "79m",
+                        "memory": "128Mi"
+                    }
+                },
+                "startTime": "2026-10-05T17:19:29Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-09-02T21:53:21Z"
+                },
+                "creationTimestamp": "2026-10-02T17:22:50Z",
+                "generateName": "model-aggregator-cf948db94-",
+                "generation": 1,
+                "labels": {
+                    "app": "model-aggregator",
+                    "pod-template-hash": "cf948db94"
+                },
+                "name": "model-aggregator-cf948db94-tkfqv",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps/v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "ReplicaSet",
+                        "name": "model-aggregator-cf948db94",
+                        "uid": "ec24452d-0ac4-49e8-aab6-2fd62e128e6b"
+                    }
+                ],
+                "resourceVersion": "112730947",
+                "uid": "f40ccbe1-615b-4be0-995d-e59f22dfc7af"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "pip install fastapi uvicorn httpx --quiet\nuvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app\n"
+                        ],
+                        "command": [
+                            "/bin/sh",
+                            "-c"
+                        ],
+                        "env": [
+                            {
+                                "name": "MODEL_BACKEND_SERVICES"
+                            },
+                            {
+                                "name": "OPENROUTER_MODEL_DOCUMENT_PATH",
+                                "value": "/etc/openrouter/models.json"
+                            },
+                            {
+                                "name": "OPENROUTER_MAX_CONCURRENCY",
+                                "value": "16"
+                            },
+                            {
+                                "name": "OPENROUTER_API_KEY",
+                                "valueFrom": {
+                                    "secretKeyRef": {
+                                        "key": "api-key",
+                                        "name": "openrouter-provider-auth",
+                                        "optional": true
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "python:3.11-slim",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": 8000,
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 30,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "aggregator",
+                        "ports": [
+                            {
+                                "containerPort": 8000,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": 8000,
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 30,
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "500m",
+                                "memory": "256Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/app",
+                                "name": "code"
+                            },
+                            {
+                                "mountPath": "/etc/openrouter",
+                                "name": "openrouter-model-document",
+                                "readOnly": true
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-gvw8s",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "controller",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "controller"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "model-aggregator",
+                "serviceAccountName": "model-aggregator",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "node-role.kubernetes.io/control-plane",
+                        "operator": "Exists"
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "configMap": {
+                            "defaultMode": 420,
+                            "name": "model-aggregator-code-6c9m9ddt89"
+                        },
+                        "name": "code"
+                    },
+                    {
+                        "configMap": {
+                            "defaultMode": 420,
+                            "name": "openrouter-model-document-g67d8h62m2"
+                        },
+                        "name": "openrouter-model-document"
+                    },
+                    {
+                        "name": "kube-api-access-gvw8s",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:14:09Z",
+                        "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 134580203952, available: 120313908Ki. Container aggregator was using 50564Ki, request is 0, has larger consumption of ephemeral-storage. ",
+                        "observedGeneration": 1,
+                        "reason": "TerminationByKubelet",
+                        "status": "True",
+                        "type": "DisruptionTarget"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:14:09Z",
+                        "message": "pod sandbox is not ready",
+                        "observedGeneration": 1,
+                        "reason": "PodSandboxNotReady",
+                        "status": "False",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:28:09Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:14:09Z",
+                        "observedGeneration": 1,
+                        "reason": "PodFailed",
+                        "status": "False",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:14:09Z",
+                        "observedGeneration": 1,
+                        "reason": "PodFailed",
+                        "status": "False",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:28:07Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "100m",
+                            "memory": "128Mi"
+                        },
+                        "containerID": "containerd://6eeb2386d4e580f5d1e79a9a3ee7ba3034cde196ff47f5f4921ebd87d3763021",
+                        "image": "docker.io/library/python:3.11-slim",
+                        "imageID": "docker.io/library/python@sha256:bab1b7ef4b450c81002278d035eff85ebe394ae94df904f7a3ba14f7e16e487b",
+                        "lastState": {},
+                        "name": "aggregator",
+                        "ready": false,
+                        "resources": {
+                            "limits": {
+                                "cpu": "500m",
+                                "memory": "256Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": false,
+                        "state": {
+                            "terminated": {
+                                "containerID": "containerd://6eeb2386d4e580f5d1e79a9a3ee7ba3034cde196ff47f5f4921ebd87d3763021",
+                                "exitCode": 137,
+                                "finishedAt": "2026-10-05T17:14:09Z",
+                                "reason": "Error",
+                                "startedAt": "2026-10-02T17:28:58Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0
+                                ],
+                                "uid": 0
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/app",
+                                "name": "code"
+                            },
+                            {
+                                "mountPath": "/etc/openrouter",
+                                "name": "openrouter-model-document",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-gvw8s",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.75",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.75"
+                    }
+                ],
+                "message": "The node was low on resource: ephemeral-storage. Threshold quantity: 134580203952, available: 120313908Ki. Container aggregator was using 50564Ki, request is 0, has larger consumption of ephemeral-storage. ",
+                "observedGeneration": 1,
+                "phase": "Failed",
+                "podIP": "10.244.0.215",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.215"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "reason": "Evicted",
+                "resources": {
+                    "limits": {
+                        "cpu": "500m",
+                        "memory": "256Mi"
+                    },
+                    "requests": {
+                        "cpu": "79m",
+                        "memory": "128Mi"
+                    }
+                },
+                "startTime": "2026-10-02T17:28:09Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-operator-origin-version": "1.3.1",
+                    "pod-group-name": "pg-muse-glimmer-30b-dynamo-agg-0-abbe2b52-1e6a-40ec-b638-03ef8ba55d90",
+                    "received-resource-type": "Regular"
+                },
+                "creationTimestamp": "2026-10-05T17:18:58Z",
+                "generateName": "muse-glimmer-30b-dynamo-agg-0-frontend-",
+                "generation": 2,
+                "labels": {
+                    "app.kubernetes.io/component": "pcs-podclique",
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/name": "muse-glimmer-30b-dynamo-agg-0-frontend",
+                    "app.kubernetes.io/part-of": "muse-glimmer-30b-dynamo-agg",
+                    "grove.io/pod-template-hash": "f8ddd96dc88d7c7fbbd",
+                    "grove.io/podclique": "muse-glimmer-30b-dynamo-agg-0-frontend",
+                    "grove.io/podclique-pod-index": "0",
+                    "grove.io/podcliqueset-replica-index": "0",
+                    "grove.io/podgang": "muse-glimmer-30b-dynamo-agg-0",
+                    "kai.scheduler/queue": "dynamo",
+                    "kai.scheduler/subgroup-name": "muse-glimmer-30b-dynamo-agg-0-frontend",
+                    "nvidia.com/dynamo-component": "Frontend",
+                    "nvidia.com/dynamo-component-type": "frontend",
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true",
+                    "nvidia.com/dynamo-graph-deployment-name": "muse-glimmer-30b-dynamo-agg",
+                    "nvidia.com/dynamo-namespace": "token-labs-muse-glimmer-30b-dynamo-agg",
+                    "nvidia.com/metrics-enabled": "true",
+                    "nvidia.com/selector": "muse-glimmer-30b-dynamo-agg-frontend"
+                },
+                "name": "muse-glimmer-30b-dynamo-agg-0-frontend-qbpmm",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "grove.io/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "PodClique",
+                        "name": "muse-glimmer-30b-dynamo-agg-0-frontend",
+                        "uid": "909e72e6-baf1-4a1f-9aba-0f5786f0a1b8"
+                    }
+                ],
+                "resourceVersion": "112734964",
+                "uid": "e9c34753-d555-4778-8bb2-0e5422c8b32d"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "-m",
+                            "dynamo.frontend",
+                            "--trust-remote-code",
+                            "--enable-anthropic-api",
+                            "--namespace",
+                            "token-labs-muse-glimmer-30b-dynamo-agg"
+                        ],
+                        "command": [
+                            "python3"
+                        ],
+                        "env": [
+                            {
+                                "name": "DYNAMO_PORT",
+                                "value": "8000"
+                            },
+                            {
+                                "name": "DYN_COMPONENT",
+                                "value": "frontend"
+                            },
+                            {
+                                "name": "DYN_DISCOVERY_BACKEND",
+                                "value": "kubernetes"
+                            },
+                            {
+                                "name": "DYN_HTTP_BODY_LIMIT_MB",
+                                "value": "200"
+                            },
+                            {
+                                "name": "DYN_HTTP_PORT",
+                                "value": "8000"
+                            },
+                            {
+                                "name": "DYN_NAMESPACE",
+                                "value": "token-labs-muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_NAMESPACE_PREFIX",
+                                "value": "token-labs-muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAME",
+                                "value": "muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAMESPACE",
+                                "value": "token-labs"
+                            },
+                            {
+                                "name": "HF_HOME",
+                                "value": "/model-cache"
+                            },
+                            {
+                                "name": "HF_HUB_OFFLINE",
+                                "value": "0"
+                            },
+                            {
+                                "name": "HF_MODULES_CACHE",
+                                "value": "/tmp/hf_modules"
+                            },
+                            {
+                                "name": "NATS_SERVER",
+                                "value": "nats://dynamo-platform-nats.dynamo-system.svc.cluster.local:4222"
+                            },
+                            {
+                                "name": "NCCL_IB_DISABLE",
+                                "value": "1"
+                            },
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_UID",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.uid"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "PROMETHEUS_ENDPOINT",
+                                "value": "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+                            },
+                            {
+                                "name": "GROVE_PCS_NAME",
+                                "value": "muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "GROVE_PCS_INDEX",
+                                "value": "0"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_NAME",
+                                "value": "muse-glimmer-30b-dynamo-agg-0-frontend"
+                            },
+                            {
+                                "name": "GROVE_HEADLESS_SERVICE",
+                                "value": "muse-glimmer-30b-dynamo-agg-0.token-labs.svc.cluster.local"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_POD_INDEX",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.labels['grove.io/podclique-pod-index']"
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "localhost/dynamo-frontend:muse-pr316-69f3f02",
+                        "imagePullPolicy": "Never",
+                        "livenessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/live",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 15,
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "main",
+                        "ports": [
+                            {
+                                "containerPort": 8000,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 10,
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 3
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "4Gi"
+                            },
+                            "requests": {
+                                "cpu": "1",
+                                "memory": "2Gi"
+                            }
+                        },
+                        "startupProbe": {
+                            "failureThreshold": 60,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": 8000,
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 60
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "shared-model-cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-fnjcg",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "muse-glimmer-30b-dynamo-agg-0-frontend-0",
+                "nodeName": "controller",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "controller"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "kai-scheduler",
+                "securityContext": {
+                    "fsGroup": 1000
+                },
+                "serviceAccount": "muse-glimmer-30b-dynamo-agg-k8s-service-discovery",
+                "serviceAccountName": "muse-glimmer-30b-dynamo-agg-k8s-service-discovery",
+                "subdomain": "muse-glimmer-30b-dynamo-agg-0",
+                "terminationGracePeriodSeconds": 60,
+                "tolerations": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "node-role.kubernetes.io/control-plane",
+                        "operator": "Exists"
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/home/nvidia/.cache/huggingface",
+                            "type": "Directory"
+                        },
+                        "name": "shared-model-cache"
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "8Gi"
+                        },
+                        "name": "shared-memory"
+                    },
+                    {
+                        "name": "kube-api-access-fnjcg",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "1",
+                    "memory": "2Gi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:29Z",
+                        "message": "Pod bound successfully to node controller",
+                        "reason": "Bound",
+                        "status": "True",
+                        "type": "PodBound"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:30Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:29Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:40Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:40Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T17:19:29Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "1",
+                            "memory": "2Gi"
+                        },
+                        "containerID": "containerd://23fd8ff3bee9333b37e82fbabf86286bfbdaf0f08785d42259d9dd96e304afa6",
+                        "image": "localhost/dynamo-frontend:muse-pr316-69f3f02",
+                        "imageID": "sha256:b635d1027bef1cf2403cb44aa195f08b0910212064f9d0998beb7064fb6cace3",
+                        "lastState": {},
+                        "name": "main",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "4Gi"
+                            },
+                            "requests": {
+                                "cpu": "1",
+                                "memory": "2Gi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-05T17:19:30Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1000
+                                ],
+                                "uid": 1000
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "shared-model-cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-fnjcg",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.75",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.75"
+                    }
+                ],
+                "observedGeneration": 2,
+                "phase": "Running",
+                "podIP": "10.244.0.228",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.228"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "2",
+                        "memory": "4Gi"
+                    },
+                    "requests": {
+                        "cpu": "975m",
+                        "memory": "2Gi"
+                    }
+                },
+                "startTime": "2026-10-05T17:19:29Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-operator-origin-version": "1.3.1",
+                    "pod-group-name": "pg-muse-glimmer-30b-dynamo-agg-0-abbe2b52-1e6a-40ec-b638-03ef8ba55d90",
+                    "received-resource-type": "Regular"
+                },
+                "creationTimestamp": "2026-10-02T17:24:10Z",
+                "generateName": "muse-glimmer-30b-dynamo-agg-0-vllmworker-",
+                "generation": 2,
+                "labels": {
+                    "app.kubernetes.io/component": "pcs-podclique",
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/name": "muse-glimmer-30b-dynamo-agg-0-vllmworker",
+                    "app.kubernetes.io/part-of": "muse-glimmer-30b-dynamo-agg",
+                    "grove.io/pod-template-hash": "5c5d8d96fc6765d4496f",
+                    "grove.io/podclique": "muse-glimmer-30b-dynamo-agg-0-vllmworker",
+                    "grove.io/podclique-pod-index": "0",
+                    "grove.io/podcliqueset-replica-index": "0",
+                    "grove.io/podgang": "muse-glimmer-30b-dynamo-agg-0",
+                    "kai.scheduler/queue": "dynamo",
+                    "kai.scheduler/subgroup-name": "muse-glimmer-30b-dynamo-agg-0-vllmworker",
+                    "nvidia.com/dynamo-component": "VllmWorker",
+                    "nvidia.com/dynamo-component-type": "worker",
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true",
+                    "nvidia.com/dynamo-graph-deployment-name": "muse-glimmer-30b-dynamo-agg",
+                    "nvidia.com/dynamo-namespace": "token-labs-muse-glimmer-30b-dynamo-agg",
+                    "nvidia.com/metrics-enabled": "true",
+                    "nvidia.com/selector": "muse-glimmer-30b-dynamo-agg-vllmworker"
+                },
+                "name": "muse-glimmer-30b-dynamo-agg-0-vllmworker-kgflk",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "grove.io/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "PodClique",
+                        "name": "muse-glimmer-30b-dynamo-agg-0-vllmworker",
+                        "uid": "89886299-2074-405a-8710-f298a255cd22"
+                    }
+                ],
+                "resourceVersion": "109860311",
+                "uid": "9e1b6e62-4f23-4667-914a-2a84a1b6092a"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "--model",
+                            "meta-models/Muse-Glimmer-30B",
+                            "--revision",
+                            "a4e59da52a7bc87ae7251dd5545c0dd437c44b68",
+                            "--served-model-name",
+                            "meta-models/Muse-Glimmer-30B",
+                            "--tensor-parallel-size",
+                            "1",
+                            "--dtype",
+                            "bfloat16",
+                            "--max-model-len",
+                            "32768",
+                            "--max-num-seqs",
+                            "4",
+                            "--gpu-memory-utilization",
+                            "0.80",
+                            "--enable-prefix-caching",
+                            "--speculative-config",
+                            "{\"method\": \"dflash\", \"model\": \"meta-models/Muse-Glimmer-30B-assistant\", \"revision\": \"e8192f3a8f617f74be2ce220360c89ef4789f39f\", \"num_speculative_tokens\": 15}",
+                            "--generation-config",
+                            "auto",
+                            "--dyn-tool-call-parser",
+                            "muse_glimmer",
+                            "--dyn-reasoning-parser",
+                            "muse_glimmer"
+                        ],
+                        "command": [
+                            "python3",
+                            "-m",
+                            "dynamo.vllm"
+                        ],
+                        "env": [
+                            {
+                                "name": "DYNAMO_PARSERS_DEBUG",
+                                "value": "1"
+                            },
+                            {
+                                "name": "DYN_COMPONENT",
+                                "value": "worker"
+                            },
+                            {
+                                "name": "DYN_DISCOVERY_BACKEND",
+                                "value": "kubernetes"
+                            },
+                            {
+                                "name": "DYN_FORWARDPASS_METRIC_PORT",
+                                "value": "20380"
+                            },
+                            {
+                                "name": "DYN_HEALTH_CHECK_ENABLED",
+                                "value": "false"
+                            },
+                            {
+                                "name": "DYN_LOG",
+                                "value": "info,dynamo_llm=trace"
+                            },
+                            {
+                                "name": "DYN_NAMESPACE",
+                                "value": "token-labs-muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAME",
+                                "value": "muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAMESPACE",
+                                "value": "token-labs"
+                            },
+                            {
+                                "name": "DYN_SYSTEM_ENABLED",
+                                "value": "true"
+                            },
+                            {
+                                "name": "DYN_SYSTEM_PORT",
+                                "value": "9090"
+                            },
+                            {
+                                "name": "DYN_SYSTEM_USE_ENDPOINT_HEALTH_STATUS",
+                                "value": "[\"generate\"]"
+                            },
+                            {
+                                "name": "HF_HOME",
+                                "value": "/model-cache"
+                            },
+                            {
+                                "name": "HF_HUB_CACHE",
+                                "value": "/model-cache/hub"
+                            },
+                            {
+                                "name": "HF_MODULES_CACHE",
+                                "value": "/tmp/hf_modules"
+                            },
+                            {
+                                "name": "NATS_SERVER",
+                                "value": "nats://dynamo-platform-nats.dynamo-system.svc.cluster.local:4222"
+                            },
+                            {
+                                "name": "NIXL_TELEMETRY_ENABLE",
+                                "value": "n"
+                            },
+                            {
+                                "name": "NIXL_TELEMETRY_EXPORTER",
+                                "value": "prometheus"
+                            },
+                            {
+                                "name": "NIXL_TELEMETRY_PROMETHEUS_PORT",
+                                "value": "19090"
+                            },
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_UID",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.uid"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "PROMETHEUS_ENDPOINT",
+                                "value": "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+                            },
+                            {
+                                "name": "PYTHONUNBUFFERED",
+                                "value": "1"
+                            },
+                            {
+                                "name": "TRITON_CACHE_DIR",
+                                "value": "/tmp/triton"
+                            },
+                            {
+                                "name": "VLLM_CACHE_ROOT",
+                                "value": "/tmp/vllm"
+                            },
+                            {
+                                "name": "VLLM_WORKER_MULTIPROC_METHOD",
+                                "value": "spawn"
+                            },
+                            {
+                                "name": "GROVE_PCS_NAME",
+                                "value": "muse-glimmer-30b-dynamo-agg"
+                            },
+                            {
+                                "name": "GROVE_PCS_INDEX",
+                                "value": "0"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_NAME",
+                                "value": "muse-glimmer-30b-dynamo-agg-0-vllmworker"
+                            },
+                            {
+                                "name": "GROVE_HEADLESS_SERVICE",
+                                "value": "muse-glimmer-30b-dynamo-agg-0.token-labs.svc.cluster.local"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_POD_INDEX",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.labels['grove.io/podclique-pod-index']"
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 1,
+                            "httpGet": {
+                                "path": "/live",
+                                "port": "system",
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 5,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 4
+                        },
+                        "name": "main",
+                        "ports": [
+                            {
+                                "containerPort": 9090,
+                                "name": "system",
+                                "protocol": "TCP"
+                            },
+                            {
+                                "containerPort": 19090,
+                                "name": "nixl",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "system",
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 4
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "12",
+                                "memory": "112Gi",
+                                "nvidia.com/gpu": "1"
+                            },
+                            "requests": {
+                                "cpu": "4",
+                                "memory": "64Gi",
+                                "nvidia.com/gpu": "1"
+                            }
+                        },
+                        "startupProbe": {
+                            "failureThreshold": 360,
+                            "httpGet": {
+                                "path": "/live",
+                                "port": 9090,
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 5
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-nnr8p",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "muse-glimmer-30b-dynamo-agg-0-vllmworker-0",
+                "nodeName": "spark-01",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "spark-01"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "runtimeClassName": "nvidia",
+                "schedulerName": "kai-scheduler",
+                "securityContext": {
+                    "fsGroup": 1000
+                },
+                "serviceAccount": "muse-glimmer-30b-dynamo-agg-k8s-service-discovery",
+                "serviceAccountName": "muse-glimmer-30b-dynamo-agg-k8s-service-discovery",
+                "subdomain": "muse-glimmer-30b-dynamo-agg-0",
+                "terminationGracePeriodSeconds": 120,
+                "tolerations": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "nvidia.com/gpu",
+                        "operator": "Exists"
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/home/nvidia/.cache/huggingface",
+                            "type": "Directory"
+                        },
+                        "name": "cache"
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "16Gi"
+                        },
+                        "name": "shared-memory"
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "16Gi"
+                        },
+                        "name": "shm"
+                    },
+                    {
+                        "name": "kube-api-access-nnr8p",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "4",
+                    "memory": "64Gi",
+                    "nvidia.com/gpu": "1"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:38:01Z",
+                        "message": "Pod bound successfully to node spark-01",
+                        "reason": "Bound",
+                        "status": "True",
+                        "type": "PodBound"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:38:01Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:38:01Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:46:51Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:46:51Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-02T17:38:01Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "4",
+                            "memory": "64Gi",
+                            "nvidia.com/gpu": "1"
+                        },
+                        "allocatedResourcesStatus": [
+                            {
+                                "name": "nvidia.com/gpu",
+                                "resources": [
+                                    {
+                                        "health": "Healthy",
+                                        "resourceID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d"
+                                    }
+                                ]
+                            }
+                        ],
+                        "containerID": "containerd://61612f37ce00697bf2da2ddb77b93d2ce0918b0a92854e0ac0e1ca2a9210cf6d",
+                        "image": "sha256:289bd20169d100b78c9794ebe2a5999104ad7a8f33ac731be4e4e5e244e58446",
+                        "imageID": "docker.io/elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d",
+                        "lastState": {},
+                        "name": "main",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "12",
+                                "memory": "112Gi",
+                                "nvidia.com/gpu": "1"
+                            },
+                            "requests": {
+                                "cpu": "4",
+                                "memory": "64Gi",
+                                "nvidia.com/gpu": "1"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-02T17:38:02Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1000,
+                                    44,
+                                    993
+                                ],
+                                "uid": 1000
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-nnr8p",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.76",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.76"
+                    }
+                ],
+                "observedGeneration": 2,
+                "phase": "Running",
+                "podIP": "10.244.2.71",
+                "podIPs": [
+                    {
+                        "ip": "10.244.2.71"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "12",
+                        "memory": "112Gi"
+                    },
+                    "requests": {
+                        "cpu": "3996m",
+                        "memory": "64Gi"
+                    }
+                },
+                "startTime": "2026-10-02T17:38:01Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/restartedAt": "2026-04-15T03:55:31Z"
+                },
+                "creationTimestamp": "2026-10-01T17:40:30Z",
+                "generateName": "otelcol-b755977f-",
+                "generation": 1,
+                "labels": {
+                    "app": "otelcol",
+                    "pod-template-hash": "b755977f"
+                },
+                "name": "otelcol-b755977f-xbf5q",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps/v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "ReplicaSet",
+                        "name": "otelcol-b755977f",
+                        "uid": "e5b2492d-0c50-4396-8863-7b2b0713a570"
+                    }
+                ],
+                "resourceVersion": "110914918",
+                "uid": "04cc8b75-06fe-4eec-8dc8-c2e85c926142"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "--config=/etc/otelcol/config.yaml"
+                        ],
+                        "image": "otel/opentelemetry-collector-contrib:0.126.0",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "otelcol",
+                        "ports": [
+                            {
+                                "containerPort": 4317,
+                                "name": "otlp-grpc",
+                                "protocol": "TCP"
+                            },
+                            {
+                                "containerPort": 4318,
+                                "name": "otlp-http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "resources": {
+                            "limits": {
+                                "cpu": "500m",
+                                "memory": "512Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/etc/otelcol",
+                                "name": "config"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-2srlp",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "nodeName": "spark-02",
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "default",
+                "serviceAccountName": "default",
+                "terminationGracePeriodSeconds": 30,
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "configMap": {
+                            "defaultMode": 420,
+                            "items": [
+                                {
+                                    "key": "config.yaml",
+                                    "path": "config.yaml"
+                                }
+                            ],
+                            "name": "otelcol-config"
+                        },
+                        "name": "config"
+                    },
+                    {
+                        "name": "kube-api-access-2srlp",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-03T20:01:26Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T17:40:30Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-03T20:01:26Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-03T20:01:26Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-01T17:40:30Z",
+                        "observedGeneration": 1,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "100m",
+                            "memory": "128Mi"
+                        },
+                        "containerID": "containerd://33e6a84c0b45d6fcd6566d4437e805acee886044c9570289546ed69c070a3e98",
+                        "image": "docker.io/otel/opentelemetry-collector-contrib:0.126.0",
+                        "imageID": "docker.io/otel/opentelemetry-collector-contrib@sha256:973747f78266a8ffec428417727e6b704559e9a30e4be8c1cca2899facd68689",
+                        "lastState": {
+                            "terminated": {
+                                "containerID": "containerd://f8164e52d53fd7c8105947977105baa75be9d135bcdcd881a14c900089a9f2c6",
+                                "exitCode": 255,
+                                "finishedAt": "2026-10-03T20:00:58Z",
+                                "reason": "Unknown",
+                                "startedAt": "2026-10-01T17:40:41Z"
+                            }
+                        },
+                        "name": "otelcol",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "500m",
+                                "memory": "512Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "128Mi"
+                            }
+                        },
+                        "restartCount": 1,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-03T20:01:26Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0
+                                ],
+                                "uid": 10001
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/etc/otelcol",
+                                "name": "config"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-2srlp",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.77",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.77"
+                    }
+                ],
+                "observedGeneration": 1,
+                "phase": "Running",
+                "podIP": "10.244.1.51",
+                "podIPs": [
+                    {
+                        "ip": "10.244.1.51"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "500m",
+                        "memory": "512Mi"
+                    },
+                    "requests": {
+                        "cpu": "79m",
+                        "memory": "128Mi"
+                    }
+                },
+                "startTime": "2026-10-01T17:40:30Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-operator-origin-version": "1.3.1",
+                    "pod-group-name": "pg-qwen36-nvfp4-dynamo-agg-0-da2ad56c-1cae-4c0c-85e5-ff6cd52095ed",
+                    "received-resource-type": "Regular"
+                },
+                "creationTimestamp": "2026-10-03T20:02:27Z",
+                "generateName": "qwen36-nvfp4-dynamo-agg-0-frontend-",
+                "generation": 2,
+                "labels": {
+                    "app.kubernetes.io/component": "pcs-podclique",
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/name": "qwen36-nvfp4-dynamo-agg-0-frontend",
+                    "app.kubernetes.io/part-of": "qwen36-nvfp4-dynamo-agg",
+                    "grove.io/pod-template-hash": "59d55d8c55dd86488999",
+                    "grove.io/podclique": "qwen36-nvfp4-dynamo-agg-0-frontend",
+                    "grove.io/podclique-pod-index": "0",
+                    "grove.io/podcliqueset-replica-index": "0",
+                    "grove.io/podgang": "qwen36-nvfp4-dynamo-agg-0",
+                    "kai.scheduler/queue": "dynamo",
+                    "kai.scheduler/subgroup-name": "qwen36-nvfp4-dynamo-agg-0-frontend",
+                    "nvidia.com/dynamo-component": "Frontend",
+                    "nvidia.com/dynamo-component-type": "frontend",
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true",
+                    "nvidia.com/dynamo-graph-deployment-name": "qwen36-nvfp4-dynamo-agg",
+                    "nvidia.com/dynamo-namespace": "token-labs-qwen36-nvfp4-dynamo-agg",
+                    "nvidia.com/metrics-enabled": "true",
+                    "nvidia.com/selector": "qwen36-nvfp4-dynamo-agg-frontend"
+                },
+                "name": "qwen36-nvfp4-dynamo-agg-0-frontend-x2m69",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "grove.io/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "PodClique",
+                        "name": "qwen36-nvfp4-dynamo-agg-0-frontend",
+                        "uid": "ae63e722-cae2-40de-a2a8-fbe3dfbd548b"
+                    }
+                ],
+                "resourceVersion": "112708973",
+                "uid": "62c0a9dc-4c93-40eb-bdd9-e5386d48a83b"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "-m",
+                            "dynamo.frontend",
+                            "--trust-remote-code",
+                            "--enable-anthropic-api",
+                            "--namespace",
+                            "token-labs-qwen36-nvfp4-dynamo-agg"
+                        ],
+                        "command": [
+                            "python3"
+                        ],
+                        "env": [
+                            {
+                                "name": "DYNAMO_PORT",
+                                "value": "8000"
+                            },
+                            {
+                                "name": "DYN_COMPONENT",
+                                "value": "frontend"
+                            },
+                            {
+                                "name": "DYN_DISCOVERY_BACKEND",
+                                "value": "kubernetes"
+                            },
+                            {
+                                "name": "DYN_ENABLE_EXPERIMENTAL_PARSERS_V2",
+                                "value": "1"
+                            },
+                            {
+                                "name": "DYN_HTTP_BODY_LIMIT_MB",
+                                "value": "200"
+                            },
+                            {
+                                "name": "DYN_HTTP_PORT",
+                                "value": "8000"
+                            },
+                            {
+                                "name": "DYN_LOG",
+                                "value": "info,dynamo_llm=trace"
+                            },
+                            {
+                                "name": "DYN_NAMESPACE",
+                                "value": "token-labs-qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_NAMESPACE_PREFIX",
+                                "value": "token-labs-qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAME",
+                                "value": "qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAMESPACE",
+                                "value": "token-labs"
+                            },
+                            {
+                                "name": "HF_HOME",
+                                "value": "/model-cache"
+                            },
+                            {
+                                "name": "HF_HUB_OFFLINE",
+                                "value": "0"
+                            },
+                            {
+                                "name": "HF_MODULES_CACHE",
+                                "value": "/tmp/hf_modules"
+                            },
+                            {
+                                "name": "NATS_SERVER",
+                                "value": "nats://dynamo-platform-nats.dynamo-system.svc.cluster.local:4222"
+                            },
+                            {
+                                "name": "NCCL_IB_DISABLE",
+                                "value": "1"
+                            },
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_UID",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.uid"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "PROMETHEUS_ENDPOINT",
+                                "value": "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+                            },
+                            {
+                                "name": "GROVE_PCS_NAME",
+                                "value": "qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "GROVE_PCS_INDEX",
+                                "value": "0"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_NAME",
+                                "value": "qwen36-nvfp4-dynamo-agg-0-frontend"
+                            },
+                            {
+                                "name": "GROVE_HEADLESS_SERVICE",
+                                "value": "qwen36-nvfp4-dynamo-agg-0.token-labs.svc.cluster.local"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_POD_INDEX",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.labels['grove.io/podclique-pod-index']"
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "elizabetht/dynamo-frontend@sha256:f8f545ec6e2737545004056dee85259622ae9966230c56382e9eb7bdb7a01756",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/live",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 15,
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 1
+                        },
+                        "name": "main",
+                        "ports": [
+                            {
+                                "containerPort": 8000,
+                                "name": "http",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "http",
+                                "scheme": "HTTP"
+                            },
+                            "initialDelaySeconds": 10,
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 3
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "4Gi"
+                            },
+                            "requests": {
+                                "cpu": "1",
+                                "memory": "2Gi"
+                            }
+                        },
+                        "startupProbe": {
+                            "failureThreshold": 60,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": 8000,
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 60
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "shared-model-cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-zhkbf",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "qwen36-nvfp4-dynamo-agg-0-frontend-0",
+                "nodeName": "controller",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "controller"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "schedulerName": "kai-scheduler",
+                "securityContext": {
+                    "fsGroup": 1000
+                },
+                "serviceAccount": "qwen36-nvfp4-dynamo-agg-k8s-service-discovery",
+                "serviceAccountName": "qwen36-nvfp4-dynamo-agg-k8s-service-discovery",
+                "subdomain": "qwen36-nvfp4-dynamo-agg-0",
+                "terminationGracePeriodSeconds": 60,
+                "tolerations": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "node-role.kubernetes.io/control-plane",
+                        "operator": "Exists"
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/home/nvidia/.cache/huggingface",
+                            "type": "Directory"
+                        },
+                        "name": "shared-model-cache"
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "8Gi"
+                        },
+                        "name": "shared-memory"
+                    },
+                    {
+                        "name": "kube-api-access-zhkbf",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "1",
+                    "memory": "2Gi"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "message": "Pod bound successfully to node controller",
+                        "reason": "Bound",
+                        "status": "True",
+                        "type": "PodBound"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:41:57Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:41:57Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "1",
+                            "memory": "2Gi"
+                        },
+                        "containerID": "containerd://1f4bf68b03a8ae9c7b5b84520fa56e8409005cc84274a9603adad2e5c8fe89bb",
+                        "image": "sha256:182d91076261e05a46725ce328ff21f65f8ec19f3b8cb44f974d48bd2a78efc1",
+                        "imageID": "docker.io/elizabetht/dynamo-frontend@sha256:f8f545ec6e2737545004056dee85259622ae9966230c56382e9eb7bdb7a01756",
+                        "lastState": {},
+                        "name": "main",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "2",
+                                "memory": "4Gi"
+                            },
+                            "requests": {
+                                "cpu": "1",
+                                "memory": "2Gi"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-05T16:41:42Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1000
+                                ],
+                                "uid": 1000
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "shared-model-cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-zhkbf",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.75",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.75"
+                    }
+                ],
+                "observedGeneration": 2,
+                "phase": "Running",
+                "podIP": "10.244.0.222",
+                "podIPs": [
+                    {
+                        "ip": "10.244.0.222"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "2",
+                        "memory": "4Gi"
+                    },
+                    "requests": {
+                        "cpu": "975m",
+                        "memory": "2Gi"
+                    }
+                },
+                "startTime": "2026-10-05T16:38:06Z"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-operator-origin-version": "1.3.1",
+                    "pod-group-name": "pg-qwen36-nvfp4-dynamo-agg-0-da2ad56c-1cae-4c0c-85e5-ff6cd52095ed",
+                    "received-resource-type": "Regular"
+                },
+                "creationTimestamp": "2026-10-05T16:38:05Z",
+                "generateName": "qwen36-nvfp4-dynamo-agg-0-vllmworker-",
+                "generation": 2,
+                "labels": {
+                    "app.kubernetes.io/component": "pcs-podclique",
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/name": "qwen36-nvfp4-dynamo-agg-0-vllmworker",
+                    "app.kubernetes.io/part-of": "qwen36-nvfp4-dynamo-agg",
+                    "grove.io/pod-template-hash": "5587d7ffd7c6f4b8555d",
+                    "grove.io/podclique": "qwen36-nvfp4-dynamo-agg-0-vllmworker",
+                    "grove.io/podclique-pod-index": "0",
+                    "grove.io/podcliqueset-replica-index": "0",
+                    "grove.io/podgang": "qwen36-nvfp4-dynamo-agg-0",
+                    "kai.scheduler/queue": "dynamo",
+                    "kai.scheduler/subgroup-name": "qwen36-nvfp4-dynamo-agg-0-vllmworker",
+                    "nvidia.com/dynamo-component": "VllmWorker",
+                    "nvidia.com/dynamo-component-type": "worker",
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true",
+                    "nvidia.com/dynamo-graph-deployment-name": "qwen36-nvfp4-dynamo-agg",
+                    "nvidia.com/dynamo-namespace": "token-labs-qwen36-nvfp4-dynamo-agg",
+                    "nvidia.com/metrics-enabled": "true",
+                    "nvidia.com/selector": "qwen36-nvfp4-dynamo-agg-vllmworker"
+                },
+                "name": "qwen36-nvfp4-dynamo-agg-0-vllmworker-8l98c",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "grove.io/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "PodClique",
+                        "name": "qwen36-nvfp4-dynamo-agg-0-vllmworker",
+                        "uid": "f1f85855-802a-4cc2-97bd-302a34089fb3"
+                    }
+                ],
+                "resourceVersion": "112709790",
+                "uid": "c9ed4c44-b76e-4bd7-a75d-a0f1cbadbe48"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "args": [
+                            "--model",
+                            "nvidia/Qwen3.6-35B-A3B-NVFP4",
+                            "--revision",
+                            "1355db6a052410cfd62085d94b58866fd0f2c3c5",
+                            "--served-model-name",
+                            "nvidia/Qwen3.6-35B-A3B-NVFP4",
+                            "--trust-remote-code",
+                            "--tensor-parallel-size",
+                            "1",
+                            "--max-model-len",
+                            "262144",
+                            "--max-num-seqs",
+                            "4",
+                            "--gpu-memory-utilization",
+                            "0.80",
+                            "--enable-prefix-caching",
+                            "--dyn-tool-call-parser",
+                            "qwen3_coder",
+                            "--dyn-reasoning-parser",
+                            "qwen3",
+                            "--moe-backend",
+                            "marlin",
+                            "--kv-cache-dtype",
+                            "fp8",
+                            "--attention-backend",
+                            "flashinfer",
+                            "--dyn-default-thinking-mode",
+                            "disabled"
+                        ],
+                        "command": [
+                            "python3",
+                            "-m",
+                            "dynamo.vllm"
+                        ],
+                        "env": [
+                            {
+                                "name": "DYN_COMPONENT",
+                                "value": "worker"
+                            },
+                            {
+                                "name": "DYN_DISCOVERY_BACKEND",
+                                "value": "kubernetes"
+                            },
+                            {
+                                "name": "DYN_FORWARDPASS_METRIC_PORT",
+                                "value": "20380"
+                            },
+                            {
+                                "name": "DYN_HEALTH_CHECK_ENABLED",
+                                "value": "false"
+                            },
+                            {
+                                "name": "DYN_NAMESPACE",
+                                "value": "token-labs-qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAME",
+                                "value": "qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "DYN_PARENT_DGD_K8S_NAMESPACE",
+                                "value": "token-labs"
+                            },
+                            {
+                                "name": "DYN_SYSTEM_ENABLED",
+                                "value": "true"
+                            },
+                            {
+                                "name": "DYN_SYSTEM_PORT",
+                                "value": "9090"
+                            },
+                            {
+                                "name": "DYN_SYSTEM_USE_ENDPOINT_HEALTH_STATUS",
+                                "value": "[\"generate\"]"
+                            },
+                            {
+                                "name": "HF_HOME",
+                                "value": "/model-cache"
+                            },
+                            {
+                                "name": "HF_HUB_CACHE",
+                                "value": "/model-cache/hub"
+                            },
+                            {
+                                "name": "HF_MODULES_CACHE",
+                                "value": "/tmp/hf_modules"
+                            },
+                            {
+                                "name": "NATS_SERVER",
+                                "value": "nats://dynamo-platform-nats.dynamo-system.svc.cluster.local:4222"
+                            },
+                            {
+                                "name": "NIXL_TELEMETRY_ENABLE",
+                                "value": "n"
+                            },
+                            {
+                                "name": "NIXL_TELEMETRY_EXPORTER",
+                                "value": "prometheus"
+                            },
+                            {
+                                "name": "NIXL_TELEMETRY_PROMETHEUS_PORT",
+                                "value": "19090"
+                            },
+                            {
+                                "name": "POD_NAME",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.name"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_NAMESPACE",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.namespace"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "POD_UID",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.uid"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "PROMETHEUS_ENDPOINT",
+                                "value": "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+                            },
+                            {
+                                "name": "PYTHONUNBUFFERED",
+                                "value": "1"
+                            },
+                            {
+                                "name": "TRITON_CACHE_DIR",
+                                "value": "/tmp/triton"
+                            },
+                            {
+                                "name": "VLLM_CACHE_ROOT",
+                                "value": "/tmp/vllm"
+                            },
+                            {
+                                "name": "VLLM_WORKER_MULTIPROC_METHOD",
+                                "value": "spawn"
+                            },
+                            {
+                                "name": "GROVE_PCS_NAME",
+                                "value": "qwen36-nvfp4-dynamo-agg"
+                            },
+                            {
+                                "name": "GROVE_PCS_INDEX",
+                                "value": "0"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_NAME",
+                                "value": "qwen36-nvfp4-dynamo-agg-0-vllmworker"
+                            },
+                            {
+                                "name": "GROVE_HEADLESS_SERVICE",
+                                "value": "qwen36-nvfp4-dynamo-agg-0.token-labs.svc.cluster.local"
+                            },
+                            {
+                                "name": "GROVE_PCLQ_POD_INDEX",
+                                "valueFrom": {
+                                    "fieldRef": {
+                                        "apiVersion": "v1",
+                                        "fieldPath": "metadata.labels['grove.io/podclique-pod-index']"
+                                    }
+                                }
+                            }
+                        ],
+                        "image": "elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d",
+                        "imagePullPolicy": "IfNotPresent",
+                        "livenessProbe": {
+                            "failureThreshold": 1,
+                            "httpGet": {
+                                "path": "/live",
+                                "port": "system",
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 5,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 4
+                        },
+                        "name": "main",
+                        "ports": [
+                            {
+                                "containerPort": 9090,
+                                "name": "system",
+                                "protocol": "TCP"
+                            },
+                            {
+                                "containerPort": 19090,
+                                "name": "nixl",
+                                "protocol": "TCP"
+                            }
+                        ],
+                        "readinessProbe": {
+                            "failureThreshold": 3,
+                            "httpGet": {
+                                "path": "/health",
+                                "port": "system",
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 4
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "12",
+                                "memory": "112Gi",
+                                "nvidia.com/gpu": "1"
+                            },
+                            "requests": {
+                                "cpu": "4",
+                                "memory": "64Gi",
+                                "nvidia.com/gpu": "1"
+                            }
+                        },
+                        "startupProbe": {
+                            "failureThreshold": 360,
+                            "httpGet": {
+                                "path": "/live",
+                                "port": 9090,
+                                "scheme": "HTTP"
+                            },
+                            "periodSeconds": 10,
+                            "successThreshold": 1,
+                            "timeoutSeconds": 5
+                        },
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-x4q74",
+                                "readOnly": true
+                            }
+                        ]
+                    }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "enableServiceLinks": true,
+                "hostname": "qwen36-nvfp4-dynamo-agg-0-vllmworker-0",
+                "nodeName": "spark-02",
+                "nodeSelector": {
+                    "kubernetes.io/hostname": "spark-02"
+                },
+                "preemptionPolicy": "PreemptLowerPriority",
+                "priority": 0,
+                "restartPolicy": "Always",
+                "runtimeClassName": "nvidia",
+                "schedulerName": "kai-scheduler",
+                "securityContext": {
+                    "fsGroup": 1000
+                },
+                "serviceAccount": "qwen36-nvfp4-dynamo-agg-k8s-service-discovery",
+                "serviceAccountName": "qwen36-nvfp4-dynamo-agg-k8s-service-discovery",
+                "subdomain": "qwen36-nvfp4-dynamo-agg-0",
+                "terminationGracePeriodSeconds": 120,
+                "tolerations": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "nvidia.com/gpu",
+                        "operator": "Exists"
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ],
+                "volumes": [
+                    {
+                        "hostPath": {
+                            "path": "/home/nvidia/.cache/huggingface",
+                            "type": "Directory"
+                        },
+                        "name": "cache"
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "16Gi"
+                        },
+                        "name": "shared-memory"
+                    },
+                    {
+                        "emptyDir": {
+                            "medium": "Memory",
+                            "sizeLimit": "16Gi"
+                        },
+                        "name": "shm"
+                    },
+                    {
+                        "name": "kube-api-access-x4q74",
+                        "projected": {
+                            "defaultMode": 420,
+                            "sources": [
+                                {
+                                    "serviceAccountToken": {
+                                        "expirationSeconds": 3607,
+                                        "path": "token"
+                                    }
+                                },
+                                {
+                                    "configMap": {
+                                        "items": [
+                                            {
+                                                "key": "ca.crt",
+                                                "path": "ca.crt"
+                                            }
+                                        ],
+                                        "name": "kube-root-ca.crt"
+                                    }
+                                },
+                                {
+                                    "downwardAPI": {
+                                        "items": [
+                                            {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                },
+                                                "path": "namespace"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "allocatedResources": {
+                    "cpu": "4",
+                    "memory": "64Gi",
+                    "nvidia.com/gpu": "1"
+                },
+                "conditions": [
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "message": "Pod bound successfully to node spark-02",
+                        "reason": "Bound",
+                        "status": "True",
+                        "type": "PodBound"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodReadyToStartContainers"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Initialized"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:43:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "Ready"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:43:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "ContainersReady"
+                    },
+                    {
+                        "lastProbeTime": null,
+                        "lastTransitionTime": "2026-10-05T16:38:06Z",
+                        "observedGeneration": 2,
+                        "status": "True",
+                        "type": "PodScheduled"
+                    }
+                ],
+                "containerStatuses": [
+                    {
+                        "allocatedResources": {
+                            "cpu": "4",
+                            "memory": "64Gi",
+                            "nvidia.com/gpu": "1"
+                        },
+                        "allocatedResourcesStatus": [
+                            {
+                                "name": "nvidia.com/gpu",
+                                "resources": [
+                                    {
+                                        "health": "Healthy",
+                                        "resourceID": "GPU-33e233b3-9856-a887-6fd5-1ad523a24361"
+                                    }
+                                ]
+                            }
+                        ],
+                        "containerID": "containerd://280e1d1efa803a730dd7155eae01cd0fc8509e2d98ac1820efeab2e682b2789d",
+                        "image": "sha256:289bd20169d100b78c9794ebe2a5999104ad7a8f33ac731be4e4e5e244e58446",
+                        "imageID": "docker.io/elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d",
+                        "lastState": {},
+                        "name": "main",
+                        "ready": true,
+                        "resources": {
+                            "limits": {
+                                "cpu": "12",
+                                "memory": "112Gi",
+                                "nvidia.com/gpu": "1"
+                            },
+                            "requests": {
+                                "cpu": "4",
+                                "memory": "64Gi",
+                                "nvidia.com/gpu": "1"
+                            }
+                        },
+                        "restartCount": 0,
+                        "started": true,
+                        "state": {
+                            "running": {
+                                "startedAt": "2026-10-05T16:38:06Z"
+                            }
+                        },
+                        "user": {
+                            "linux": {
+                                "gid": 0,
+                                "supplementalGroups": [
+                                    0,
+                                    1000,
+                                    44,
+                                    993
+                                ],
+                                "uid": 1000
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/model-cache",
+                                "name": "cache"
+                            },
+                            {
+                                "mountPath": "/dev/shm",
+                                "name": "shared-memory"
+                            },
+                            {
+                                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                                "name": "kube-api-access-x4q74",
+                                "readOnly": true,
+                                "recursiveReadOnly": "Disabled"
+                            }
+                        ]
+                    }
+                ],
+                "hostIP": "192.168.1.77",
+                "hostIPs": [
+                    {
+                        "ip": "192.168.1.77"
+                    }
+                ],
+                "observedGeneration": 2,
+                "phase": "Running",
+                "podIP": "10.244.1.65",
+                "podIPs": [
+                    {
+                        "ip": "10.244.1.65"
+                    }
+                ],
+                "qosClass": "Burstable",
+                "resources": {
+                    "limits": {
+                        "cpu": "12",
+                        "memory": "112Gi"
+                    },
+                    "requests": {
+                        "cpu": "3996m",
+                        "memory": "64Gi"
+                    }
+                },
+                "startTime": "2026-10-05T16:38:06Z"
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

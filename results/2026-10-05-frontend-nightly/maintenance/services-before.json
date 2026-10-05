@@ -1,0 +1,1009 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "meta.helm.sh/release-name": "gaie-qwen3-control-comparison",
+                    "meta.helm.sh/release-namespace": "token-labs"
+                },
+                "creationTimestamp": "2026-08-31T05:00:35Z",
+                "labels": {
+                    "app.kubernetes.io/managed-by": "Helm",
+                    "app.kubernetes.io/name": "gaie-qwen3-control-comparison-epp",
+                    "app.kubernetes.io/version": "v1.5.0"
+                },
+                "name": "gaie-qwen3-control-comparison-epp",
+                "namespace": "token-labs",
+                "resourceVersion": "78878425",
+                "uid": "8dd80086-8c9b-4ffa-a223-78bf63cf8d0f"
+            },
+            "spec": {
+                "clusterIP": "10.97.4.127",
+                "clusterIPs": [
+                    "10.97.4.127"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "grpc-ext-proc",
+                        "port": 9002,
+                        "protocol": "TCP",
+                        "targetPort": 9002
+                    },
+                    {
+                        "name": "http-metrics",
+                        "port": 9090,
+                        "protocol": "TCP",
+                        "targetPort": 9090
+                    }
+                ],
+                "selector": {
+                    "inferencepool": "gaie-qwen3-control-comparison-epp"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"token-labs/model\":\"true\"},\"name\":\"glm47-flash-agg\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"glm47-flash-agg\",\"token-labs/model-id\":\"glm47-flash-agg\",\"token-labs/slot\":\"blue\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-30T17:04:15Z",
+                "labels": {
+                    "token-labs/model": "true"
+                },
+                "name": "glm47-flash-agg",
+                "namespace": "token-labs",
+                "resourceVersion": "107932461",
+                "uid": "394f2ed7-6fff-4891-883c-878cdc108045"
+            },
+            "spec": {
+                "clusterIP": "10.104.166.80",
+                "clusterIPs": [
+                    "10.104.166.80"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "glm47-flash-agg",
+                    "token-labs/model-id": "glm47-flash-agg",
+                    "token-labs/slot": "blue"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"model-aggregator\"},\"name\":\"model-aggregator\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":8000}],\"selector\":{\"app\":\"model-aggregator\"},\"type\":\"ClusterIP\"}}\n"
+                },
+                "creationTimestamp": "2026-04-14T21:42:50Z",
+                "labels": {
+                    "app": "model-aggregator"
+                },
+                "name": "model-aggregator",
+                "namespace": "token-labs",
+                "resourceVersion": "107973015",
+                "uid": "0c12fd71-15d7-4d8d-82d5-c34a34bcf0e5"
+            },
+            "spec": {
+                "clusterIP": "10.100.90.120",
+                "clusterIPs": [
+                    "10.100.90.120"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    }
+                ],
+                "selector": {
+                    "app": "model-aggregator"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"model-aggregator-production\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":8000}],\"selector\":{\"app\":\"model-aggregator\"},\"type\":\"ClusterIP\"}}\n"
+                },
+                "creationTimestamp": "2026-09-30T18:20:28Z",
+                "name": "model-aggregator-production",
+                "namespace": "token-labs",
+                "resourceVersion": "107971999",
+                "uid": "aa3f59ee-24a0-44fd-8564-f32d29a0a521"
+            },
+            "spec": {
+                "clusterIP": "10.100.129.236",
+                "clusterIPs": [
+                    "10.100.129.236"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": 8000
+                    }
+                ],
+                "selector": {
+                    "app": "model-aggregator"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2026-10-02T03:56:52Z",
+                "labels": {
+                    "app.kubernetes.io/component": "pcs-headless-service",
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/name": "muse-glimmer-30b-dynamo-agg-0",
+                    "app.kubernetes.io/part-of": "muse-glimmer-30b-dynamo-agg",
+                    "grove.io/podcliqueset-replica-index": "0"
+                },
+                "name": "muse-glimmer-30b-dynamo-agg-0",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "grove.io/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "PodCliqueSet",
+                        "name": "muse-glimmer-30b-dynamo-agg",
+                        "uid": "12d737ad-45b1-43dc-85b3-ed8bb34d199d"
+                    }
+                ],
+                "resourceVersion": "109308438",
+                "uid": "aabefad2-c279-4592-864b-f43f1ff0050b"
+            },
+            "spec": {
+                "clusterIP": "None",
+                "clusterIPs": [
+                    "None"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "publishNotReadyAddresses": true,
+                "selector": {
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/part-of": "muse-glimmer-30b-dynamo-agg",
+                    "grove.io/podcliqueset-replica-index": "0"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/last-applied-generation": "1",
+                    "nvidia.com/last-applied-hash": "e847f2cccbe15b0044cada546e0579da95189927b1eac8467a5d3e385ad117eb"
+                },
+                "creationTimestamp": "2026-10-02T03:56:52Z",
+                "labels": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true"
+                },
+                "name": "muse-glimmer-30b-dynamo-agg-frontend",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "nvidia.com/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "DynamoGraphDeployment",
+                        "name": "muse-glimmer-30b-dynamo-agg",
+                        "uid": "4574d2f5-2437-4bca-b3f3-4e412f155d33"
+                    }
+                ],
+                "resourceVersion": "109308421",
+                "uid": "c90cd36f-a521-4a6a-ae9e-c96377ce45a9"
+            },
+            "spec": {
+                "clusterIP": "10.97.50.70",
+                "clusterIPs": [
+                    "10.97.50.70"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "nvidia.com/dynamo-component": "Frontend",
+                    "nvidia.com/dynamo-component-type": "frontend",
+                    "nvidia.com/dynamo-namespace": "token-labs-muse-glimmer-30b-dynamo-agg"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/last-applied-generation": "1",
+                    "nvidia.com/last-applied-hash": "4d1850c8d1bb246847c1a081069a025cffcd412af6983286e5c3fd2ada23d47e"
+                },
+                "creationTimestamp": "2026-10-02T03:56:52Z",
+                "labels": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true"
+                },
+                "name": "muse-glimmer-30b-dynamo-agg-vllmworker",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "nvidia.com/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "DynamoGraphDeployment",
+                        "name": "muse-glimmer-30b-dynamo-agg",
+                        "uid": "4574d2f5-2437-4bca-b3f3-4e412f155d33"
+                    }
+                ],
+                "resourceVersion": "109308427",
+                "uid": "498c2c53-dbd6-4cb9-b034-ae05e18728f0"
+            },
+            "spec": {
+                "clusterIP": "10.99.52.199",
+                "clusterIPs": [
+                    "10.99.52.199"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "system",
+                        "port": 9090,
+                        "protocol": "TCP",
+                        "targetPort": "system"
+                    }
+                ],
+                "selector": {
+                    "nvidia.com/dynamo-component": "VllmWorker",
+                    "nvidia.com/dynamo-component-type": "worker",
+                    "nvidia.com/dynamo-namespace": "token-labs-muse-glimmer-30b-dynamo-agg"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"otelcol\"},\"name\":\"otelcol\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"otlp-grpc\",\"port\":4317,\"targetPort\":4317},{\"name\":\"otlp-http\",\"port\":4318,\"targetPort\":4318}],\"selector\":{\"app\":\"otelcol\"},\"type\":\"ClusterIP\"}}\n"
+                },
+                "creationTimestamp": "2026-04-15T03:53:07Z",
+                "labels": {
+                    "app": "otelcol"
+                },
+                "name": "otelcol",
+                "namespace": "token-labs",
+                "resourceVersion": "8368732",
+                "uid": "60fc9678-1126-4730-ba82-e87602a03611"
+            },
+            "spec": {
+                "clusterIP": "10.106.90.24",
+                "clusterIPs": [
+                    "10.106.90.24"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "appProtocol": "grpc",
+                        "name": "otlp-grpc",
+                        "port": 4317,
+                        "protocol": "TCP",
+                        "targetPort": 4317
+                    },
+                    {
+                        "name": "otlp-http",
+                        "port": 4318,
+                        "protocol": "TCP",
+                        "targetPort": 4318
+                    },
+                    {
+                        "name": "zipkin",
+                        "port": 9411,
+                        "protocol": "TCP",
+                        "targetPort": 9411
+                    }
+                ],
+                "selector": {
+                    "app": "otelcol"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"token-labs/model\":\"true\"},\"name\":\"qwen3-30b-openrouter-sglang\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen3-30b-openrouter-sglang\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T14:15:06Z",
+                "labels": {
+                    "token-labs/model": "true"
+                },
+                "name": "qwen3-30b-openrouter-sglang",
+                "namespace": "token-labs",
+                "resourceVersion": "81153041",
+                "uid": "4a3ee2c6-58db-4412-8a19-6c322eefe0cc"
+            },
+            "spec": {
+                "clusterIP": "10.103.131.144",
+                "clusterIPs": [
+                    "10.103.131.144"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen3-30b-openrouter-sglang"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"qwen3-30b-openrouter-vllm\",\"token-labs/model\":\"true\"},\"name\":\"qwen3-30b-openrouter-vllm\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen3-30b-openrouter-vllm\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T05:21:02Z",
+                "labels": {
+                    "app": "qwen3-30b-openrouter-vllm",
+                    "token-labs/model": "true"
+                },
+                "name": "qwen3-30b-openrouter-vllm",
+                "namespace": "token-labs",
+                "resourceVersion": "80771561",
+                "uid": "86751bb7-2ab9-4a65-9ecc-f6c3bcc62401"
+            },
+            "spec": {
+                "clusterIP": "10.101.31.227",
+                "clusterIPs": [
+                    "10.101.31.227"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen3-30b-openrouter-vllm"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"qwen3-30b-trtllm-benchmark\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen3-30b-trtllm-benchmark\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T13:14:53Z",
+                "name": "qwen3-30b-trtllm-benchmark",
+                "namespace": "token-labs",
+                "resourceVersion": "81085629",
+                "uid": "669d53b5-4c53-4668-8a6e-1b2465a325d2"
+            },
+            "spec": {
+                "clusterIP": "10.109.113.10",
+                "clusterIPs": [
+                    "10.109.113.10"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen3-30b-trtllm-benchmark"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"qwen36-35b-fp8-blue\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen36-35b-fp8-vllm-blue\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-03T05:21:27Z",
+                "name": "qwen36-35b-fp8-blue",
+                "namespace": "token-labs",
+                "resourceVersion": "81720713",
+                "uid": "6a1bb776-c01e-40b2-98dc-37a3c7caad3d"
+            },
+            "spec": {
+                "clusterIP": "10.98.84.157",
+                "clusterIPs": [
+                    "10.98.84.157"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen36-35b-fp8-vllm-blue"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"token-labs/model\":\"true\"},\"name\":\"qwen36-35b-nvfp4\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"token-labs/model-id\":\"qwen36-35b-nvfp4\",\"token-labs/slot\":\"green\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T19:06:19Z",
+                "labels": {
+                    "token-labs/model": "true"
+                },
+                "name": "qwen36-35b-nvfp4",
+                "namespace": "token-labs",
+                "resourceVersion": "81431217",
+                "uid": "1716d3b2-46b2-4902-9c79-0b7b9d5a2aeb"
+            },
+            "spec": {
+                "clusterIP": "10.110.178.21",
+                "clusterIPs": [
+                    "10.110.178.21"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "token-labs/model-id": "qwen36-35b-nvfp4",
+                    "token-labs/slot": "green"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"qwen36-35b-nvfp4-blue-mtp\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen36-35b-nvfp4-vllm-blue-mtp\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-03T04:55:07Z",
+                "name": "qwen36-35b-nvfp4-blue-mtp",
+                "namespace": "token-labs",
+                "resourceVersion": "81703098",
+                "uid": "e5bdb323-2a29-45eb-9a3f-52856e818f36"
+            },
+            "spec": {
+                "clusterIP": "10.97.102.104",
+                "clusterIPs": [
+                    "10.97.102.104"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen36-35b-nvfp4-vllm-blue-mtp"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"qwen36-35b-nvfp4-blue-tuned\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen36-35b-nvfp4-vllm-blue-tuned\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-03T03:52:06Z",
+                "name": "qwen36-35b-nvfp4-blue-tuned",
+                "namespace": "token-labs",
+                "resourceVersion": "81662916",
+                "uid": "8a873c86-7ac4-4811-bf23-bc83efe39990"
+            },
+            "spec": {
+                "clusterIP": "10.108.178.184",
+                "clusterIPs": [
+                    "10.108.178.184"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen36-35b-nvfp4-vllm-blue-tuned"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"qwen36-35b-nvfp4-green\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"token-labs/model-id\":\"qwen36-35b-nvfp4\",\"token-labs/slot\":\"green\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T19:06:19Z",
+                "name": "qwen36-35b-nvfp4-green",
+                "namespace": "token-labs",
+                "resourceVersion": "81316708",
+                "uid": "5b49c51f-0e6c-404c-93a9-6145365522af"
+            },
+            "spec": {
+                "clusterIP": "10.96.195.13",
+                "clusterIPs": [
+                    "10.96.195.13"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "token-labs/model-id": "qwen36-35b-nvfp4",
+                    "token-labs/slot": "green"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"name\":\"qwen36-35b-nvfp4-sglang-benchmark\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen36-35b-nvfp4-sglang-benchmark\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-02T20:09:32Z",
+                "name": "qwen36-35b-nvfp4-sglang-benchmark",
+                "namespace": "token-labs",
+                "resourceVersion": "81357029",
+                "uid": "437d8672-f115-486a-85a0-b2ef5b4c07a5"
+            },
+            "spec": {
+                "clusterIP": "10.103.126.146",
+                "clusterIPs": [
+                    "10.103.126.146"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen36-35b-nvfp4-sglang-benchmark"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"token-labs/model\":\"true\"},\"name\":\"qwen36-nvfp4-agg\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"app\":\"qwen36-nvfp4-agg\",\"token-labs/model-id\":\"qwen36-nvfp4-agg\",\"token-labs/slot\":\"blue\"}}}\n"
+                },
+                "creationTimestamp": "2026-09-30T17:04:15Z",
+                "labels": {
+                    "token-labs/model": "true"
+                },
+                "name": "qwen36-nvfp4-agg",
+                "namespace": "token-labs",
+                "resourceVersion": "107932464",
+                "uid": "0b81df0b-1c6d-4346-8d0a-774877ec6eeb"
+            },
+            "spec": {
+                "clusterIP": "10.98.211.207",
+                "clusterIPs": [
+                    "10.98.211.207"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "app": "qwen36-nvfp4-agg",
+                    "token-labs/model-id": "qwen36-nvfp4-agg",
+                    "token-labs/slot": "blue"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "creationTimestamp": "2026-09-30T19:09:04Z",
+                "labels": {
+                    "app.kubernetes.io/component": "pcs-headless-service",
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/name": "qwen36-nvfp4-dynamo-agg-0",
+                    "app.kubernetes.io/part-of": "qwen36-nvfp4-dynamo-agg",
+                    "grove.io/podcliqueset-replica-index": "0"
+                },
+                "name": "qwen36-nvfp4-dynamo-agg-0",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "grove.io/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "PodCliqueSet",
+                        "name": "qwen36-nvfp4-dynamo-agg",
+                        "uid": "9a7b1b2b-ac06-4477-a32f-390b82155171"
+                    }
+                ],
+                "resourceVersion": "108002159",
+                "uid": "61f5b4d5-f29b-48aa-84bb-65cbfa6883f6"
+            },
+            "spec": {
+                "clusterIP": "None",
+                "clusterIPs": [
+                    "None"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "publishNotReadyAddresses": true,
+                "selector": {
+                    "app.kubernetes.io/managed-by": "grove-operator",
+                    "app.kubernetes.io/part-of": "qwen36-nvfp4-dynamo-agg",
+                    "grove.io/podcliqueset-replica-index": "0"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/last-applied-generation": "1",
+                    "nvidia.com/last-applied-hash": "277e2737ace61b40fc5478df450e968c8ac7edcf262f15bb965b798a6c6fee23"
+                },
+                "creationTimestamp": "2026-09-30T19:09:03Z",
+                "labels": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true"
+                },
+                "name": "qwen36-nvfp4-dynamo-agg-frontend",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "nvidia.com/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "DynamoGraphDeployment",
+                        "name": "qwen36-nvfp4-dynamo-agg",
+                        "uid": "33ba3a5b-04c0-4c94-b30f-94e856d418b6"
+                    }
+                ],
+                "resourceVersion": "108002136",
+                "uid": "eed5fe08-87c3-4c9a-a045-47a781898cab"
+            },
+            "spec": {
+                "clusterIP": "10.107.110.235",
+                "clusterIPs": [
+                    "10.107.110.235"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "nvidia.com/dynamo-component": "Frontend",
+                    "nvidia.com/dynamo-component-type": "frontend",
+                    "nvidia.com/dynamo-namespace": "token-labs-qwen36-nvfp4-dynamo-agg"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/last-applied-generation": "1",
+                    "nvidia.com/last-applied-hash": "2ca7d070722290a799eac036d94afa618cc5ea946964e2f4223a4ba7c1948739"
+                },
+                "creationTimestamp": "2026-09-30T19:09:03Z",
+                "labels": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true"
+                },
+                "name": "qwen36-nvfp4-dynamo-agg-vllmworker",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "nvidia.com/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "DynamoGraphDeployment",
+                        "name": "qwen36-nvfp4-dynamo-agg",
+                        "uid": "33ba3a5b-04c0-4c94-b30f-94e856d418b6"
+                    }
+                ],
+                "resourceVersion": "108002144",
+                "uid": "0ca83b4d-17fa-4e11-8ad4-940c00b2b17e"
+            },
+            "spec": {
+                "clusterIP": "10.104.158.112",
+                "clusterIPs": [
+                    "10.104.158.112"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "system",
+                        "port": 9090,
+                        "protocol": "TCP",
+                        "targetPort": "system"
+                    }
+                ],
+                "selector": {
+                    "nvidia.com/dynamo-component": "VllmWorker",
+                    "nvidia.com/dynamo-component-type": "worker",
+                    "nvidia.com/dynamo-namespace": "token-labs-qwen36-nvfp4-dynamo-agg"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

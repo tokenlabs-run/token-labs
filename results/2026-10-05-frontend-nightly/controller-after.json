@@ -1,0 +1,514 @@
+{
+    "apiVersion": "v1",
+    "kind": "Node",
+    "metadata": {
+        "annotations": {
+            "csi.volume.kubernetes.io/nodeid": "{\"driver.longhorn.io\":\"controller\"}",
+            "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"d6:f9:30:7a:c2:ba\"}",
+            "flannel.alpha.coreos.com/backend-type": "vxlan",
+            "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+            "flannel.alpha.coreos.com/public-ip": "192.168.1.75",
+            "nfd.node.kubernetes.io/feature-labels": "cpu-cpuid.ADX,cpu-cpuid.AESNI,cpu-cpuid.AVX,cpu-cpuid.AVX2,cpu-cpuid.CETSS,cpu-cpuid.CLZERO,cpu-cpuid.CMPXCHG8,cpu-cpuid.CPBOOST,cpu-cpuid.CPPC,cpu-cpuid.EFER_LMSLE_UNS,cpu-cpuid.FMA3,cpu-cpuid.FP256,cpu-cpuid.FSRM,cpu-cpuid.FXSR,cpu-cpuid.FXSROPT,cpu-cpuid.IBPB,cpu-cpuid.IBRS,cpu-cpuid.IBRS_PREFERRED,cpu-cpuid.IBRS_PROVIDES_SMP,cpu-cpuid.IBS,cpu-cpuid.IBSBRNTRGT,cpu-cpuid.IBSFFV,cpu-cpuid.IBSOPCNT,cpu-cpuid.IBSOPCNTEXT,cpu-cpuid.IBSOPSAM,cpu-cpuid.IBSRDWROPCNT,cpu-cpuid.IBSRIPINVALIDCHK,cpu-cpuid.IBS_FETCH_CTLX,cpu-cpuid.IBS_OPFUSE,cpu-cpuid.INT_WBINVD,cpu-cpuid.LAHF,cpu-cpuid.LBRVIRT,cpu-cpuid.MCAOVERFLOW,cpu-cpuid.MOVBE,cpu-cpuid.MOVU,cpu-cpuid.MSRIRC,cpu-cpuid.MSR_PAGEFLUSH,cpu-cpuid.NRIPS,cpu-cpuid.OSXSAVE,cpu-cpuid.PSFD,cpu-cpuid.RDPRU,cpu-cpuid.SEV,cpu-cpuid.SEV_64BIT,cpu-cpuid.SEV_ALTERNATIVE,cpu-cpuid.SEV_DEBUGSWAP,cpu-cpuid.SEV_ES,cpu-cpuid.SEV_RESTRICTED,cpu-cpuid.SHA,cpu-cpuid.SME,cpu-cpuid.SPEC_CTRL_SSBD,cpu-cpuid.SSE4A,cpu-cpuid.STIBP,cpu-cpuid.STIBP_ALWAYSON,cpu-cpuid.SUCCOR,cpu-cpuid.SVM,cpu-cpuid.SVMDA,cpu-cpuid.SVMFBASID,cpu-cpuid.SVML,cpu-cpuid.SVMNP,cpu-cpuid.SVMPF,cpu-cpuid.SVMPFT,cpu-cpuid.SYSCALL,cpu-cpuid.SYSEE,cpu-cpuid.TOPEXT,cpu-cpuid.TSCRATEMSR,cpu-cpuid.VAES,cpu-cpuid.VMCBCLEAN,cpu-cpuid.VPCLMULQDQ,cpu-cpuid.VTE,cpu-cpuid.WBNOINVD,cpu-cpuid.X86_64_V1,cpu-cpuid.X86_64_V2,cpu-cpuid.X86_64_V3,cpu-cpuid.X87,cpu-cpuid.XGETBV1,cpu-cpuid.XSAVE,cpu-cpuid.XSAVEC,cpu-cpuid.XSAVEOPT,cpu-cpuid.XSAVES,cpu-hardware_multithreading,cpu-model.family,cpu-model.hypervisor,cpu-model.id,cpu-model.vendor_id,kernel-config.NO_HZ,kernel-config.NO_HZ_FULL,kernel-version.full,kernel-version.major,kernel-version.minor,kernel-version.revision,pci-1002.present,pci-10ec.present,storage-nonrotationaldisk,system-os_release.ID,system-os_release.VERSION_ID,system-os_release.VERSION_ID.major,system-os_release.VERSION_ID.minor",
+            "node.alpha.kubernetes.io/ttl": "0",
+            "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+        },
+        "creationTimestamp": "2026-03-27T03:04:10Z",
+        "labels": {
+            "beta.kubernetes.io/arch": "amd64",
+            "beta.kubernetes.io/os": "linux",
+            "feature.node.kubernetes.io/cpu-cpuid.ADX": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.AESNI": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.AVX": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.AVX2": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.CETSS": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.CLZERO": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.CMPXCHG8": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.CPBOOST": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.CPPC": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.EFER_LMSLE_UNS": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.FMA3": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.FP256": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.FSRM": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.FXSR": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.FXSROPT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBPB": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBRS": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBRS_PREFERRED": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBRS_PROVIDES_SMP": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBS": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSBRNTRGT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSFFV": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSOPCNT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSOPCNTEXT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSOPSAM": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSRDWROPCNT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBSRIPINVALIDCHK": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBS_FETCH_CTLX": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.IBS_OPFUSE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.INT_WBINVD": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.LAHF": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.LBRVIRT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.MCAOVERFLOW": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.MOVBE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.MOVU": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.MSRIRC": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.MSR_PAGEFLUSH": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.NRIPS": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.OSXSAVE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.PSFD": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.RDPRU": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SEV": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SEV_64BIT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SEV_ALTERNATIVE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SEV_DEBUGSWAP": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SEV_ES": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SEV_RESTRICTED": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SHA": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SME": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SPEC_CTRL_SSBD": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SSE4A": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.STIBP": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.STIBP_ALWAYSON": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SUCCOR": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVM": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVMDA": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVMFBASID": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVML": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVMNP": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVMPF": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SVMPFT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SYSCALL": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.SYSEE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.TOPEXT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.TSCRATEMSR": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.VAES": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.VMCBCLEAN": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.VPCLMULQDQ": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.VTE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.WBNOINVD": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.X86_64_V1": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.X86_64_V2": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.X86_64_V3": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.X87": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.XGETBV1": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.XSAVE": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.XSAVEC": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.XSAVEOPT": "true",
+            "feature.node.kubernetes.io/cpu-cpuid.XSAVES": "true",
+            "feature.node.kubernetes.io/cpu-hardware_multithreading": "true",
+            "feature.node.kubernetes.io/cpu-model.family": "25",
+            "feature.node.kubernetes.io/cpu-model.hypervisor": "none",
+            "feature.node.kubernetes.io/cpu-model.id": "68",
+            "feature.node.kubernetes.io/cpu-model.vendor_id": "AMD",
+            "feature.node.kubernetes.io/kernel-config.NO_HZ": "true",
+            "feature.node.kubernetes.io/kernel-config.NO_HZ_FULL": "true",
+            "feature.node.kubernetes.io/kernel-version.full": "6.8.0-138-generic",
+            "feature.node.kubernetes.io/kernel-version.major": "6",
+            "feature.node.kubernetes.io/kernel-version.minor": "8",
+            "feature.node.kubernetes.io/kernel-version.revision": "0",
+            "feature.node.kubernetes.io/pci-1002.present": "true",
+            "feature.node.kubernetes.io/pci-10ec.present": "true",
+            "feature.node.kubernetes.io/storage-nonrotationaldisk": "true",
+            "feature.node.kubernetes.io/system-os_release.ID": "ubuntu",
+            "feature.node.kubernetes.io/system-os_release.VERSION_ID": "24.04",
+            "feature.node.kubernetes.io/system-os_release.VERSION_ID.major": "24",
+            "feature.node.kubernetes.io/system-os_release.VERSION_ID.minor": "04",
+            "kubernetes.io/arch": "amd64",
+            "kubernetes.io/hostname": "controller",
+            "kubernetes.io/os": "linux",
+            "node-role.kubernetes.io/control-plane": "",
+            "node.kubernetes.io/exclude-from-external-load-balancers": ""
+        },
+        "name": "controller",
+        "resourceVersion": "112736065",
+        "uid": "9fa2ddc5-806d-4e1e-b025-ca8b8c2daad5"
+    },
+    "spec": {
+        "podCIDR": "10.244.0.0/24",
+        "podCIDRs": [
+            "10.244.0.0/24"
+        ],
+        "taints": [
+            {
+                "effect": "NoSchedule",
+                "key": "node-role.kubernetes.io/control-plane"
+            },
+            {
+                "effect": "NoSchedule",
+                "key": "node.kubernetes.io/disk-pressure",
+                "timeAdded": "2026-10-05T17:20:30Z"
+            }
+        ]
+    },
+    "status": {
+        "addresses": [
+            {
+                "address": "192.168.1.75",
+                "type": "InternalIP"
+            },
+            {
+                "address": "controller",
+                "type": "Hostname"
+            }
+        ],
+        "allocatable": {
+            "cpu": "16",
+            "ephemeral-storage": "807481190292",
+            "hugepages-1Gi": "0",
+            "hugepages-2Mi": "0",
+            "memory": "32021828Ki",
+            "pods": "110"
+        },
+        "capacity": {
+            "cpu": "16",
+            "ephemeral-storage": "897201324032",
+            "hugepages-1Gi": "0",
+            "hugepages-2Mi": "0",
+            "memory": "32124228Ki",
+            "pods": "110"
+        },
+        "conditions": [
+            {
+                "lastHeartbeatTime": "2026-08-31T22:53:09Z",
+                "lastTransitionTime": "2026-08-31T22:53:09Z",
+                "message": "Flannel is running on this node",
+                "reason": "FlannelIsUp",
+                "status": "False",
+                "type": "NetworkUnavailable"
+            },
+            {
+                "lastHeartbeatTime": "2026-10-05T17:20:40Z",
+                "lastTransitionTime": "2026-03-27T03:04:10Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+            },
+            {
+                "lastHeartbeatTime": "2026-10-05T17:20:40Z",
+                "lastTransitionTime": "2026-10-05T17:20:30Z",
+                "message": "kubelet has disk pressure",
+                "reason": "KubeletHasDiskPressure",
+                "status": "True",
+                "type": "DiskPressure"
+            },
+            {
+                "lastHeartbeatTime": "2026-10-05T17:20:40Z",
+                "lastTransitionTime": "2026-03-27T03:04:10Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+            },
+            {
+                "lastHeartbeatTime": "2026-10-05T17:20:40Z",
+                "lastTransitionTime": "2026-08-31T22:39:06Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+            }
+        ],
+        "daemonEndpoints": {
+            "kubeletEndpoint": {
+                "Port": 10250
+            }
+        },
+        "declaredFeatures": [
+            "ExtendWebSocketsToKubelet",
+            "InPlacePodLevelResourcesVerticalScaling",
+            "InPlacePodVerticalScalingInitContainers",
+            "RestartAllContainersOnContainerExits"
+        ],
+        "features": {
+            "supplementalGroupsPolicy": true
+        },
+        "images": [
+            {
+                "names": [
+                    "localhost/dynamo-frontend@sha256:425512a844c7ceda2e70cbddb9a366fe4be0e1585b7e52dde00f24002799e988",
+                    "localhost/dynamo-frontend:muse-pr316-69f3f02"
+                ],
+                "sizeBytes": 8115618438
+            },
+            {
+                "names": [
+                    "docker.io/elizabetht/dynamo-frontend@sha256:f8f545ec6e2737545004056dee85259622ae9966230c56382e9eb7bdb7a01756"
+                ],
+                "sizeBytes": 3870912571
+            },
+            {
+                "names": [
+                    "ghcr.io/openclaw/openclaw@sha256:4826ca6157377e93463786d5c16852e34eede9f4bd4be55e3773cdc509762857",
+                    "ghcr.io/openclaw/openclaw:2026.6.6"
+                ],
+                "sizeBytes": 347721254
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/longhorn-engine@sha256:ba088c87b148cb423a7d85e0c44523ed7032335c4fafa5d64083d8e99eaf672d",
+                    "docker.io/longhornio/longhorn-engine:v1.7.3"
+                ],
+                "sizeBytes": 156197509
+            },
+            {
+                "names": [
+                    "nvcr.io/nvidia/gpu-operator@sha256:b844f9c033e748b8f9925f791f426a531ee8a855f04d4ccea365378634bcefe5",
+                    "nvcr.io/nvidia/gpu-operator:v26.7.1"
+                ],
+                "sizeBytes": 148878191
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/longhorn-manager@sha256:240ae4e318ffe172ca53c0cb05da9d7a79cce507683c84299e988f57c0daed7d",
+                    "docker.io/longhornio/longhorn-manager:v1.7.3"
+                ],
+                "sizeBytes": 118761772
+            },
+            {
+                "names": [
+                    "registry.k8s.io/nfd/node-feature-discovery@sha256:2fa1c99ad09bdf2c8ad97706a4ad2fd548c84d5ecd70ba32a6152c667b96c4d2",
+                    "registry.k8s.io/nfd/node-feature-discovery:v0.19.0"
+                ],
+                "sizeBytes": 85412382
+            },
+            {
+                "names": [
+                    "docker.io/library/node@sha256:d649c27dae7ba0137b3cef5dd75baa422c08dc3d9e3fc0c23dfb172dc3cc6436"
+                ],
+                "sizeBytes": 79900719
+            },
+            {
+                "names": [
+                    "docker.io/envoyproxy/gateway@sha256:0049bcb384c591c6a6dd043fe5c9929ef6e74f230e12dd678d2d3701df9b301e",
+                    "docker.io/envoyproxy/gateway:v1.9.1"
+                ],
+                "sizeBytes": 74796169
+            },
+            {
+                "names": [
+                    "ghcr.io/fluxcd/kustomize-controller@sha256:c480b89e26e42f6c112a4f683244a7979de3a2ca299bed7d5367ddf4fed706f0",
+                    "ghcr.io/fluxcd/kustomize-controller:v1.8.2"
+                ],
+                "sizeBytes": 68278904
+            },
+            {
+                "names": [
+                    "ghcr.io/fluxcd/source-controller@sha256:7382d002cffeed2d877331353f95797e89c0aa7ecb432e661eeeda3e590b3293",
+                    "ghcr.io/fluxcd/source-controller:v1.8.1"
+                ],
+                "sizeBytes": 63538632
+            },
+            {
+                "names": [
+                    "ghcr.io/fluxcd/helm-controller@sha256:b150af0cd7a501dafe2374b1d22c39abf0572465df4fa1fb99b37927b0d95d75",
+                    "ghcr.io/fluxcd/helm-controller:v1.5.3"
+                ],
+                "sizeBytes": 50827725
+            },
+            {
+                "names": [
+                    "ghcr.io/fluxcd/notification-controller@sha256:87806dc20caff40b37280ea3155cc9ef3e995402997c49a8f9f9c6bff57e1499",
+                    "ghcr.io/fluxcd/notification-controller:v1.8.2"
+                ],
+                "sizeBytes": 49831610
+            },
+            {
+                "names": [
+                    "docker.io/library/python@sha256:6f31d6e9ba2b0a787a3f81c37b004155b87b9efa1b771182bd550c1615745be5",
+                    "docker.io/library/python:3.11-slim"
+                ],
+                "sizeBytes": 48574704
+            },
+            {
+                "names": [
+                    "docker.io/envoyproxy/ai-gateway-controller@sha256:e7662d3502ad894b5937e6747998449892219778299bc2e612baed93ad17418b",
+                    "docker.io/envoyproxy/ai-gateway-controller:v1.1.0"
+                ],
+                "sizeBytes": 45729442
+            },
+            {
+                "names": [
+                    "docker.io/envoyproxy/envoy@sha256:eb2c01c13125d1629637cb4e4cce7207009fb7cc2c8027f9742758549d15b6f4"
+                ],
+                "sizeBytes": 43290581
+            },
+            {
+                "names": [
+                    "docker.io/envoyproxy/ai-gateway-extproc@sha256:a6633382aed19905d81ae36c4bd1637499ce56af4c510f9f4b9f080b2139c845",
+                    "docker.io/envoyproxy/ai-gateway-extproc:v1.1.0"
+                ],
+                "sizeBytes": 36810641
+            },
+            {
+                "names": [
+                    "ghcr.io/flannel-io/flannel@sha256:6a9c170acece4457ccb9cdfe53c787cc451e87990e20451bf20070b8895fa538",
+                    "ghcr.io/flannel-io/flannel:v0.28.1"
+                ],
+                "sizeBytes": 34114824
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/csi-resizer@sha256:94763536d2c408efb2a43d3e1c5a56ed1e38dd2c1b63659ff2418c0602651d37",
+                    "docker.io/longhornio/csi-resizer:v1.13.1"
+                ],
+                "sizeBytes": 32400492
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/csi-attacher@sha256:86afa429db9da56ff7b1b53541ff508a0b71ed5dd8c57e392d93f6d4174f1abd",
+                    "docker.io/longhornio/csi-attacher:v4.8.0"
+                ],
+                "sizeBytes": 32230986
+            },
+            {
+                "names": [
+                    "registry.k8s.io/kube-apiserver@sha256:d1045e5c6d2f016797d22143eba7502e1bb712a4681836a7c35763a9c192dd70",
+                    "registry.k8s.io/kube-apiserver:v1.37.0"
+                ],
+                "sizeBytes": 31171933
+            },
+            {
+                "names": [
+                    "registry.k8s.io/kube-proxy@sha256:77bf2b08ff8ac1a4a446cffaa85e79e87379c8cb54fcf60f2cb6c62c966829c8",
+                    "registry.k8s.io/kube-proxy:v1.37.0"
+                ],
+                "sizeBytes": 30200433
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/csi-provisioner@sha256:7ea03c4b3e85a9b0ebf57ebd41f3fc37adf37bc5a04808f52134990226e3c7cb",
+                    "docker.io/longhornio/csi-provisioner:v4.0.1-20250204"
+                ],
+                "sizeBytes": 30025486
+            },
+            {
+                "names": [
+                    "quay.io/metallb/controller@sha256:86261567e5ff03978893bf03ea865275283ad1e3f0f20dd342ed501b651fdf78",
+                    "quay.io/metallb/controller:v0.14.9"
+                ],
+                "sizeBytes": 29163511
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/csi-snapshotter@sha256:f5a1ab6654a2f513e2b61f17811680817263188980c37f93b919597aa4add18c",
+                    "docker.io/longhornio/csi-snapshotter:v7.0.2-20250204"
+                ],
+                "sizeBytes": 28219335
+            },
+            {
+                "names": [
+                    "registry.k8s.io/kube-controller-manager@sha256:997c997924eb8574f63f204a0b0af133aaf33c10df84009c32d34037f4e0e077",
+                    "registry.k8s.io/kube-controller-manager:v1.37.0"
+                ],
+                "sizeBytes": 27291057
+            },
+            {
+                "names": [
+                    "registry.k8s.io/coredns/coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                    "registry.k8s.io/coredns/coredns:v1.14.6"
+                ],
+                "sizeBytes": 23758055
+            },
+            {
+                "names": [
+                    "registry.k8s.io/etcd@sha256:6ecefbe2510c4a30573a62a4d6dd175acf881ca67003fcd91849a16df7a724d5",
+                    "registry.k8s.io/etcd:3.7.0-0"
+                ],
+                "sizeBytes": 22342384
+            },
+            {
+                "names": [
+                    "registry.k8s.io/kube-scheduler@sha256:a27622f132aa09cf2461ba077894a070c0186ec607366d14e805912d4804d11f",
+                    "registry.k8s.io/kube-scheduler:v1.37.0"
+                ],
+                "sizeBytes": 20845306
+            },
+            {
+                "names": [
+                    "docker.io/iiidev/iii@sha256:15f8d4ed16c0bec350b98f4e18ed04498b1fc5ccc50585e087b736717300cf26"
+                ],
+                "sizeBytes": 20773090
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/livenessprobe@sha256:8ced2d04e57e44cfba0b9901e984d8f063c72133a1fde3eb607cc634cd2c8244",
+                    "docker.io/longhornio/livenessprobe:v2.15.0"
+                ],
+                "sizeBytes": 14995918
+            },
+            {
+                "names": [
+                    "docker.io/longhornio/csi-node-driver-registrar@sha256:69cd0517dcd5ca916ad9c8297d3d5370df93c84619cec3d977e8770edf70874f",
+                    "docker.io/longhornio/csi-node-driver-registrar:v2.13.0"
+                ],
+                "sizeBytes": 14780983
+            },
+            {
+                "names": [
+                    "quay.io/prometheus/node-exporter@sha256:4cb2b9019f1757be8482419002cb7afe028fdba35d47958829e4cfeaf6246d80",
+                    "quay.io/prometheus/node-exporter:v1.7.0"
+                ],
+                "sizeBytes": 11777109
+            },
+            {
+                "names": [
+                    "ghcr.io/flannel-io/flannel-cni-plugin@sha256:c6a08fe5bcb23b19c2fc7c1e47b95a967cc924224ebedf94e8623f27b6c258fa",
+                    "ghcr.io/flannel-io/flannel-cni-plugin:v1.9.0-flannel1"
+                ],
+                "sizeBytes": 5142124
+            },
+            {
+                "names": [
+                    "docker.io/library/busybox@sha256:bdf57e528e45e4433820e045b29b4597825a1c9e38353532d90a01445013f82e",
+                    "docker.io/library/busybox:1.37",
+                    "docker.io/library/busybox:1.37.0"
+                ],
+                "sizeBytes": 2222118
+            },
+            {
+                "names": [
+                    "docker.io/library/busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",
+                    "docker.io/library/busybox:1.36"
+                ],
+                "sizeBytes": 2217006
+            },
+            {
+                "names": [
+                    "registry.k8s.io/pause@sha256:9001185023633d17a2f98ff69b6ff2615b8ea02a825adffa40422f51dfdcde9d",
+                    "registry.k8s.io/pause:3.8"
+                ],
+                "sizeBytes": 311286
+            }
+        ],
+        "nodeInfo": {
+            "architecture": "amd64",
+            "bootID": "ac2cdf42-e3bc-42a6-9aed-421fbf19727e",
+            "containerRuntimeVersion": "containerd://2.3.5",
+            "kernelVersion": "6.8.0-138-generic",
+            "kubeProxyVersion": "",
+            "kubeletVersion": "v1.37.0",
+            "machineID": "672bce3c32d34d18ae568baf377c965f",
+            "operatingSystem": "linux",
+            "osImage": "Ubuntu 24.04.4 LTS",
+            "runningInUserNamespace": false,
+            "systemUUID": "03000200-0400-0500-0006-000700080009"
+        },
+        "runtimeHandlers": [
+            {
+                "features": {
+                    "recursiveReadOnlyMounts": true,
+                    "userNamespaces": true
+                },
+                "name": ""
+            },
+            {
+                "features": {
+                    "recursiveReadOnlyMounts": true,
+                    "userNamespaces": true
+                },
+                "name": "runc"
+            }
+        ]
+    }
+}

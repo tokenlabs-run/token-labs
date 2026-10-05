@@ -1,0 +1,125 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/last-applied-generation": "1",
+                    "nvidia.com/last-applied-hash": "277e2737ace61b40fc5478df450e968c8ac7edcf262f15bb965b798a6c6fee23"
+                },
+                "creationTimestamp": "2026-09-30T19:09:03Z",
+                "labels": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true"
+                },
+                "name": "qwen36-nvfp4-dynamo-agg-frontend",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "nvidia.com/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "DynamoGraphDeployment",
+                        "name": "qwen36-nvfp4-dynamo-agg",
+                        "uid": "33ba3a5b-04c0-4c94-b30f-94e856d418b6"
+                    }
+                ],
+                "resourceVersion": "108002136",
+                "uid": "eed5fe08-87c3-4c9a-a045-47a781898cab"
+            },
+            "spec": {
+                "clusterIP": "10.107.110.235",
+                "clusterIPs": [
+                    "10.107.110.235"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "nvidia.com/dynamo-component": "Frontend",
+                    "nvidia.com/dynamo-component-type": "frontend",
+                    "nvidia.com/dynamo-namespace": "token-labs-qwen36-nvfp4-dynamo-agg"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "annotations": {
+                    "nvidia.com/last-applied-generation": "1",
+                    "nvidia.com/last-applied-hash": "e847f2cccbe15b0044cada546e0579da95189927b1eac8467a5d3e385ad117eb"
+                },
+                "creationTimestamp": "2026-10-02T03:56:52Z",
+                "labels": {
+                    "nvidia.com/dynamo-discovery-backend": "kubernetes",
+                    "nvidia.com/dynamo-discovery-enabled": "true"
+                },
+                "name": "muse-glimmer-30b-dynamo-agg-frontend",
+                "namespace": "token-labs",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "nvidia.com/v1beta1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "DynamoGraphDeployment",
+                        "name": "muse-glimmer-30b-dynamo-agg",
+                        "uid": "4574d2f5-2437-4bca-b3f3-4e412f155d33"
+                    }
+                ],
+                "resourceVersion": "109308421",
+                "uid": "c90cd36f-a521-4a6a-ae9e-c96377ce45a9"
+            },
+            "spec": {
+                "clusterIP": "10.97.50.70",
+                "clusterIPs": [
+                    "10.97.50.70"
+                ],
+                "internalTrafficPolicy": "Cluster",
+                "ipFamilies": [
+                    "IPv4"
+                ],
+                "ipFamilyPolicy": "SingleStack",
+                "ports": [
+                    {
+                        "name": "http",
+                        "port": 8000,
+                        "protocol": "TCP",
+                        "targetPort": "http"
+                    }
+                ],
+                "selector": {
+                    "nvidia.com/dynamo-component": "Frontend",
+                    "nvidia.com/dynamo-component-type": "frontend",
+                    "nvidia.com/dynamo-namespace": "token-labs-muse-glimmer-30b-dynamo-agg"
+                },
+                "sessionAffinity": "None",
+                "type": "ClusterIP"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

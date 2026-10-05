@@ -1,0 +1,19 @@
+# FQDN Backends resolve stable ClusterIPs, so Service selector changes do not
+# invalidate Envoy's pooled upstream connections. Bound reuse while allowing
+# active streams to drain, so blue/green switches converge without stopping blue.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: model-frontend-connections
+  namespace: token-labs
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: token-labs-models
+  # Route policies override the Gateway policy; retain its request buffer limit.
+  connection:
+    bufferLimit: "10Mi"
+  timeout:
+    http:
+      maxConnectionDuration: 60s

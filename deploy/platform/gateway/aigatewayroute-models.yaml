@@ -12,34 +12,6 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
-  name: qwen3-6-35b-a3b-nvfp4
-  namespace: token-labs
-  labels:
-    app.kubernetes.io/managed-by: gen-aigwroute
-spec:
-  endpoints:
-    - fqdn:
-        hostname: qwen36-nvfp4-dynamo-agg-frontend.token-labs.svc.cluster.local
-        port: 8000
----
-apiVersion: aigateway.envoyproxy.io/v1beta1
-kind: AIServiceBackend
-metadata:
-  name: qwen3-6-35b-a3b-nvfp4
-  namespace: token-labs
-  labels:
-    app.kubernetes.io/managed-by: gen-aigwroute
-spec:
-  schema:
-    name: OpenAI
-  backendRef:
-    group: gateway.envoyproxy.io
-    kind: Backend
-    name: qwen3-6-35b-a3b-nvfp4
----
-apiVersion: gateway.envoyproxy.io/v1alpha1
-kind: Backend
-metadata:
   name: muse-glimmer-30b
   namespace: token-labs
   labels:
@@ -47,7 +19,7 @@ metadata:
 spec:
   endpoints:
     - fqdn:
-        hostname: muse-glimmer-30b-dynamo-agg-frontend.token-labs.svc.cluster.local
+        hostname: muse-glimmer-30b-frontend.token-labs.svc.cluster.local
         port: 8000
 ---
 apiVersion: aigateway.envoyproxy.io/v1beta1
@@ -64,6 +36,34 @@ spec:
     group: gateway.envoyproxy.io
     kind: Backend
     name: muse-glimmer-30b
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: qwen3-6-35b-a3b-nvfp4
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  endpoints:
+    - fqdn:
+        hostname: qwen36-nvfp4-frontend.token-labs.svc.cluster.local
+        port: 8000
+---
+apiVersion: aigateway.envoyproxy.io/v1beta1
+kind: AIServiceBackend
+metadata:
+  name: qwen3-6-35b-a3b-nvfp4
+  namespace: token-labs
+  labels:
+    app.kubernetes.io/managed-by: gen-aigwroute
+spec:
+  schema:
+    name: OpenAI
+  backendRef:
+    group: gateway.envoyproxy.io
+    kind: Backend
+    name: qwen3-6-35b-a3b-nvfp4
 ---
 apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIGatewayRoute
@@ -87,16 +87,6 @@ spec:
       kind: Gateway
       name: token-labs-gateway
   rules:
-    # nvidia/Qwen3.6-35B-A3B-NVFP4 (dynamo) -- from DynamoGraphDeployment/qwen36-nvfp4-dynamo-agg
-    - matches:
-        - headers:
-            - type: Exact
-              name: x-ai-eg-model
-              value: "nvidia/Qwen3.6-35B-A3B-NVFP4"
-      timeouts:
-        request: 3600s
-      backendRefs:
-        - name: qwen3-6-35b-a3b-nvfp4
     # meta-models/Muse-Glimmer-30B (dynamo) -- from DynamoGraphDeployment/muse-glimmer-30b-dynamo-agg
     - matches:
         - headers:
@@ -107,3 +97,13 @@ spec:
         request: 3600s
       backendRefs:
         - name: muse-glimmer-30b
+    # nvidia/Qwen3.6-35B-A3B-NVFP4 (dynamo) -- from DynamoGraphDeployment/qwen36-nvfp4-dynamo-agg
+    - matches:
+        - headers:
+            - type: Exact
+              name: x-ai-eg-model
+              value: "nvidia/Qwen3.6-35B-A3B-NVFP4"
+      timeouts:
+        request: 3600s
+      backendRefs:
+        - name: qwen3-6-35b-a3b-nvfp4

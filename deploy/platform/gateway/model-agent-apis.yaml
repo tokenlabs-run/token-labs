@@ -35,7 +35,22 @@ spec:
           type: ReplacePrefixMatch
           replacePrefixMatch: /v1
     backendRefs:
-    - name: qwen36-nvfp4-dynamo-agg-frontend
+    - name: qwen36-nvfp4-frontend
+      port: 8000
+    timeouts:
+      request: 3600s
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /models/muse/v1
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /v1
+    backendRefs:
+    - name: muse-glimmer-30b-frontend
       port: 8000
     timeouts:
       request: 3600s

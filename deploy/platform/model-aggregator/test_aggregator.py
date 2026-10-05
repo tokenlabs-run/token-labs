@@ -91,6 +91,33 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(calls, ['active', 'active'])
                     self.assertEqual(a._model_backends, {})
 
+    async def test_stable_frontend_replaces_legacy_without_fallback(self):
+        legacy = service('legacy', {'nvidia.com/dynamo-component-type': 'frontend'})
+        stable = service('stable', {'token-labs/slot': 'blue'}, {'token-labs/frontend-role': 'stable'})
+        stable['metadata']['annotations'] = {'token-labs/replaces-service': 'legacy'}
+        diagnostic = service('green', {'nvidia.com/dynamo-component-type': 'frontend'},
+                             {'token-labs/frontend-role': 'diagnostic'})
+        calls = []
+        failed = False
+        def backend(request):
+            calls.append(request.url.host.split('.')[0])
+            return httpx.Response(503 if failed else 200, json={'data': [{'id': 'model'}]})
+        with tempfile.TemporaryDirectory() as directory:
+            token_path = Path(directory)
+            (token_path / 'token').write_text('test-token')
+            async with httpx.AsyncClient(transport=httpx.MockTransport(
+                    lambda request: httpx.Response(200, json={'items': [legacy, stable, diagnostic]})),
+                    base_url='https://kube') as k, httpx.AsyncClient(transport=httpx.MockTransport(backend)) as b:
+                with patch.multiple(a, MODEL_BACKEND_SERVICES=frozenset(), SA_PATH=token_path,
+                                    _namespace='token-labs', _kube_client=k, _http_client=b):
+                    await a.refresh_cache()
+                    self.assertEqual(calls, ['stable'])
+                    self.assertEqual(a._model_backends['model'], 'http://stable.token-labs.svc.cluster.local:8000')
+                    failed = True
+                    await a.refresh_cache()
+                    self.assertEqual(calls, ['stable', 'stable'])
+                    self.assertEqual(a._model_backends, {})
+
     def test_service_selection(self):
         self.assertIsNone(a.service_url(service('prefill', {'llm-d.ai/inference-serving': 'true', 'llm-d.ai/role': 'prefill'})))
         self.assertIsNone(a.service_url(service('unrelated', {'app': 'web'})))

@@ -42,8 +42,11 @@ def service_url(service):
     if MODEL_BACKEND_SERVICES and meta.get('name') not in MODEL_BACKEND_SERVICES:
         return None
     labels, selector = meta.get('labels', {}), spec.get('selector', {})
+    if labels.get('token-labs/frontend-role') == 'diagnostic':
+        return None
     serving = (
-        labels.get('token-labs/model') == 'true'
+        labels.get('token-labs/frontend-role') == 'stable'
+        or labels.get('token-labs/model') == 'true'
         or (selector.get('llm-d.ai/inference-serving') == 'true'
             and selector.get('llm-d.ai/role') == 'decode')
         or selector.get('nvidia.com/dynamo-component-type') == 'frontend'
@@ -84,7 +87,13 @@ async def refresh_cache():
             headers={'Authorization': f'Bearer {token}'})
         response.raise_for_status()
         services = response.json()['items']
-        urls = sorted({url for service in services if (url := service_url(service))})
+        replaced = {s['metadata'].get('annotations', {}).get('token-labs/replaces-service')
+                    for s in services
+                    if s['metadata'].get('labels', {}).get('token-labs/frontend-role') == 'stable'
+                    and service_url(s)}
+        urls = sorted({url for service in services
+                       if service['metadata']['name'] not in replaced
+                       and (url := service_url(service))})
         results = await asyncio.gather(*(fetch_live_models(url) for url in urls))
         models = {m['id']: m for group in results for m in group}
         _model_backends = {

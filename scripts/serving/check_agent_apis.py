@@ -47,6 +47,20 @@ def main():
             ('responses-tool', '/v1/responses', {'model': args.model, 'input': 'Call get_weather for Paris.', 'max_output_tokens': 512, 'store': False, 'tools': [{'type': 'function', **function}], 'tool_choice': {'type': 'function', 'name': 'get_weather'}}),
             ('messages-tool', '/v1/messages', {'model': args.model, 'thinking': {'type': 'disabled'}, 'messages': [{'role': 'user', 'content': 'Call get_weather for Paris.'}], 'max_tokens': 512, 'tools': [{'name': function['name'], 'description': function['description'], 'input_schema': function['parameters']}], 'tool_choice': {'type': 'tool', 'name': 'get_weather'}}),
         ]
+        namespace_tools = [{'type': 'namespace', 'name': namespace,
+                            'description': namespace, 'tools': [{'type': 'function', **function}]}
+                           for namespace in ('crm', 'billing')]
+        collision = {'model': args.model, 'input': 'Call get_weather for Paris.',
+                     'max_output_tokens': 512, 'store': False, 'tools': namespace_tools}
+        for stream in (False, True):
+            suffix = '-stream' if stream else ''
+            cases.append(('responses-collision-none' + suffix, '/v1/responses',
+                          {**collision, 'input': 'Reply with exactly OK.', 'tool_choice': 'none', 'stream': stream}))
+            for namespace in ('crm', 'billing'):
+                choice = {'type': 'allowed_tools', 'mode': 'required', 'tools': [
+                    {'type': 'function', 'namespace': namespace, 'name': 'get_weather'}]}
+                cases.append(('responses-collision-' + namespace + suffix, '/v1/responses',
+                              {**collision, 'tool_choice': choice, 'stream': stream}))
     failures = []
     for name, path, body in cases:
         with tempfile.TemporaryDirectory() as directory:
@@ -76,10 +90,32 @@ def main():
                 elif name == 'messages-tool':
                     call = next(x for x in data['content'] if x.get('type') == 'tool_use')
                     success = success and call['name'] == 'get_weather' and call['input']['city'].lower() == 'paris'
-                elif name == 'responses':
+                elif name == 'responses' or name == 'responses-collision-none':
                     success = success and data.get('status') == 'completed' and any(x.get('type') == 'message' for x in data.get('output', []))
                 elif name == 'messages':
                     success = success and any(x.get('type') == 'text' and x.get('text') for x in data.get('content', []))
+            if name.startswith('responses-collision-'):
+                if body['stream']:
+                    events = [json.loads(line[5:].strip()) for line in result.stdout.splitlines()
+                              if line.startswith('data:') and line[5:].strip() != '[DONE]']
+                    completed = next(e['response'] for e in events if e.get('type') == 'response.completed')
+                    items = [e['item'] for e in events if e.get('type') in
+                             ('response.output_item.added', 'response.output_item.done')]
+                else:
+                    completed = data
+                    items = []
+                success = success and completed.get('status') == 'completed'
+                calls = [x for x in completed.get('output', []) if x.get('type') == 'function_call']
+                if body['tool_choice'] == 'none':
+                    success = success and not calls
+                else:
+                    namespace = body['tool_choice']['tools'][0]['namespace']
+                    observed = calls + [x for x in items if x.get('type') == 'function_call']
+                    success = success and bool(calls) and all(
+                        x.get('namespace') == namespace and x.get('name') == 'get_weather'
+                        for x in observed)
+                    success = success and all(json.loads(x['arguments'])['city'].lower() == 'paris'
+                                              for x in calls)
         except (ValueError, KeyError, IndexError, TypeError, StopIteration):
             success = False
         print(json.dumps({'test': name, 'model': args.model, 'passed': success, 'response': result.stdout, 'stderr': result.stderr}), flush=True)

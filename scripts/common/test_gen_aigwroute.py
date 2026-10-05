@@ -70,6 +70,30 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(len(models), 1)
         self.assertEqual(models[0].backend_host, "disagg-frontend.token-labs.svc.cluster.local")
 
+    def test_stable_frontend_intent(self):
+        obj = {"metadata": {"name": "qwen36-nvfp4-dynamo-agg"}, "spec": {
+            "components": [{"type": "worker", "replicas": 1, "podTemplate": {"spec": {
+                "containers": [{"args": ["--served-model-name", "org/model"]}]}}}]}}
+        with patch.object(g, "kubectl", return_value={"items": [obj]}):
+            models = g.discover_dynamo("token-labs")
+        self.assertEqual(models[0].backend_host, "qwen36-nvfp4-frontend.token-labs.svc.cluster.local")
+
+    def test_live_uses_stable_service_not_legacy_or_diagnostic(self):
+        stable = service("qwen36-nvfp4-frontend")
+        stable["spec"]["selector"] = {"token-labs/model-id": "qwen36-nvfp4-frontend", "token-labs/slot": "green"}
+        diagnostic = service("qwen36-nvfp4-frontend-green")
+        diagnostic["metadata"]["labels"] = {"token-labs/frontend-role": "diagnostic"}
+        legacy = service("qwen36-nvfp4-dynamo-agg-frontend")
+        services = [legacy, diagnostic, stable]
+        slices = [{"metadata": {"labels": {"kubernetes.io/service-name": x["metadata"]["name"]}},
+                   "endpoints": [{"conditions": {"ready": True}}]} for x in services]
+        with patch.object(g, "kubectl", side_effect=[{"items": services}, {"items": slices},
+                                                   {"data": [{"id": "org/model"}]}]) as call:
+            models = g.discover_live("token-labs")
+        self.assertEqual(len(models), 1)
+        self.assertEqual(models[0].backend_host, "qwen36-nvfp4-frontend.token-labs.svc.cluster.local")
+        self.assertEqual(call.call_count, 3)
+
     def test_live_apply_rejected_before_discovery(self):
         with patch("sys.argv", ["gen_aigwroute.py", "--discovery", "live", "--apply"]), patch.object(g, "kubectl") as call:
             with self.assertRaises(SystemExit):

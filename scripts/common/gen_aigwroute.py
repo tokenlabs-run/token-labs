@@ -20,7 +20,8 @@ it still reports Accepted and looks healthy.
 Discovery, per framework:
   dynamo -- DynamoGraphDeployment CRs. --served-model-name comes off the worker
             components; the dynamo-operator already publishes <dgd>-frontend,
-            so no Service is emitted for these.
+            so no Service is emitted for these. Stable frontend overrides live
+            in deploy/models/frontend-rollout/services.json.
   llm-d  -- Deployments whose POD TEMPLATE carries llm-d.ai/role=decode. The
             labels are on spec.template.metadata.labels, not on the Deployment's
             own metadata, so `kubectl get deploy -l llm-d.ai/role=decode`
@@ -62,6 +63,8 @@ DEFAULT_OUT = (
     pathlib.Path(__file__).resolve().parents[2]
     / "deploy/platform/gateway/aigatewayroute-models.yaml"
 )
+
+FRONTEND_SERVICES = json.loads((DEFAULT_OUT.parents[2] / "models/frontend-rollout/services.json").read_text())
 
 
 @dataclass
@@ -162,7 +165,7 @@ def discover_dynamo(ns: str) -> list[Model]:
                             served_name=served,
                             framework="dynamo",
                             slug=slug(served),
-                            backend_host=f"{name}-frontend.{ns}.svc.cluster.local",
+                            backend_host=f"{FRONTEND_SERVICES.get(name, name + '-frontend')}.{ns}.svc.cluster.local",
                             source=f"DynamoGraphDeployment/{name}",
                         )
                     )
@@ -260,9 +263,13 @@ def discover_live(ns: str) -> list[Model]:
         meta, spec = service["metadata"], service.get("spec", {})
         selector = spec.get("selector") or {}
         labels = meta.get("labels") or {}
+        if (meta.get("labels", {}).get("token-labs/frontend-role") == "diagnostic"
+                or meta["name"] in {name + "-frontend" for name in FRONTEND_SERVICES}):
+            continue
         if meta.get("deletionTimestamp") or not selector or spec.get("type") == "ExternalName":
             continue
-        if selector.get("nvidia.com/dynamo-component-type") == "frontend":
+        if (selector.get("nvidia.com/dynamo-component-type") == "frontend"
+                or meta["name"] in FRONTEND_SERVICES.values()):
             framework = "dynamo"
         elif (selector.get("llm-d.ai/inference-serving") == "true"
               and selector.get("llm-d.ai/role") == "decode"):

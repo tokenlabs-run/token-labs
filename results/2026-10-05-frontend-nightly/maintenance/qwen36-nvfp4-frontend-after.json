@@ -1,0 +1,115 @@
+{
+  "service": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "annotations": {
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{\"token-labs/replaces-service\":\"qwen36-nvfp4-dynamo-agg-frontend\"},\"labels\":{\"token-labs/frontend-role\":\"stable\"},\"name\":\"qwen36-nvfp4-frontend\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"token-labs/model-id\":\"qwen36-nvfp4-frontend\",\"token-labs/slot\":\"blue\"}}}\n",
+        "token-labs/replaces-service": "qwen36-nvfp4-dynamo-agg-frontend"
+      },
+      "creationTimestamp": "2026-10-05T17:53:04Z",
+      "labels": {
+        "token-labs/frontend-role": "stable"
+      },
+      "name": "qwen36-nvfp4-frontend",
+      "namespace": "token-labs",
+      "resourceVersion": "112763990",
+      "uid": "c4861f56-5235-48b3-a37a-5981f92dba2e"
+    },
+    "spec": {
+      "clusterIP": "10.109.45.176",
+      "clusterIPs": [
+        "10.109.45.176"
+      ],
+      "internalTrafficPolicy": "Cluster",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "ports": [
+        {
+          "name": "http",
+          "port": 8000,
+          "protocol": "TCP",
+          "targetPort": "http"
+        }
+      ],
+      "selector": {
+        "token-labs/model-id": "qwen36-nvfp4-frontend",
+        "token-labs/slot": "green"
+      },
+      "sessionAffinity": "None",
+      "type": "ClusterIP"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  "slices": {
+    "apiVersion": "v1",
+    "items": [
+      {
+        "addressType": "IPv4",
+        "apiVersion": "discovery.k8s.io/v1",
+        "endpoints": [
+          {
+            "addresses": [
+              "10.244.0.239"
+            ],
+            "conditions": {
+              "ready": true,
+              "serving": true,
+              "terminating": false
+            },
+            "nodeName": "controller",
+            "targetRef": {
+              "kind": "Pod",
+              "name": "qwen36-nvfp4-frontend-green-94fd97f75-s22rd",
+              "namespace": "token-labs",
+              "uid": "1eba6e4d-c9c1-45b4-84ba-2e00fc99b8cb"
+            }
+          }
+        ],
+        "kind": "EndpointSlice",
+        "metadata": {
+          "annotations": {
+            "endpoints.kubernetes.io/last-change-trigger-time": "2026-10-05T17:55:00Z"
+          },
+          "creationTimestamp": "2026-10-05T17:53:04Z",
+          "generateName": "qwen36-nvfp4-frontend-",
+          "generation": 2,
+          "labels": {
+            "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+            "kubernetes.io/service-name": "qwen36-nvfp4-frontend",
+            "token-labs/frontend-role": "stable"
+          },
+          "name": "qwen36-nvfp4-frontend-pf627",
+          "namespace": "token-labs",
+          "ownerReferences": [
+            {
+              "apiVersion": "v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Service",
+              "name": "qwen36-nvfp4-frontend",
+              "uid": "c4861f56-5235-48b3-a37a-5981f92dba2e"
+            }
+          ],
+          "resourceVersion": "112763992",
+          "uid": "7dac07fa-3934-4a08-8c5c-7d60f6944a13"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    ],
+    "kind": "List",
+    "metadata": {
+      "resourceVersion": ""
+    }
+  }
+}

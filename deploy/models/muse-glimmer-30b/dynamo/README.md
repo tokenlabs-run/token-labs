@@ -1,5 +1,12 @@
 # Muse Glimmer 30B on Dynamo
 
+Public traffic now uses `frontend-service.yaml`, selecting the separate green
+Deployment on Dynamo `1.6.0.dev20261004`. Blue remains ready for rollback.
+`aggregated.yaml` retains the worker graph and its original frontend; it is not
+the public frontend upgrade mechanism. See the
+[frontend rollout](../../frontend-rollout/README.md) for image pins, validation,
+and rollback. The worker image and model revision were not changed.
+
 `aggregated.yaml` creates `muse-glimmer-30b-dynamo-agg` in `token-labs`.
 One vLLM worker performs prefill and decode on `spark-01`; the frontend runs on
 `controller`. The frontend uses `localhost/dynamo-frontend:muse-pr316-69f3f02` with

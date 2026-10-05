@@ -1,0 +1,18 @@
+# Stable production entry point. Change only the slot after candidate validation.
+apiVersion: v1
+kind: Service
+metadata:
+  name: muse-glimmer-30b-frontend
+  namespace: token-labs
+  labels:
+    token-labs/frontend-role: stable
+  annotations:
+    token-labs/replaces-service: muse-glimmer-30b-dynamo-agg-frontend
+spec:
+  selector:
+    token-labs/model-id: muse-glimmer-30b-frontend
+    token-labs/slot: green
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

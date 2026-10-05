@@ -1,0 +1,115 @@
+{
+  "service": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "annotations": {
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{\"token-labs/replaces-service\":\"muse-glimmer-30b-dynamo-agg-frontend\"},\"labels\":{\"token-labs/frontend-role\":\"stable\"},\"name\":\"muse-glimmer-30b-frontend\",\"namespace\":\"token-labs\"},\"spec\":{\"ports\":[{\"name\":\"http\",\"port\":8000,\"targetPort\":\"http\"}],\"selector\":{\"token-labs/model-id\":\"muse-glimmer-30b-frontend\",\"token-labs/slot\":\"blue\"}}}\n",
+        "token-labs/replaces-service": "muse-glimmer-30b-dynamo-agg-frontend"
+      },
+      "creationTimestamp": "2026-10-05T17:53:04Z",
+      "labels": {
+        "token-labs/frontend-role": "stable"
+      },
+      "name": "muse-glimmer-30b-frontend",
+      "namespace": "token-labs",
+      "resourceVersion": "112765781",
+      "uid": "a57b8e77-12d4-4cf0-bfb7-12d343672e61"
+    },
+    "spec": {
+      "clusterIP": "10.98.54.109",
+      "clusterIPs": [
+        "10.98.54.109"
+      ],
+      "internalTrafficPolicy": "Cluster",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "ports": [
+        {
+          "name": "http",
+          "port": 8000,
+          "protocol": "TCP",
+          "targetPort": "http"
+        }
+      ],
+      "selector": {
+        "token-labs/model-id": "muse-glimmer-30b-frontend",
+        "token-labs/slot": "green"
+      },
+      "sessionAffinity": "None",
+      "type": "ClusterIP"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  "slices": {
+    "apiVersion": "v1",
+    "items": [
+      {
+        "addressType": "IPv4",
+        "apiVersion": "discovery.k8s.io/v1",
+        "endpoints": [
+          {
+            "addresses": [
+              "10.244.0.240"
+            ],
+            "conditions": {
+              "ready": true,
+              "serving": true,
+              "terminating": false
+            },
+            "nodeName": "controller",
+            "targetRef": {
+              "kind": "Pod",
+              "name": "muse-glimmer-30b-frontend-green-b49f47b7-9vbxg",
+              "namespace": "token-labs",
+              "uid": "92e50157-40ee-44c9-bf99-0ad6ce099dba"
+            }
+          }
+        ],
+        "kind": "EndpointSlice",
+        "metadata": {
+          "annotations": {
+            "endpoints.kubernetes.io/last-change-trigger-time": "2026-10-05T17:54:58Z"
+          },
+          "creationTimestamp": "2026-10-05T17:53:04Z",
+          "generateName": "muse-glimmer-30b-frontend-",
+          "generation": 2,
+          "labels": {
+            "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+            "kubernetes.io/service-name": "muse-glimmer-30b-frontend",
+            "token-labs/frontend-role": "stable"
+          },
+          "name": "muse-glimmer-30b-frontend-dcw4z",
+          "namespace": "token-labs",
+          "ownerReferences": [
+            {
+              "apiVersion": "v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Service",
+              "name": "muse-glimmer-30b-frontend",
+              "uid": "a57b8e77-12d4-4cf0-bfb7-12d343672e61"
+            }
+          ],
+          "resourceVersion": "112765783",
+          "uid": "4a00b1bb-bd4f-45b4-bf5e-ab8e514a119f"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "protocol": "TCP"
+          }
+        ]
+      }
+    ],
+    "kind": "List",
+    "metadata": {
+      "resourceVersion": ""
+    }
+  }
+}

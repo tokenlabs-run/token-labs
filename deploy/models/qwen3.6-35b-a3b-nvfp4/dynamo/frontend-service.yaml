@@ -1,0 +1,18 @@
+# Stable production entry point. Change only the slot after candidate validation.
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen36-nvfp4-frontend
+  namespace: token-labs
+  labels:
+    token-labs/frontend-role: stable
+  annotations:
+    token-labs/replaces-service: qwen36-nvfp4-dynamo-agg-frontend
+spec:
+  selector:
+    token-labs/model-id: qwen36-nvfp4-frontend
+    token-labs/slot: green
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

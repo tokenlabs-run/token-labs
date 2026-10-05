@@ -1,5 +1,12 @@
 # Qwen3.6 35B A3B NVFP4 — Dynamo
 
+Public traffic now uses `frontend-service.yaml`, selecting the separate green
+Deployment on Dynamo `1.6.0.dev20261004`. Blue remains ready for rollback.
+`aggregated.yaml` retains the worker graph and its original frontend; it is not
+the public frontend upgrade mechanism. See the
+[frontend rollout](../../frontend-rollout/README.md) for image pins, validation,
+and rollback. The worker image and model revision were not changed.
+
 These candidate manifests serve `nvidia/Qwen3.6-35B-A3B-NVFP4`.
 
 | File | Graph | Runtime |
