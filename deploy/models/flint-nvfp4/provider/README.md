@@ -62,6 +62,13 @@ or generated content and retain the previous deployments during observation.
 The portal Flux Kustomization depends on `inference-gateway` so a new catalog
 cannot publish before its API route reconciles.
 
+After the observation stream finishes, run
+`scripts/openrouter/check_portal_overload.py --output <report.json>` to verify
+that the public portal API preserves HTTP 429 and `Retry-After`. It creates
+and revokes a disposable portal key inside AWS; the key stays inside that
+process. Stop other operator Flint probes during this check so the test can
+admit one request and reject the remaining seven.
+
 To roll back DGX, restore the recorded `model-aggregator` Service selector.
 To roll back the portal, restore `app: inference-portal-public` and revert that
 selector in GitOps. Withdraw only the Flint route if needed; retain Qwen's
