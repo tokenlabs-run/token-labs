@@ -1,0 +1,44 @@
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "creationTimestamp": "2026-10-16T20:29:40Z",
+        "labels": {
+            "kustomize.toolkit.fluxcd.io/name": "qwen38-27b",
+            "kustomize.toolkit.fluxcd.io/namespace": "flux-system"
+        },
+        "name": "qwen38-27b",
+        "namespace": "inference",
+        "resourceVersion": "7680846",
+        "uid": "bab43b8b-06af-476d-98b4-2b2bb12a4dab"
+    },
+    "spec": {
+        "clusterIP": "172.20.243.146",
+        "clusterIPs": [
+            "172.20.243.146"
+        ],
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+            "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+            {
+                "name": "http",
+                "port": 8000,
+                "protocol": "TCP",
+                "targetPort": 8000
+            }
+        ],
+        "selector": {
+            "component": "frontend",
+            "model": "qwen38-27b",
+            "slot": "public-workers"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+    },
+    "status": {
+        "loadBalancer": {}
+    }
+}
