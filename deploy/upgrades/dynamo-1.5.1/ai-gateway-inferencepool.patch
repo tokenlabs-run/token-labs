@@ -1,0 +1,30 @@
+diff --git a/internal/extensionserver/inferencepool.go b/internal/extensionserver/inferencepool.go
+index 34eaf5a..1a19887 100644
+--- a/internal/extensionserver/inferencepool.go
++++ b/internal/extensionserver/inferencepool.go
+@@ -309,9 +309,10 @@ func buildHTTPFilterForInferencePool(pool *gwaiev1.InferencePool) *extprocv3.Ext
+ 			ResponseHeaderMode:  extprocv3.ProcessingMode_SEND,
+ 			ResponseTrailerMode: extprocv3.ProcessingMode_SEND,
+ 		},
+-		AllowModeOverride: allowModeOverride,
+-		MessageTimeout:    durationpb.New(300 * time.Second),
+-		FailureModeAllow:  false,
++		SendBodyWithoutWaitingForHeaderResponse: processingBodyMode == extprocv3.ProcessingMode_FULL_DUPLEX_STREAMED,
++		AllowModeOverride:                       allowModeOverride,
++		MessageTimeout:                          durationpb.New(300 * time.Second),
++		FailureModeAllow:                        false,
+ 	}
+ }
+ 
+diff --git a/internal/extensionserver/inferencepool_test.go b/internal/extensionserver/inferencepool_test.go
+index d820ea0..d31d46d 100644
+--- a/internal/extensionserver/inferencepool_test.go
++++ b/internal/extensionserver/inferencepool_test.go
+@@ -151,4 +151,7 @@ func TestBuildHTTPFilterForInferencePool_Defaults(t *testing.T) {
+ 	assert.Equal(t, extprocv3.ProcessingMode_FULL_DUPLEX_STREAMED, filter.ProcessingMode.RequestBodyMode)
+ 	assert.Equal(t, extprocv3.ProcessingMode_FULL_DUPLEX_STREAMED, filter.ProcessingMode.ResponseBodyMode)
+ 	assert.False(t, filter.AllowModeOverride)
++	assert.True(t, filter.SendBodyWithoutWaitingForHeaderResponse)
++	pool.Annotations = map[string]string{processingBodyModeAnnotation: "buffered"}
++	assert.False(t, buildHTTPFilterForInferencePool(pool).SendBodyWithoutWaitingForHeaderResponse)
+ }

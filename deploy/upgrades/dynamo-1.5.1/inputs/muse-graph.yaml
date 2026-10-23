@@ -1,0 +1,172 @@
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeployment
+spec:
+  backendFramework: vllm
+  components:
+  - minAvailable: 1
+    name: Frontend
+    podTemplate:
+      spec:
+        containers:
+        - args:
+          - -m
+          - dynamo.frontend
+          - --trust-remote-code
+          - --enable-anthropic-api
+          - --namespace
+          - token-labs-muse-glimmer-30b-dynamo-agg
+          command:
+          - python3
+          env:
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          - name: DYN_HTTP_BODY_LIMIT_MB
+            value: '200'
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_OFFLINE
+            value: '0'
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: NCCL_IB_DISABLE
+            value: '1'
+          image: localhost/dynamo-frontend:muse-pr316-69f3f02
+          imagePullPolicy: Never
+          name: main
+          resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: '1'
+              memory: 2Gi
+          startupProbe:
+            failureThreshold: 60
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 60
+          volumeMounts:
+          - mountPath: /model-cache
+            name: shared-model-cache
+        nodeSelector:
+          kubernetes.io/hostname: controller
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: shared-model-cache
+    replicas: 1
+    type: frontend
+  - minAvailable: 1
+    name: VllmWorker
+    podTemplate:
+      spec:
+        containers:
+        - args:
+          - --model
+          - meta-models/Muse-Glimmer-30B
+          - --revision
+          - a4e59da52a7bc87ae7251dd5545c0dd437c44b68
+          - --served-model-name
+          - meta-models/Muse-Glimmer-30B
+          - --tensor-parallel-size
+          - '1'
+          - --dtype
+          - bfloat16
+          - --max-model-len
+          - '32768'
+          - --max-num-seqs
+          - '4'
+          - --gpu-memory-utilization
+          - '0.80'
+          - --enable-prefix-caching
+          - --speculative-config
+          - '{"method": "dflash", "model": "meta-models/Muse-Glimmer-30B-assistant",
+            "revision": "e8192f3a8f617f74be2ce220360c89ef4789f39f", "num_speculative_tokens":
+            15}'
+          - --generation-config
+          - auto
+          - --dyn-tool-call-parser
+          - muse_glimmer
+          - --dyn-reasoning-parser
+          - muse_glimmer
+          command:
+          - python3
+          - -m
+          - dynamo.vllm
+          env:
+          - name: HF_HOME
+            value: /model-cache
+          - name: HF_HUB_CACHE
+            value: /model-cache/hub
+          - name: HF_MODULES_CACHE
+            value: /tmp/hf_modules
+          - name: TRITON_CACHE_DIR
+            value: /tmp/triton
+          - name: VLLM_CACHE_ROOT
+            value: /tmp/vllm
+          - name: VLLM_WORKER_MULTIPROC_METHOD
+            value: spawn
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: DYN_LOG
+            value: info,dynamo_llm=trace
+          - name: DYNAMO_PARSERS_DEBUG
+            value: '1'
+          - name: POD_UID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.uid
+          image: elizabetht/dynamo-vllm@sha256:48aa2ca8ba779d4266d9b441e78bd57842d93e1c74c68aadfcb8cacd1610e30d
+          name: main
+          resources:
+            limits:
+              cpu: '12'
+              memory: 112Gi
+              nvidia.com/gpu: '1'
+            requests:
+              cpu: '4'
+              memory: 64Gi
+              nvidia.com/gpu: '1'
+          startupProbe:
+            failureThreshold: 360
+            httpGet:
+              path: /live
+              port: 9090
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+          - mountPath: /model-cache
+            name: cache
+          - mountPath: /dev/shm
+            name: shm
+        nodeSelector:
+          kubernetes.io/hostname: spark-01
+        terminationGracePeriodSeconds: 120
+        tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /home/nvidia/.cache/huggingface
+            type: Directory
+          name: cache
+        - emptyDir:
+            medium: Memory
+            sizeLimit: 16Gi
+          name: shm
+    replicas: 1
+    sharedMemorySize: 16Gi
+    type: worker
+metadata:
+  name: muse-glimmer-30b-dynamo-agg
+  namespace: token-labs

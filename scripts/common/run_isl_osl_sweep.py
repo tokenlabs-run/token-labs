@@ -5,6 +5,7 @@ Runs vllm bench serve for each (ISL, OSL) combo at multiple concurrency levels.
 Writes results to results/qwen25-7b-llmd-isl-osl-sweep-YYYY-MM-DD.json
 """
 import json
+from pathlib import Path
 import re
 import subprocess
 import sys
@@ -78,7 +79,7 @@ def parse_output(text):
 
 def main():
     output_path = (
-        f"/home/nvidia/src/github.com/elizabetht/token-labs/results/"
+        f"{Path(__file__).resolve().parents[2]}/results/"
         f"qwen25-7b-llmd-isl-osl-sweep-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
     )
 

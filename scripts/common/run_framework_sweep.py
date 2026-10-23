@@ -9,6 +9,7 @@ Usage:
 """
 import argparse
 import json
+from pathlib import Path
 import math
 import re
 import subprocess
@@ -123,7 +124,7 @@ def main():
 
     date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     output_path = (
-        f"/home/nvidia/src/github.com/elizabetht/token-labs/results/"
+        f"{Path(__file__).resolve().parents[2]}/results/"
         f"qwen25-7b-{args.framework}-isl-osl-sweep-{date_str}.json"
     )
 

@@ -12,20 +12,20 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
-  name: glm-4-7-flash
+  name: qwen3-6-35b-a3b-nvfp4
   namespace: token-labs
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
 spec:
   endpoints:
     - fqdn:
-        hostname: glm47-flash-dynamo-disagg-frontend.token-labs.svc.cluster.local
+        hostname: qwen36-nvfp4-frontend.token-labs.svc.cluster.local
         port: 8000
 ---
 apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIServiceBackend
 metadata:
-  name: glm-4-7-flash
+  name: qwen3-6-35b-a3b-nvfp4
   namespace: token-labs
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
@@ -35,7 +35,7 @@ spec:
   backendRef:
     group: gateway.envoyproxy.io
     kind: Backend
-    name: glm-4-7-flash
+    name: qwen3-6-35b-a3b-nvfp4
 ---
 apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIGatewayRoute
@@ -59,13 +59,13 @@ spec:
       kind: Gateway
       name: token-labs-gateway
   rules:
-    # glm-4.7-flash (dynamo) -- from DynamoGraphDeployment/glm47-flash-dynamo-disagg
+    # nvidia/Qwen3.6-35B-A3B-NVFP4 (plain) -- from Service/qwen36-nvfp4-frontend
     - matches:
         - headers:
             - type: Exact
               name: x-ai-eg-model
-              value: "glm-4.7-flash"
+              value: "nvidia/Qwen3.6-35B-A3B-NVFP4"
       timeouts:
         request: 3600s
       backendRefs:
-        - name: glm-4-7-flash
+        - name: qwen3-6-35b-a3b-nvfp4

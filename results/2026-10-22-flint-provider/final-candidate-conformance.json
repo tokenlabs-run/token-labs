@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "started_at_utc": "2026-10-22T16:56:17.854993+00:00",
+  "url": "http://127.0.0.1:18098/openrouter",
+  "model": "RecursiveSI/flint",
+  "repetitions": 1,
+  "checks": [
+    {
+      "name": "provider-catalog",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "elapsed_ms": 33.75353400770109,
+        "schema_version": "2.4",
+        "is_ready": true,
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "check_elapsed_ms": 33.82415599480737
+    },
+    {
+      "name": "models",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "elapsed_ms": 8.31411499530077,
+        "model_count": 2
+      },
+      "check_elapsed_ms": 8.355242011020891
+    },
+    {
+      "name": "auth-required",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "status_code": 401
+      },
+      "check_elapsed_ms": 32.77369399438612
+    },
+    {
+      "name": "nonstream",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "returned_model": "RecursiveSI/flint",
+        "requested_model": "RecursiveSI/flint",
+        "finish_reason": "length",
+        "usage": {
+          "prompt_tokens": 8,
+          "completion_tokens": 16,
+          "total_tokens": 24
+        },
+        "elapsed_ms": 295.8303339983104
+      },
+      "check_elapsed_ms": 295.9100320003927
+    },
+    {
+      "name": "stream",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "first_data_ms": 88.37611599301454,
+        "elapsed_ms": 257.6531829981832,
+        "json_chunks": 17,
+        "usage": {
+          "prompt_tokens": 8,
+          "completion_tokens": 16,
+          "total_tokens": 24
+        }
+      },
+      "check_elapsed_ms": 257.6799530070275
+    },
+    {
+      "name": "unknown-model",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "status_code": 404
+      },
+      "check_elapsed_ms": 32.63960499316454
+    },
+    {
+      "name": "invalid-request",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "status_code": 400
+      },
+      "check_elapsed_ms": 10.743678998551331
+    },
+    {
+      "name": "tools",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "returned_model": "RecursiveSI/flint",
+        "requested_model": "RecursiveSI/flint",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 133,
+          "completion_tokens": 47,
+          "total_tokens": 180
+        },
+        "elapsed_ms": 596.6413719870616
+      },
+      "check_elapsed_ms": 596.7840969969984
+    }
+  ],
+  "finished_at_utc": "2026-10-22T16:56:19.123773+00:00",
+  "passed": true,
+  "failure_count": 0
+}

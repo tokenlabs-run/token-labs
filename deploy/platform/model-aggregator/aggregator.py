@@ -30,8 +30,15 @@ PROVIDER_DOCUMENT_PATH = Path(os.environ.get(
     'OPENROUTER_MODEL_DOCUMENT_PATH', '/etc/openrouter/models.json'))
 OPENROUTER_CONCURRENCY = int(os.environ.get('OPENROUTER_MAX_CONCURRENCY', '16'))
 OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
+MODEL_CONCURRENCY_LIMITS = json.loads(os.environ.get('MODEL_CONCURRENCY_LIMITS', '{}'))
+if (not isinstance(MODEL_CONCURRENCY_LIMITS, dict)
+        or any(not isinstance(model, str) or not model
+               or type(limit) is not int or limit < 1
+               for model, limit in MODEL_CONCURRENCY_LIMITS.items())):
+    raise ValueError('MODEL_CONCURRENCY_LIMITS must map model IDs to positive integers')
 _admission_lock = asyncio.Lock()
 _inflight = 0
+_model_inflight = {}
 
 QWEN_THINKING_MODELS = {
     'unsloth/qwen3.6-35b-a3b-nvfp4-fast',
@@ -43,7 +50,8 @@ def service_url(service):
         return None
     labels, selector = meta.get('labels', {}), spec.get('selector', {})
     serving = (
-        labels.get('token-labs/model') == 'true'
+        meta.get('name') in MODEL_BACKEND_SERVICES
+        or labels.get('token-labs/model') == 'true'
         or (selector.get('llm-d.ai/inference-serving') == 'true'
             and selector.get('llm-d.ai/role') == 'decode')
         or selector.get('nvidia.com/dynamo-component-type') == 'frontend'
@@ -116,19 +124,30 @@ def provider_document():
         return None
 
 
-async def admit():
+async def admit(model=None):
     global _inflight
     async with _admission_lock:
         if _inflight >= OPENROUTER_CONCURRENCY:
             return False
+        limit = MODEL_CONCURRENCY_LIMITS.get(model)
+        if limit is not None and _model_inflight.get(model, 0) >= limit:
+            return False
         _inflight += 1
+        if model is not None:
+            _model_inflight[model] = _model_inflight.get(model, 0) + 1
         return True
 
 
-async def release():
+async def release(model=None):
     global _inflight
     async with _admission_lock:
         _inflight -= 1
+        if model is not None:
+            remaining = _model_inflight[model] - 1
+            if remaining:
+                _model_inflight[model] = remaining
+            else:
+                del _model_inflight[model]
 
 
 def provider_authorized(authorization: str | None) -> bool:
@@ -249,7 +268,7 @@ async def proxy_chat_completions(request: Request):
         payload = prepare_openrouter_payload(payload)
     except ValueError as error:
         return JSONResponse({'error': {'message': str(error)}}, status_code=400)
-    if not await admit():
+    if not await admit(model):
         return JSONResponse(
             {'error': {'message': 'Capacity temporarily exhausted; retry later'}},
             status_code=429,
@@ -271,24 +290,26 @@ async def proxy_chat_completions(request: Request):
                     async for chunk in upstream.aiter_raw():
                         yield chunk
                 finally:
-                    await upstream.aclose()
-                    await release()
+                    try:
+                        await upstream.aclose()
+                    finally:
+                        await release(model)
             slot_owned = False
             return StreamingResponse(stream_and_release(), status_code=upstream.status_code,
                                      media_type=content_type)
         body = await upstream.aread()
-        await upstream.aclose()
-        await release()
-        slot_owned = False
         return JSONResponse(content=json.loads(body), status_code=upstream.status_code)
     except Exception:
-        if upstream is not None:
-            await upstream.aclose()
-        if slot_owned:
-            await release()
         log.exception('OpenRouter upstream request failed')
         return JSONResponse({'error': {'message': 'Upstream unavailable'}},
                             status_code=502)
+    finally:
+        if slot_owned:
+            try:
+                if upstream is not None:
+                    await upstream.aclose()
+            finally:
+                await release(model)
 
 
 @app.post('/v1/chat/completions')

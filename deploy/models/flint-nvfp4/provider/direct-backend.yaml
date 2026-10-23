@@ -1,0 +1,23 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: flint-admission-gateway
+  namespace: token-labs
+spec:
+  endpoints:
+  - fqdn:
+      hostname: model-aggregator.token-labs.svc.cluster.local
+      port: 8000
+---
+apiVersion: aigateway.envoyproxy.io/v1beta1
+kind: AIServiceBackend
+metadata:
+  name: flint-admission-gateway
+  namespace: token-labs
+spec:
+  schema:
+    name: OpenAI
+  backendRef:
+    group: gateway.envoyproxy.io
+    kind: Backend
+    name: flint-admission-gateway

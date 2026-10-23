@@ -1,0 +1,532 @@
+{
+  "captured_at": "2026-10-01T21:13:32.934363+00:00",
+  "dcgm_targets": [
+    {
+      "labels": {
+        "cluster": "token-labs",
+        "container": "nvidia-dcgm-exporter",
+        "endpoint": "gpu-metrics",
+        "instance": "10.244.2.10:9400",
+        "job": "nvidia-dcgm-exporter",
+        "namespace": "gpu-operator",
+        "node": "spark-01",
+        "pod": "nvidia-dcgm-exporter-26mn8",
+        "service": "nvidia-dcgm-exporter"
+      },
+      "health": "up",
+      "lastScrape": "2026-10-01T21:13:18.95218799Z"
+    },
+    {
+      "labels": {
+        "cluster": "token-labs",
+        "container": "nvidia-dcgm-exporter",
+        "endpoint": "gpu-metrics",
+        "instance": "10.244.1.252:9400",
+        "job": "nvidia-dcgm-exporter",
+        "namespace": "gpu-operator",
+        "node": "spark-02",
+        "pod": "nvidia-dcgm-exporter-ptgvq",
+        "service": "nvidia-dcgm-exporter"
+      },
+      "health": "up",
+      "lastScrape": "2026-10-01T21:13:21.406174725Z"
+    }
+  ],
+  "raw_gpu_samples": {
+    "spark-01": {
+      "DCGM_FI_DEV_DEC_UTIL": "0",
+      "DCGM_FI_DEV_ENC_UTIL": "0",
+      "DCGM_FI_DEV_GPU_TEMP": "47",
+      "DCGM_FI_DEV_GPU_UTIL": "0",
+      "DCGM_FI_DEV_MEMORY_TEMP": "0",
+      "DCGM_FI_DEV_MEM_COPY_UTIL": "0",
+      "DCGM_FI_DEV_PCIE_REPLAY_COUNTER": "0",
+      "DCGM_FI_DEV_POWER_USAGE": "11.693",
+      "DCGM_FI_DEV_SM_CLOCK": "2405",
+      "DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION": "1.38396483e+08",
+      "DCGM_FI_DEV_VGPU_LICENSE_STATUS": "0"
+    },
+    "spark-02": {
+      "DCGM_FI_DEV_DEC_UTIL": "0",
+      "DCGM_FI_DEV_ENC_UTIL": "0",
+      "DCGM_FI_DEV_GPU_TEMP": "49",
+      "DCGM_FI_DEV_GPU_UTIL": "0",
+      "DCGM_FI_DEV_MEMORY_TEMP": "0",
+      "DCGM_FI_DEV_MEM_COPY_UTIL": "0",
+      "DCGM_FI_DEV_PCIE_REPLAY_COUNTER": "0",
+      "DCGM_FI_DEV_POWER_USAGE": "12.117",
+      "DCGM_FI_DEV_SM_CLOCK": "2392",
+      "DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION": "1.16208665119e+11",
+      "DCGM_FI_DEV_VGPU_LICENSE_STATUS": "0"
+    }
+  },
+  "rules": [
+    {
+      "group": "token-labs.hardware.alerts",
+      "rules": [
+        {
+          "name": "TokenLabsDCGMTelemetryUnavailable",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsHOSTTelemetryUnavailable",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsGPUFieldMissing",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsGPUFieldMissing",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsGPUFieldMissing",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsGPUFieldMissing",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsGPUFieldMissing",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsHostOOMObserved",
+          "health": "ok",
+          "state": "inactive"
+        },
+        {
+          "name": "TokenLabsGPUReplayObserved",
+          "health": "ok",
+          "state": "inactive"
+        }
+      ]
+    },
+    {
+      "group": "token-labs.hardware.recording",
+      "rules": [
+        {
+          "name": "token_labs:hardware_expected:info",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:dcgm_up:bool",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:host_up:bool",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:gpu_utilization_percent",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:gpu_temperature_celsius",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:gpu_power_watts",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:gpu_sm_clock_mhz",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:gpu_pcie_replays_total",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:host_memory_available:ratio",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:host_oom_kills:increase5m",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:host_receive_drops:rate5m",
+          "health": "ok",
+          "state": null
+        },
+        {
+          "name": "token_labs:host_receive_bytes:rate5m",
+          "health": "ok",
+          "state": null
+        }
+      ]
+    }
+  ],
+  "dashboard": {
+    "uid": "token-labs-hardware",
+    "provisioned": true,
+    "url": "/d/token-labs-hardware/token-labs-gb10-hardware-health"
+  },
+  "panel_queries": [
+    {
+      "title": "DCGM telemetry available; 0 = unavailable",
+      "query": "(token_labs:dcgm_up:bool and on(node) token_labs:hardware_expected:info) or on(node) (0 * token_labs:hardware_expected:info)",
+      "samples": [
+        {
+          "metric": {
+            "__name__": "token_labs:dcgm_up:bool",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.077,
+            "1"
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "token_labs:dcgm_up:bool",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.077,
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "HOST telemetry available; 0 = unavailable",
+      "query": "(token_labs:host_up:bool and on(node) token_labs:hardware_expected:info) or on(node) (0 * token_labs:hardware_expected:info)",
+      "samples": [
+        {
+          "metric": {
+            "__name__": "token_labs:host_up:bool",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.16,
+            "1"
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "token_labs:host_up:bool",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.16,
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gpu utilization percent",
+      "query": "token_labs:gpu_utilization_percent",
+      "samples": [
+        {
+          "metric": {
+            "UUID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d",
+            "__name__": "token_labs:gpu_utilization_percent",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.208,
+            "0"
+          ]
+        },
+        {
+          "metric": {
+            "UUID": "GPU-33e233b3-9856-a887-6fd5-1ad523a24361",
+            "__name__": "token_labs:gpu_utilization_percent",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.208,
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gpu temperature celsius",
+      "query": "token_labs:gpu_temperature_celsius",
+      "samples": [
+        {
+          "metric": {
+            "UUID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d",
+            "__name__": "token_labs:gpu_temperature_celsius",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.256,
+            "47"
+          ]
+        },
+        {
+          "metric": {
+            "UUID": "GPU-33e233b3-9856-a887-6fd5-1ad523a24361",
+            "__name__": "token_labs:gpu_temperature_celsius",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.256,
+            "49"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gpu power watts",
+      "query": "token_labs:gpu_power_watts",
+      "samples": [
+        {
+          "metric": {
+            "UUID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d",
+            "__name__": "token_labs:gpu_power_watts",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.299,
+            "14.486"
+          ]
+        },
+        {
+          "metric": {
+            "UUID": "GPU-33e233b3-9856-a887-6fd5-1ad523a24361",
+            "__name__": "token_labs:gpu_power_watts",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.299,
+            "12.11"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gpu sm clock mhz",
+      "query": "token_labs:gpu_sm_clock_mhz",
+      "samples": [
+        {
+          "metric": {
+            "UUID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d",
+            "__name__": "token_labs:gpu_sm_clock_mhz",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.335,
+            "2405"
+          ]
+        },
+        {
+          "metric": {
+            "UUID": "GPU-33e233b3-9856-a887-6fd5-1ad523a24361",
+            "__name__": "token_labs:gpu_sm_clock_mhz",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.335,
+            "2392"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "gpu pcie replays total",
+      "query": "token_labs:gpu_pcie_replays_total",
+      "samples": [
+        {
+          "metric": {
+            "UUID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d",
+            "__name__": "token_labs:gpu_pcie_replays_total",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.37,
+            "0"
+          ]
+        },
+        {
+          "metric": {
+            "UUID": "GPU-33e233b3-9856-a887-6fd5-1ad523a24361",
+            "__name__": "token_labs:gpu_pcie_replays_total",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.37,
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "host memory available:ratio",
+      "query": "token_labs:host_memory_available:ratio",
+      "samples": [
+        {
+          "metric": {
+            "__name__": "token_labs:host_memory_available:ratio",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.406,
+            "0.1069503196218683"
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "token_labs:host_memory_available:ratio",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.406,
+            "0.10212842307709723"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "host oom kills:increase5m",
+      "query": "token_labs:host_oom_kills:increase5m",
+      "samples": [
+        {
+          "metric": {
+            "__name__": "token_labs:host_oom_kills:increase5m",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.44,
+            "0"
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "token_labs:host_oom_kills:increase5m",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.44,
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "host receive drops:rate5m",
+      "query": "token_labs:host_receive_drops:rate5m",
+      "samples": [
+        {
+          "metric": {
+            "__name__": "token_labs:host_receive_drops:rate5m",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.488,
+            "0"
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "token_labs:host_receive_drops:rate5m",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.488,
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "host receive bytes:rate5m",
+      "query": "token_labs:host_receive_bytes:rate5m",
+      "samples": [
+        {
+          "metric": {
+            "__name__": "token_labs:host_receive_bytes:rate5m",
+            "cluster": "token-labs",
+            "node": "spark-01",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.567,
+            "0"
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "token_labs:host_receive_bytes:rate5m",
+            "cluster": "token-labs",
+            "node": "spark-02",
+            "service": "hardware-observability"
+          },
+          "value": [
+            1790889214.567,
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Missing GPU fields",
+      "query": "ALERTS{alertname=\"TokenLabsGPUFieldMissing\",alertstate=\"firing\"}",
+      "samples": []
+    }
+  ]
+}

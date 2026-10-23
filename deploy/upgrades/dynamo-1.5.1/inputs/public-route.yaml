@@ -1,0 +1,42 @@
+apiVersion: aigateway.envoyproxy.io/v1beta1
+kind: AIGatewayRoute
+spec:
+  llmRequestCosts:
+  - metadataKey: llm_input_token
+    type: InputToken
+  - metadataKey: llm_output_token
+    type: OutputToken
+  - metadataKey: llm_total_token
+    type: TotalToken
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: token-labs-gateway
+  rules:
+  - backendRefs:
+    - name: muse-glimmer-30b
+      priority: 0
+      weight: 1
+    matches:
+    - headers:
+      - name: x-ai-eg-model
+        type: Exact
+        value: meta-models/Muse-Glimmer-30B
+    modelsOwnedBy: Envoy AI Gateway
+    timeouts:
+      request: 3600s
+  - backendRefs:
+    - name: qwen3-6-35b-a3b-nvfp4
+      priority: 0
+      weight: 1
+    matches:
+    - headers:
+      - name: x-ai-eg-model
+        type: Exact
+        value: nvidia/Qwen3.6-35B-A3B-NVFP4
+    modelsOwnedBy: Envoy AI Gateway
+    timeouts:
+      request: 3600s
+metadata:
+  name: token-labs-models
+  namespace: token-labs

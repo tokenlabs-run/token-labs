@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run trtllm-bf16 and sglang-gptq-int4 on spark-01 in parallel.
 set -euo pipefail
-REPO="/home/nvidia/src/github.com/elizabetht/token-labs"
+REPO="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 NS="token-labs"
 RESULTS="$REPO/results"
 DEPLOY="$REPO/deploy/models/qwen35-27b"

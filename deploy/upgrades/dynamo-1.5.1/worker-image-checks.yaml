@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamo-151-image-check-spark-01
+  namespace: token-labs
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: spark-01
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: check
+        image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.1@sha256:2b224a823d52a198ec0eeb0e3e4f5cf26cd8a7fc2e9812ee16204b6b1e974870
+        command:
+        - python3
+        - -c
+        args:
+        - import importlib.metadata as m; from pathlib import Path; print("dynamo",m.version("ai-dynamo"),"vllm",m.version("vllm"));
+          print("muse",list(Path("/usr/local/lib").glob("**/vllm/model_executor/models/muse_glimmer.py")))
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamo-151-image-check-spark-02
+  namespace: token-labs
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: spark-02
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: check
+        image: nvcr.io/nvidia/ai-dynamo/vllm-runtime:1.5.1@sha256:2b224a823d52a198ec0eeb0e3e4f5cf26cd8a7fc2e9812ee16204b6b1e974870
+        command:
+        - python3
+        - -c
+        args:
+        - import importlib.metadata as m; from pathlib import Path; print("dynamo",m.version("ai-dynamo"),"vllm",m.version("vllm"));
+          print("muse",list(Path("/usr/local/lib").glob("**/vllm/model_executor/models/muse_glimmer.py")))
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi

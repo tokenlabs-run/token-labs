@@ -1,0 +1,42 @@
+/* The serving journey uses the shared site palette and one continuous column. */
+.serving { max-width: 920px; }
+.serving .hero { padding-top: 54px; padding-bottom: 0; }
+.serving h1 { overflow-wrap: anywhere; }
+.availability { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.availability::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #89938d; flex-shrink: 0; }
+.availability[data-ready="true"]::before { background: var(--accent); }
+.hero-link { display: inline-block; margin-top: 24px; }
+.capabilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 40px 0 0; padding: 24px 0; border-top: 1px solid var(--line); }
+.capabilities dt { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+.capabilities dd { margin: 0; font-size: 15px; }
+.flow-section { border-top: 1px solid var(--line); padding: 48px 0; scroll-margin-top: 24px; }
+.section-heading .eyebrow { margin-bottom: 14px; }
+.section-heading h2 { font-size: clamp(26px, 4vw, 34px); letter-spacing: -1px; line-height: 1.2; font-weight: 500; margin: 0 0 12px; }
+.section-heading p:not(.eyebrow) { color: var(--muted); font-size: 15px; }
+.model-status { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 13px; margin-top: 24px; }
+#serving-model { overflow-wrap: anywhere; min-width: 0; }
+.serving #chat-form { margin-top: 16px; }
+.serving-connection { display: block; max-width: 520px; }
+.serving .chat { min-height: 190px; }
+.endpoint { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 12px; color: var(--muted); margin: 24px 0; }
+.endpoint code { color: var(--ink); overflow-wrap: anywhere; }
+.code-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.code-toolbar label { display: flex; align-items: center; gap: 12px; font-size: 12px; }
+.code-toolbar select { width: auto; }
+.code-example { background: var(--ink); color: #ecf1e9; border-radius: 12px; padding: 24px; font-size: 13px; line-height: 1.7; overflow: auto; tab-size: 2; }
+.helper { font-size: 12px; color: var(--muted); min-height: 20px; }
+.supporting details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+.supporting summary { font-size: 15px; }
+.supporting details p { font-size: 14px; color: var(--muted); max-width: 680px; margin: 16px 0 0; }
+.supporting a { text-underline-offset: 3px; }
+@media (max-width: 600px) {
+  .serving .hero { padding-top: 32px; }
+  .capabilities { gap: 16px; grid-template-columns: 1fr; margin-top: 30px; }
+  .capabilities div { display: flex; justify-content: space-between; gap: 16px; }
+  .capabilities dd { font-size: 13px; }
+  .flow-section { padding: 32px 0; }
+  .serving .composer-actions { flex-wrap: wrap; }
+  .serving .composer-actions > span { flex-basis: 100%; max-width: none; }
+  .model-status { align-items: flex-start; }
+  .code-example { padding: 18px; font-size: 12px; }
+}

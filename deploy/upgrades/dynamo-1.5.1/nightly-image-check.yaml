@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dynamo-151-nightly-check-spark-01
+  namespace: token-labs
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: spark-01
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: check
+        image: nvcr.io/nvidia/ai-dynamo/dynamo-frontend-nightly@sha256:38286598fd3a514a36bfddb90c2f8751350ccb787fabd307361673a534e46c4f
+        command:
+        - python3
+        - -c
+        args:
+        - import importlib.metadata as m; print(m.version("ai-dynamo"))
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '1'
+            memory: 1Gi

@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: token-labs
+resources:
+- deployment.yaml
+configMapGenerator:
+- name: flint-vllm-pr-aed08d76
+  files:
+  - build-pr-runtime.py
+generatorOptions:
+  disableNameSuffixHash: true
