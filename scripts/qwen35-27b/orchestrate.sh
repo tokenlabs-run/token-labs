@@ -10,7 +10,7 @@
 #   PHASE=ALL ./orchestrate_qwen35_27b.sh         # All phases sequentially
 set -euo pipefail
 
-REPO="/home/nvidia/src/github.com/elizabetht/token-labs"
+REPO="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 NAMESPACE="token-labs"
 RESULTS_DIR="$REPO/results"
 SCRIPTS_DIR="$REPO/scripts/qwen35-27b"

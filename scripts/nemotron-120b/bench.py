@@ -6,6 +6,7 @@ Measures TTFT and ITL via streaming, outputs JSON matching existing format.
 
 import asyncio
 import json
+from pathlib import Path
 import time
 import random
 import statistics
@@ -265,7 +266,7 @@ async def main():
     }
 
     out_path = (
-        "/home/nvidia/src/github.com/elizabetht/token-labs/results/"
+        f"{Path(__file__).resolve().parents[2]}/results/"
         "nemotron-120b-nvfp4-isl-osl-sweep-2026-04-15.json"
     )
     with open(out_path, "w") as f:
