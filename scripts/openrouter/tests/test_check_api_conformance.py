@@ -96,6 +96,16 @@ class ConformanceValidationTests(unittest.TestCase):
         })
         self.assertTrue(result["is_ready"])
 
+        document["id"] = "RecursiveSI/flint"
+        document["openrouter"]["slug"] = "recursive/flint-v1.0"
+        result = conformance.check_provider_catalog({
+            "session": FakeSession(FakeResponse(body={"data": [document]})),
+            "provider_models_url": "https://example.test/models",
+            "model": "RecursiveSI/flint", "openrouter_slug": "recursive/flint-v1.0",
+            "timeout": 1,
+        })
+        self.assertTrue(result["is_ready"])
+
     def test_provider_catalog_rejects_not_ready(self):
         model = "qwen/qwen3-30b-a3b-instruct-2507"
         response = FakeResponse(body={"data": [{

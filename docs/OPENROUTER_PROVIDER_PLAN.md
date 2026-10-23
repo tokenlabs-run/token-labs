@@ -204,10 +204,14 @@ python3 scripts/openrouter/generate_model_document.py \
   --deployment-region "${TOKENLABS_DEPLOYMENT_REGION}"
 ```
 
-The generator requires every price and capacity value, rejects non-positive or
-scientific-notation prices, validates against the downloaded OpenAPI document,
-and defaults to `is_ready: false`. Add `--tools`, `--structured-outputs`, `--zdr`,
-`--hipaa`, or `--ready` only after the corresponding gate is evidenced. Test
+The generator requires concurrency and, for paid endpoints, both token prices.
+Rate capacities and location metadata are optional and must be measured or
+verified before declaration. It rejects non-positive or scientific-notation
+prices, validates against the downloaded OpenAPI document,
+and defaults to `is_ready: false`. Add `--tools`, `--structured-outputs`,
+or `--ready` only after the corresponding gate is evidenced. Free endpoints use
+`--free` and omit prices. Supply `--model-id`, `--hf-model-id`, and
+`--openrouter-slug` explicitly when onboarding another model. Test
 values belong under `/tmp`; do not commit a production-looking model document
 until capacity, economics, location, and compliance are known.
 

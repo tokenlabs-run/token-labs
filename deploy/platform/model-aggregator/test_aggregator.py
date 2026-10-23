@@ -1,4 +1,5 @@
 import json
+import asyncio
 from pathlib import Path
 import tempfile
 import unittest
@@ -137,6 +138,67 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
         await a.release()
         self.assertEqual(a._inflight, 0)
         a.OPENROUTER_CONCURRENCY = old_limit
+
+    async def test_model_limit_preserves_other_model_capacity(self):
+        with patch.multiple(a, OPENROUTER_CONCURRENCY=16,
+                            MODEL_CONCURRENCY_LIMITS={'RecursiveSI/flint': 1},
+                            _inflight=0, _model_inflight={}):
+            self.assertTrue(await a.admit('RecursiveSI/flint'))
+            self.assertFalse(await a.admit('RecursiveSI/flint'))
+            self.assertTrue(await a.admit('qwen'))
+            await a.release('RecursiveSI/flint')
+            self.assertTrue(await a.admit('RecursiveSI/flint'))
+            await a.release('RecursiveSI/flint')
+            await a.release('qwen')
+            self.assertEqual(a._inflight, 0)
+            self.assertEqual(a._model_inflight, {})
+
+    async def test_cancelled_upstream_releases_model_capacity(self):
+        body = json.dumps({'model': 'RecursiveSI/flint', 'messages': []}).encode()
+
+        async def receive():
+            return {'type': 'http.request', 'body': body, 'more_body': False}
+
+        async def backend(request):
+            raise asyncio.CancelledError()
+
+        request = a.Request({'type': 'http', 'method': 'POST',
+                             'path': '/v1/chat/completions', 'headers': []}, receive)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(backend)) as client:
+            with patch.multiple(a, _http_client=client,
+                                _model_backends={'RecursiveSI/flint': 'http://flint'},
+                                _inflight=0, _model_inflight={}):
+                with self.assertRaises(asyncio.CancelledError):
+                    await a.proxy_chat_completions(request)
+                self.assertEqual(a._inflight, 0)
+                self.assertEqual(a._model_inflight, {})
+
+    async def test_stream_holds_model_capacity_until_client_closes(self):
+        class Stream(httpx.AsyncByteStream):
+            async def __aiter__(self):
+                yield b'data: {"choices": []}\n\n'
+                yield b'data: [DONE]\n\n'
+
+        body = json.dumps({'model': 'RecursiveSI/flint', 'stream': True}).encode()
+
+        async def receive():
+            return {'type': 'http.request', 'body': body, 'more_body': False}
+
+        request = a.Request({'type': 'http', 'method': 'POST',
+                             'path': '/v1/chat/completions', 'headers': []}, receive)
+        async with httpx.AsyncClient(transport=httpx.MockTransport(
+                lambda request: httpx.Response(200, stream=Stream()))) as client:
+            with patch.multiple(a, _http_client=client,
+                                _model_backends={'RecursiveSI/flint': 'http://flint'},
+                                MODEL_CONCURRENCY_LIMITS={'RecursiveSI/flint': 1},
+                                _inflight=0, _model_inflight={}):
+                response = await a.proxy_chat_completions(request)
+                self.assertFalse(await a.admit('RecursiveSI/flint'))
+                await response.body_iterator.__anext__()
+                await response.body_iterator.aclose()
+                self.assertEqual(a._inflight, 0)
+                self.assertTrue(await a.admit('RecursiveSI/flint'))
+                await a.release('RecursiveSI/flint')
 
     async def test_direct_chat_uses_advertised_model_backend(self):
         old_client = a._http_client

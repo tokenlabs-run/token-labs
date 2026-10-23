@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate and validate Tokenlabs' OpenRouter provider model document.
 
-Pricing and capacity are mandatory command-line inputs so an unmeasured or
-placeholder declaration cannot accidentally become the production document.
+Paid endpoints require explicit pricing. Only measured rate capacities should
+be declared; free endpoints omit prices.
 The output defaults to ``is_ready: false`` and requires an explicit ``--ready``
 after all provider gates pass.
 """
@@ -102,18 +102,14 @@ def build_document(args: argparse.Namespace) -> dict:
     if args.structured_outputs:
         parameters["structured_outputs"] = {"type": "boolean"}
 
-    return {
+    document = {
         "schema_version": "2.4",
-        "id": MODEL_ID,
-        "name": "Qwen: Qwen3 30B A3B Instruct 2507",
-        "hugging_face_id": HF_BASE_ID,
-        "created": MODEL_CREATED_EPOCH,
-        "quantization": "fp8",
-        "tokenizer": "Qwen",
-        "description": (
-            f"Tokenlabs serves {HF_SERVED_ID} on one NVIDIA DGX Spark using "
-            "an aggregated vLLM worker."
-        ),
+        "id": args.model_id,
+        "name": args.name,
+        "hugging_face_id": args.hf_model_id,
+        "created": args.created,
+        "quantization": args.quantization,
+        "description": args.description,
         "input_modalities": [
             {
                 "type": "text",
@@ -180,33 +176,56 @@ def build_document(args: argparse.Namespace) -> dict:
             },
         ],
         "is_ready": args.ready,
-        "is_free": False,
-        "openrouter": {"slug": MODEL_ID},
-        "datacenters": [
-            {"country_code": args.country, "region": args.datacenter_region}
-        ],
-        "deployment_region": args.deployment_region,
-        "compliance": {"zdr": args.zdr, "hipaa": args.hipaa},
+        "is_free": args.free,
+        "openrouter": {"slug": args.openrouter_slug or args.model_id},
     }
+    if args.tokenizer:
+        document["tokenizer"] = args.tokenizer
+    if args.country:
+        document["datacenters"] = [
+            {"country_code": args.country, "region": args.datacenter_region}
+        ]
+        document["deployment_region"] = args.deployment_region
+    for modality, capacity in zip(
+        (document["input_modalities"][0], document["output_modalities"][0]),
+        (args.prompt_tpm, args.completion_tpm),
+    ):
+        if args.free:
+            del modality["pricing"]
+        if capacity is None:
+            del modality["capacity"]
+    if args.requests_per_minute is None:
+        document["capacity"].pop(0)
+    return document
 
 
-def main() -> int:
+def argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--schema", required=True, type=pathlib.Path)
     parser.add_argument("--output", required=True, type=pathlib.Path)
-    parser.add_argument("--prompt-price", required=True, type=positive_decimal)
-    parser.add_argument("--completion-price", required=True, type=positive_decimal)
-    parser.add_argument("--prompt-tpm", required=True, type=positive_integer)
-    parser.add_argument("--completion-tpm", required=True, type=positive_integer)
+    parser.add_argument("--model-id", default=MODEL_ID)
+    parser.add_argument("--openrouter-slug")
+    parser.add_argument("--hf-model-id", default=HF_BASE_ID)
+    parser.add_argument("--name", default="Qwen: Qwen3 30B A3B Instruct 2507")
+    parser.add_argument("--created", type=positive_integer, default=MODEL_CREATED_EPOCH)
+    parser.add_argument("--quantization", choices=("nvfp4", "fp8", "bf16"), default="fp8")
+    parser.add_argument("--tokenizer")
+    parser.add_argument("--description", default=(
+        f"Token Labs serves {HF_SERVED_ID} on one NVIDIA DGX Spark using vLLM."))
+    parser.add_argument("--free", action="store_true")
+    parser.add_argument("--prompt-price", type=positive_decimal)
+    parser.add_argument("--completion-price", type=positive_decimal)
+    parser.add_argument("--prompt-tpm", type=positive_integer)
+    parser.add_argument("--completion-tpm", type=positive_integer)
     parser.add_argument(
-        "--requests-per-minute", required=True, type=positive_integer
+        "--requests-per-minute", type=positive_integer
     )
     parser.add_argument("--concurrency", required=True, type=positive_integer)
     parser.add_argument("--max-context-tokens", type=positive_integer, default=32768)
     parser.add_argument("--max-output-tokens", type=positive_integer, default=8192)
-    parser.add_argument("--country", type=country_code, required=True)
-    parser.add_argument("--datacenter-region", required=True)
-    parser.add_argument("--deployment-region", required=True)
+    parser.add_argument("--country", type=country_code)
+    parser.add_argument("--datacenter-region")
+    parser.add_argument("--deployment-region")
     parser.add_argument(
         "--tools",
         action="store_true",
@@ -218,24 +237,28 @@ def main() -> int:
         help="declare only after the structured-output gate passes",
     )
     parser.add_argument(
-        "--zdr", action="store_true", help="declare only with verified ZDR controls"
-    )
-    parser.add_argument(
-        "--hipaa",
-        action="store_true",
-        help="declare only with a verified HIPAA-capable service",
-    )
-    parser.add_argument(
         "--ready",
         action="store_true",
         help="set only after capacity, conformance, quality, and soak gates pass",
     )
+    return parser
+
+
+def main() -> int:
+    parser = argument_parser()
     args = parser.parse_args()
 
     if not args.schema.is_file():
         parser.error(f"schema does not exist: {args.schema}")
     if args.max_output_tokens > args.max_context_tokens:
         parser.error("max output cannot exceed max context")
+    if args.free and (args.prompt_price is not None or args.completion_price is not None):
+        parser.error("free endpoints must not declare prices")
+    if not args.free and (args.prompt_price is None or args.completion_price is None):
+        parser.error("paid endpoints require --prompt-price and --completion-price")
+    location = (args.country, args.datacenter_region, args.deployment_region)
+    if any(location) and not all(location):
+        parser.error("provide country, datacenter region, and deployment region together")
     document = build_document(args)
     validate(document, args.schema)
     args.output.parent.mkdir(parents=True, exist_ok=True)

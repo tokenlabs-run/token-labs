@@ -121,8 +121,9 @@ def check_provider_catalog(ctx: dict[str, Any]) -> dict[str, Any]:
     require(isinstance(document.get("name"), str) and document["name"], "missing name")
     require(isinstance(document.get("created"), int), "missing created timestamp")
     require(isinstance(document.get("hugging_face_id"), str), "missing Hugging Face ID")
-    require(document.get("openrouter", {}).get("slug") == ctx["model"],
-            "OpenRouter slug differs from model ID")
+    require(document.get("openrouter", {}).get("slug")
+            == ctx.get("openrouter_slug", ctx["model"]),
+            "OpenRouter slug differs from the expected catalog mapping")
     inputs = document.get("input_modalities")
     outputs = document.get("output_modalities")
     require(isinstance(inputs, list) and inputs, "missing input modalities")
@@ -371,6 +372,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", required=True)
     parser.add_argument("--model", required=True)
+    parser.add_argument("--openrouter-slug")
     parser.add_argument("--provider-models-url")
     parser.add_argument("--api-key-env", default="TOKENLABS_BENCH_API_KEY")
     parser.add_argument("--output", required=True, type=pathlib.Path)
@@ -393,6 +395,7 @@ def main() -> int:
         "session": session,
         "url": args.url.rstrip("/"),
         "model": args.model,
+        "openrouter_slug": args.openrouter_slug or args.model,
         "timeout": args.timeout,
         "provider_models_url": args.provider_models_url,
     }
