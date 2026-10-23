@@ -27,3 +27,9 @@ Production availability takes precedence over deployment convenience.
 
 Follow `deploy/models/MODEL_ROLLOUT_RUNBOOK.md` for every production model
 promotion and rollback.
+
+## Branch naming
+
+Follow the target repository's branch naming conventions. Use task-appropriate
+prefixes such as `fix/`, `feat/`, `chore/`, or `docs/`. Do not use the `codex/`
+prefix.
