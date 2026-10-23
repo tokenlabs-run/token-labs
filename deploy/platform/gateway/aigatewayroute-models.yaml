@@ -12,20 +12,20 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: Backend
 metadata:
-  name: qwen3-30b-a3b-instruct-2507-fp8
+  name: qwen3-6-35b-a3b-nvfp4
   namespace: token-labs
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
 spec:
   endpoints:
     - fqdn:
-        hostname: qwen3-30b-control-dynamo-disagg-frontend.token-labs.svc.cluster.local
+        hostname: qwen36-nvfp4-frontend.token-labs.svc.cluster.local
         port: 8000
 ---
-apiVersion: aigateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIServiceBackend
 metadata:
-  name: qwen3-30b-a3b-instruct-2507-fp8
+  name: qwen3-6-35b-a3b-nvfp4
   namespace: token-labs
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
@@ -35,9 +35,9 @@ spec:
   backendRef:
     group: gateway.envoyproxy.io
     kind: Backend
-    name: qwen3-30b-a3b-instruct-2507-fp8
+    name: qwen3-6-35b-a3b-nvfp4
 ---
-apiVersion: aigateway.envoyproxy.io/v1alpha1
+apiVersion: aigateway.envoyproxy.io/v1beta1
 kind: AIGatewayRoute
 metadata:
   name: token-labs-models
@@ -45,8 +45,6 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: gen-aigwroute
 spec:
-  schema:
-    name: OpenAI
   # Declared once here so token accounting applies uniformly to every model and
   # both serving stacks.
   llmRequestCosts:
@@ -56,16 +54,18 @@ spec:
       type: OutputToken
     - metadataKey: llm_total_token
       type: TotalToken
-  targetRefs:
+  parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
       name: token-labs-gateway
   rules:
-    # Qwen/Qwen3-30B-A3B-Instruct-2507-FP8 (dynamo) -- from Service/qwen3-30b-control-dynamo-disagg-frontend
+    # nvidia/Qwen3.6-35B-A3B-NVFP4 (plain) -- from Service/qwen36-nvfp4-frontend
     - matches:
         - headers:
             - type: Exact
               name: x-ai-eg-model
-              value: "Qwen/Qwen3-30B-A3B-Instruct-2507-FP8"
+              value: "nvidia/Qwen3.6-35B-A3B-NVFP4"
+      timeouts:
+        request: 3600s
       backendRefs:
-        - name: qwen3-30b-a3b-instruct-2507-fp8
+        - name: qwen3-6-35b-a3b-nvfp4
