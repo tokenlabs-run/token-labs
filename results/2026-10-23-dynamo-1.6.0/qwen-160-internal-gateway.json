@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "started_at_utc": "2026-10-23T20:29:18.012158+00:00",
+  "url": "http://10.100.90.120:8000/openrouter",
+  "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+  "repetitions": 3,
+  "checks": [
+    {
+      "name": "models",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "elapsed_ms": 49.10274900612421,
+        "model_count": 2
+      },
+      "check_elapsed_ms": 49.140810006065294
+    },
+    {
+      "name": "auth-required",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "status_code": 401
+      },
+      "check_elapsed_ms": 48.99307500454597
+    },
+    {
+      "name": "nonstream",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 2,
+          "total_tokens": 20
+        },
+        "elapsed_ms": 2547.7095220121555
+      },
+      "check_elapsed_ms": 2547.7727789839264
+    },
+    {
+      "name": "stream",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "first_data_ms": 449.4951859815046,
+        "elapsed_ms": 475.9190229815431,
+        "json_chunks": 3,
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 2,
+          "total_tokens": 20
+        }
+      },
+      "check_elapsed_ms": 475.9461230132729
+    },
+    {
+      "name": "unknown-model",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "status_code": 404
+      },
+      "check_elapsed_ms": 32.54256898071617
+    },
+    {
+      "name": "invalid-request",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "status_code": 400
+      },
+      "check_elapsed_ms": 18.589004990644753
+    },
+    {
+      "name": "tools",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "tool_calls",
+        "usage": {
+          "prompt_tokens": 279,
+          "completion_tokens": 27,
+          "total_tokens": 306
+        },
+        "elapsed_ms": 4624.503866012674
+      },
+      "check_elapsed_ms": 4624.578965012915
+    },
+    {
+      "name": "structured-output",
+      "repetition": 1,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 17,
+          "completion_tokens": 8,
+          "total_tokens": 25
+        },
+        "elapsed_ms": 1127.8230439929757
+      },
+      "check_elapsed_ms": 1127.8941170021426
+    },
+    {
+      "name": "models",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "elapsed_ms": 81.07076899614185,
+        "model_count": 2
+      },
+      "check_elapsed_ms": 81.13043001503684
+    },
+    {
+      "name": "auth-required",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "status_code": 401
+      },
+      "check_elapsed_ms": 207.08914901479147
+    },
+    {
+      "name": "nonstream",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 2,
+          "total_tokens": 20
+        },
+        "elapsed_ms": 1393.5508519934956
+      },
+      "check_elapsed_ms": 1393.6154219845776
+    },
+    {
+      "name": "stream",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "first_data_ms": 189.83884499175474,
+        "elapsed_ms": 216.76360399578698,
+        "json_chunks": 3,
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 2,
+          "total_tokens": 20
+        }
+      },
+      "check_elapsed_ms": 216.78690699627623
+    },
+    {
+      "name": "unknown-model",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "status_code": 404
+      },
+      "check_elapsed_ms": 14.706342975841835
+    },
+    {
+      "name": "invalid-request",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "status_code": 400
+      },
+      "check_elapsed_ms": 12.3005390050821
+    },
+    {
+      "name": "tools",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "tool_calls",
+        "usage": {
+          "prompt_tokens": 279,
+          "completion_tokens": 27,
+          "total_tokens": 306
+        },
+        "elapsed_ms": 3243.166995001957
+      },
+      "check_elapsed_ms": 3243.257843016181
+    },
+    {
+      "name": "structured-output",
+      "repetition": 2,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 17,
+          "completion_tokens": 8,
+          "total_tokens": 25
+        },
+        "elapsed_ms": 1437.803612992866
+      },
+      "check_elapsed_ms": 1437.8815289819613
+    },
+    {
+      "name": "models",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "elapsed_ms": 9.861903003184125,
+        "model_count": 2
+      },
+      "check_elapsed_ms": 9.907216997817159
+    },
+    {
+      "name": "auth-required",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "status_code": 401
+      },
+      "check_elapsed_ms": 22.471116011729464
+    },
+    {
+      "name": "nonstream",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 2,
+          "total_tokens": 20
+        },
+        "elapsed_ms": 1880.1247089868411
+      },
+      "check_elapsed_ms": 1880.1712759886868
+    },
+    {
+      "name": "stream",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "first_data_ms": 2262.883682997199,
+        "elapsed_ms": 2291.264741012128,
+        "json_chunks": 3,
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 2,
+          "total_tokens": 20
+        }
+      },
+      "check_elapsed_ms": 2291.290499008028
+    },
+    {
+      "name": "unknown-model",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "status_code": 404
+      },
+      "check_elapsed_ms": 22.34266698360443
+    },
+    {
+      "name": "invalid-request",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "status_code": 400
+      },
+      "check_elapsed_ms": 102.85761201521382
+    },
+    {
+      "name": "tools",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "tool_calls",
+        "usage": {
+          "prompt_tokens": 279,
+          "completion_tokens": 27,
+          "total_tokens": 306
+        },
+        "elapsed_ms": 3588.0168699950445
+      },
+      "check_elapsed_ms": 3588.0990629957523
+    },
+    {
+      "name": "structured-output",
+      "repetition": 3,
+      "passed": true,
+      "evidence": {
+        "returned_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 17,
+          "completion_tokens": 8,
+          "total_tokens": 25
+        },
+        "elapsed_ms": 1060.8318310114555
+      },
+      "check_elapsed_ms": 1060.9073520172387
+    }
+  ],
+  "finished_at_utc": "2026-10-23T20:29:42.522601+00:00",
+  "passed": true,
+  "failure_count": 0
+}

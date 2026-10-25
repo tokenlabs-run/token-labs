@@ -1,0 +1,473 @@
+{
+    "apiVersion": "nvidia.com/v1beta1",
+    "kind": "DynamoGraphDeployment",
+    "metadata": {
+        "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"nvidia.com/v1beta1\",\"kind\":\"DynamoGraphDeployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/name\":\"qwen38-nvfp4-dynamo-agg\",\"app.kubernetes.io/part-of\":\"dynamo\"},\"name\":\"qwen38-nvfp4-dynamo-agg\",\"namespace\":\"token-labs\"},\"spec\":{\"backendFramework\":\"vllm\",\"components\":[{\"name\":\"Frontend\",\"podTemplate\":{\"spec\":{\"containers\":[{\"args\":[\"-m\",\"dynamo.frontend\"],\"command\":[\"python3\"],\"env\":[{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"HOME\",\"value\":\"/tmp\"},{\"name\":\"DYN_HTTP_PORT\",\"value\":\"8000\"}],\"image\":\"docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":5,\"httpGet\":{\"path\":\"/live\",\"port\":\"http\"},\"periodSeconds\":30,\"timeoutSeconds\":5},\"name\":\"main\",\"ports\":[{\"containerPort\":8000,\"name\":\"http\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/health\",\"port\":\"http\"},\"periodSeconds\":10,\"timeoutSeconds\":5},\"resources\":{\"limits\":{\"cpu\":\"2\",\"memory\":\"4Gi\"},\"requests\":{\"cpu\":\"1\",\"memory\":\"1Gi\"}},\"startupProbe\":{\"failureThreshold\":360,\"httpGet\":{\"path\":\"/health\",\"port\":\"http\"},\"periodSeconds\":10,\"timeoutSeconds\":5},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"securityContext\":{\"fsGroup\":1003,\"runAsGroup\":1003,\"runAsUser\":1002},\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"nvidia.com/gpu\",\"operator\":\"Exists\"}],\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"model-cache\"}]}},\"replicas\":1,\"runtimeVersionOverride\":\"1.6.0\",\"type\":\"frontend\"},{\"name\":\"VllmWorker\",\"podTemplate\":{\"spec\":{\"containers\":[{\"args\":[\"--model\",\"nvidia/Qwen3.8-27B-NVFP4\",\"--revision\",\"482ca0f3832238542f8f5295dde86b5f22711d80\",\"--served-model-name\",\"nvidia/Qwen3.8-27B-NVFP4\",\"--tensor-parallel-size\",\"1\",\"--max-model-len\",\"131072\",\"--max-num-seqs\",\"8\",\"--max-num-batched-tokens\",\"2048\",\"--gpu-memory-utilization\",\"0.75\",\"--language-model-only\",\"--dtype\",\"bfloat16\",\"--kv-cache-dtype\",\"fp8\",\"--attention-backend\",\"flashinfer\",\"--mamba-cache-mode\",\"align\",\"--enable-prefix-caching\",\"--dyn-tool-call-parser\",\"qwen3_coder\",\"--dyn-reasoning-parser\",\"qwen3\",\"--dyn-default-thinking-mode\",\"disabled\",\"--speculative-config\",\"{\\\"method\\\": \\\"mtp\\\", \\\"num_speculative_tokens\\\": 3}\"],\"command\":[\"python3\",\"-m\",\"dynamo.vllm\"],\"env\":[{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"HOME\",\"value\":\"/tmp\"},{\"name\":\"DYN_SYSTEM_ENABLED\",\"value\":\"true\"},{\"name\":\"DYN_SYSTEM_PORT\",\"value\":\"9090\"},{\"name\":\"VLLM_WORKER_MULTIPROC_METHOD\",\"value\":\"spawn\"},{\"name\":\"TRITON_CACHE_DIR\",\"value\":\"/compile-cache/triton\"},{\"name\":\"VLLM_CACHE_ROOT\",\"value\":\"/compile-cache/vllm\"},{\"name\":\"TORCHINDUCTOR_CACHE_DIR\",\"value\":\"/compile-cache/torchinductor\"}],\"image\":\"docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"failureThreshold\":5,\"httpGet\":{\"path\":\"/live\",\"port\":\"system\"},\"periodSeconds\":30,\"timeoutSeconds\":5},\"name\":\"main\",\"ports\":[{\"containerPort\":9090,\"name\":\"system\"}],\"readinessProbe\":{\"failureThreshold\":3,\"httpGet\":{\"path\":\"/health\",\"port\":\"system\"},\"periodSeconds\":10,\"timeoutSeconds\":5},\"resources\":{\"limits\":{\"cpu\":\"12\",\"memory\":\"112Gi\",\"nvidia.com/gpu\":\"1\"},\"requests\":{\"cpu\":\"4\",\"memory\":\"64Gi\",\"nvidia.com/gpu\":\"1\"}},\"startupProbe\":{\"failureThreshold\":360,\"httpGet\":{\"path\":\"/live\",\"port\":\"system\"},\"periodSeconds\":10,\"timeoutSeconds\":5},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"},{\"mountPath\":\"/dev/shm\",\"name\":\"shm\"},{\"mountPath\":\"/compile-cache\",\"name\":\"compile-cache\"}]}],\"initContainers\":[{\"args\":[\"from huggingface_hub import snapshot_download; snapshot_download('nvidia/Qwen3.8-27B-NVFP4',revision='482ca0f3832238542f8f5295dde86b5f22711d80',cache_dir=\\\"/model-cache/hub\\\",max_workers=4)\"],\"command\":[\"python3\",\"-c\"],\"env\":[{\"name\":\"HF_HOME\",\"value\":\"/model-cache\"},{\"name\":\"DYN_FILE_KV\",\"value\":\"/dynamo-discovery\"},{\"name\":\"PYTHONUNBUFFERED\",\"value\":\"1\"},{\"name\":\"HOME\",\"value\":\"/tmp\"},{\"name\":\"HF_TOKEN\",\"valueFrom\":{\"secretKeyRef\":{\"key\":\"HF_TOKEN\",\"name\":\"hf-token\",\"optional\":true}}}],\"image\":\"docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4\",\"name\":\"download-model\",\"resources\":{\"limits\":{\"cpu\":\"4\",\"memory\":\"8Gi\"},\"requests\":{\"cpu\":\"1\",\"memory\":\"2Gi\"}},\"securityContext\":{\"runAsGroup\":0,\"runAsUser\":0},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"}]},{\"args\":[\"mkdir -p /compile-cache /model-cache/hub/.locks/models--nvidia--Qwen3.8-27B-NVFP4; chown -R 1002:1003 /compile-cache /model-cache/hub/models--nvidia--Qwen3.8-27B-NVFP4 /model-cache/hub/.locks/models--nvidia--Qwen3.8-27B-NVFP4\"],\"command\":[\"sh\",\"-ec\"],\"image\":\"docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4\",\"name\":\"prepare-cache-permissions\",\"securityContext\":{\"runAsGroup\":0,\"runAsUser\":0},\"volumeMounts\":[{\"mountPath\":\"/model-cache\",\"name\":\"model-cache\"},{\"mountPath\":\"/compile-cache\",\"name\":\"compile-cache\"}]}],\"nodeSelector\":{\"kubernetes.io/hostname\":\"spark-01\"},\"runtimeClassName\":\"nvidia\",\"securityContext\":{\"fsGroup\":1003,\"runAsGroup\":1003,\"runAsUser\":1002},\"terminationGracePeriodSeconds\":120,\"tolerations\":[{\"effect\":\"NoSchedule\",\"key\":\"nvidia.com/gpu\",\"operator\":\"Exists\"}],\"volumes\":[{\"hostPath\":{\"path\":\"/home/nvidia/.cache/huggingface\",\"type\":\"Directory\"},\"name\":\"model-cache\"},{\"hostPath\":{\"path\":\"/home/nvidia/.cache/tokenlabs/qwen38\",\"type\":\"DirectoryOrCreate\"},\"name\":\"compile-cache\"},{\"emptyDir\":{\"medium\":\"Memory\",\"sizeLimit\":\"16Gi\"},\"name\":\"shm\"}]}},\"replicas\":1,\"runtimeVersionOverride\":\"1.6.0\",\"sharedMemorySize\":\"16Gi\",\"type\":\"worker\"}]}}\n",
+            "nvidia.com/current-worker-hash-v2": "18e61795",
+            "nvidia.com/dynamo-operator-origin-version": "1.5.1",
+            "nvidia.com/workload-provider": "grove"
+        },
+        "creationTimestamp": "2026-10-25T18:49:07Z",
+        "finalizers": [
+            "nvidia.com/finalizer"
+        ],
+        "generation": 3,
+        "labels": {
+            "app.kubernetes.io/name": "qwen38-nvfp4-dynamo-agg",
+            "app.kubernetes.io/part-of": "dynamo"
+        },
+        "name": "qwen38-nvfp4-dynamo-agg",
+        "namespace": "token-labs",
+        "resourceVersion": "131858136",
+        "uid": "3d530a30-f0c7-48c4-bf8a-ab7e7326160c"
+    },
+    "spec": {
+        "backendFramework": "vllm",
+        "components": [
+            {
+                "minAvailable": 1,
+                "name": "Frontend",
+                "podTemplate": {
+                    "spec": {
+                        "containers": [
+                            {
+                                "args": [
+                                    "-m",
+                                    "dynamo.frontend"
+                                ],
+                                "command": [
+                                    "python3"
+                                ],
+                                "env": [
+                                    {
+                                        "name": "HF_HOME",
+                                        "value": "/model-cache"
+                                    },
+                                    {
+                                        "name": "PYTHONUNBUFFERED",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "name": "HOME",
+                                        "value": "/tmp"
+                                    },
+                                    {
+                                        "name": "DYN_HTTP_PORT",
+                                        "value": "8000"
+                                    }
+                                ],
+                                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                                "imagePullPolicy": "IfNotPresent",
+                                "livenessProbe": {
+                                    "failureThreshold": 5,
+                                    "httpGet": {
+                                        "path": "/live",
+                                        "port": "http"
+                                    },
+                                    "periodSeconds": 30,
+                                    "timeoutSeconds": 5
+                                },
+                                "name": "main",
+                                "ports": [
+                                    {
+                                        "containerPort": 8000,
+                                        "name": "http",
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "readinessProbe": {
+                                    "failureThreshold": 3,
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": "http"
+                                    },
+                                    "periodSeconds": 10,
+                                    "timeoutSeconds": 5
+                                },
+                                "resources": {
+                                    "limits": {
+                                        "cpu": "2",
+                                        "memory": "4Gi"
+                                    },
+                                    "requests": {
+                                        "cpu": "1",
+                                        "memory": "1Gi"
+                                    }
+                                },
+                                "startupProbe": {
+                                    "failureThreshold": 360,
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": "http"
+                                    },
+                                    "periodSeconds": 10,
+                                    "timeoutSeconds": 5
+                                },
+                                "volumeMounts": [
+                                    {
+                                        "mountPath": "/model-cache",
+                                        "name": "model-cache"
+                                    }
+                                ]
+                            }
+                        ],
+                        "nodeSelector": {
+                            "kubernetes.io/hostname": "spark-01"
+                        },
+                        "securityContext": {
+                            "fsGroup": 1003,
+                            "runAsGroup": 1003,
+                            "runAsUser": 1002
+                        },
+                        "tolerations": [
+                            {
+                                "effect": "NoSchedule",
+                                "key": "nvidia.com/gpu",
+                                "operator": "Exists"
+                            }
+                        ],
+                        "volumes": [
+                            {
+                                "hostPath": {
+                                    "path": "/home/nvidia/.cache/huggingface",
+                                    "type": "Directory"
+                                },
+                                "name": "model-cache"
+                            }
+                        ]
+                    }
+                },
+                "replicas": 1,
+                "runtimeVersionOverride": "1.6.0",
+                "type": "frontend"
+            },
+            {
+                "minAvailable": 1,
+                "name": "VllmWorker",
+                "podTemplate": {
+                    "spec": {
+                        "containers": [
+                            {
+                                "args": [
+                                    "--model",
+                                    "nvidia/Qwen3.8-27B-NVFP4",
+                                    "--revision",
+                                    "482ca0f3832238542f8f5295dde86b5f22711d80",
+                                    "--served-model-name",
+                                    "nvidia/Qwen3.8-27B-NVFP4",
+                                    "--tensor-parallel-size",
+                                    "1",
+                                    "--max-model-len",
+                                    "131072",
+                                    "--max-num-seqs",
+                                    "8",
+                                    "--max-num-batched-tokens",
+                                    "2048",
+                                    "--gpu-memory-utilization",
+                                    "0.75",
+                                    "--language-model-only",
+                                    "--dtype",
+                                    "bfloat16",
+                                    "--kv-cache-dtype",
+                                    "fp8",
+                                    "--attention-backend",
+                                    "flashinfer",
+                                    "--mamba-cache-mode",
+                                    "align",
+                                    "--enable-prefix-caching",
+                                    "--dyn-tool-call-parser",
+                                    "qwen3_coder",
+                                    "--dyn-reasoning-parser",
+                                    "qwen3",
+                                    "--dyn-default-thinking-mode",
+                                    "disabled",
+                                    "--speculative-config",
+                                    "{\"method\": \"mtp\", \"num_speculative_tokens\": 3}"
+                                ],
+                                "command": [
+                                    "python3",
+                                    "-m",
+                                    "dynamo.vllm"
+                                ],
+                                "env": [
+                                    {
+                                        "name": "HF_HOME",
+                                        "value": "/model-cache"
+                                    },
+                                    {
+                                        "name": "PYTHONUNBUFFERED",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "name": "HOME",
+                                        "value": "/tmp"
+                                    },
+                                    {
+                                        "name": "DYN_SYSTEM_ENABLED",
+                                        "value": "true"
+                                    },
+                                    {
+                                        "name": "DYN_SYSTEM_PORT",
+                                        "value": "9090"
+                                    },
+                                    {
+                                        "name": "VLLM_WORKER_MULTIPROC_METHOD",
+                                        "value": "spawn"
+                                    },
+                                    {
+                                        "name": "TRITON_CACHE_DIR",
+                                        "value": "/compile-cache/triton"
+                                    },
+                                    {
+                                        "name": "VLLM_CACHE_ROOT",
+                                        "value": "/compile-cache/vllm"
+                                    },
+                                    {
+                                        "name": "TORCHINDUCTOR_CACHE_DIR",
+                                        "value": "/compile-cache/torchinductor"
+                                    }
+                                ],
+                                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                                "imagePullPolicy": "IfNotPresent",
+                                "livenessProbe": {
+                                    "failureThreshold": 5,
+                                    "httpGet": {
+                                        "path": "/live",
+                                        "port": "system"
+                                    },
+                                    "periodSeconds": 30,
+                                    "timeoutSeconds": 5
+                                },
+                                "name": "main",
+                                "ports": [
+                                    {
+                                        "containerPort": 9090,
+                                        "name": "system",
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "readinessProbe": {
+                                    "failureThreshold": 3,
+                                    "httpGet": {
+                                        "path": "/health",
+                                        "port": "system"
+                                    },
+                                    "periodSeconds": 10,
+                                    "timeoutSeconds": 5
+                                },
+                                "resources": {
+                                    "limits": {
+                                        "cpu": "12",
+                                        "memory": "112Gi",
+                                        "nvidia.com/gpu": "1"
+                                    },
+                                    "requests": {
+                                        "cpu": "4",
+                                        "memory": "64Gi",
+                                        "nvidia.com/gpu": "1"
+                                    }
+                                },
+                                "startupProbe": {
+                                    "failureThreshold": 360,
+                                    "httpGet": {
+                                        "path": "/live",
+                                        "port": "system"
+                                    },
+                                    "periodSeconds": 10,
+                                    "timeoutSeconds": 5
+                                },
+                                "volumeMounts": [
+                                    {
+                                        "mountPath": "/model-cache",
+                                        "name": "model-cache"
+                                    },
+                                    {
+                                        "mountPath": "/dev/shm",
+                                        "name": "shm"
+                                    },
+                                    {
+                                        "mountPath": "/compile-cache",
+                                        "name": "compile-cache"
+                                    }
+                                ]
+                            }
+                        ],
+                        "initContainers": [
+                            {
+                                "args": [
+                                    "from huggingface_hub import snapshot_download; snapshot_download('nvidia/Qwen3.8-27B-NVFP4',revision='482ca0f3832238542f8f5295dde86b5f22711d80',cache_dir=\"/model-cache/hub\",max_workers=4)"
+                                ],
+                                "command": [
+                                    "python3",
+                                    "-c"
+                                ],
+                                "env": [
+                                    {
+                                        "name": "HF_HOME",
+                                        "value": "/model-cache"
+                                    },
+                                    {
+                                        "name": "DYN_FILE_KV",
+                                        "value": "/dynamo-discovery"
+                                    },
+                                    {
+                                        "name": "PYTHONUNBUFFERED",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "name": "HOME",
+                                        "value": "/tmp"
+                                    },
+                                    {
+                                        "name": "HF_TOKEN",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "key": "HF_TOKEN",
+                                                "name": "hf-token",
+                                                "optional": true
+                                            }
+                                        }
+                                    }
+                                ],
+                                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                                "name": "download-model",
+                                "resources": {
+                                    "limits": {
+                                        "cpu": "4",
+                                        "memory": "8Gi"
+                                    },
+                                    "requests": {
+                                        "cpu": "1",
+                                        "memory": "2Gi"
+                                    }
+                                },
+                                "securityContext": {
+                                    "runAsGroup": 0,
+                                    "runAsUser": 0
+                                },
+                                "volumeMounts": [
+                                    {
+                                        "mountPath": "/model-cache",
+                                        "name": "model-cache"
+                                    }
+                                ]
+                            },
+                            {
+                                "args": [
+                                    "mkdir -p /compile-cache /model-cache/hub/.locks/models--nvidia--Qwen3.8-27B-NVFP4; chown -R 1002:1003 /compile-cache /model-cache/hub/models--nvidia--Qwen3.8-27B-NVFP4 /model-cache/hub/.locks/models--nvidia--Qwen3.8-27B-NVFP4"
+                                ],
+                                "command": [
+                                    "sh",
+                                    "-ec"
+                                ],
+                                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                                "name": "prepare-cache-permissions",
+                                "securityContext": {
+                                    "runAsGroup": 0,
+                                    "runAsUser": 0
+                                },
+                                "volumeMounts": [
+                                    {
+                                        "mountPath": "/model-cache",
+                                        "name": "model-cache"
+                                    },
+                                    {
+                                        "mountPath": "/compile-cache",
+                                        "name": "compile-cache"
+                                    }
+                                ]
+                            }
+                        ],
+                        "nodeSelector": {
+                            "kubernetes.io/hostname": "spark-01"
+                        },
+                        "runtimeClassName": "nvidia",
+                        "securityContext": {
+                            "fsGroup": 1003,
+                            "runAsGroup": 1003,
+                            "runAsUser": 1002
+                        },
+                        "terminationGracePeriodSeconds": 120,
+                        "tolerations": [
+                            {
+                                "effect": "NoSchedule",
+                                "key": "nvidia.com/gpu",
+                                "operator": "Exists"
+                            }
+                        ],
+                        "volumes": [
+                            {
+                                "hostPath": {
+                                    "path": "/home/nvidia/.cache/huggingface",
+                                    "type": "Directory"
+                                },
+                                "name": "model-cache"
+                            },
+                            {
+                                "hostPath": {
+                                    "path": "/home/nvidia/.cache/tokenlabs/qwen38",
+                                    "type": "DirectoryOrCreate"
+                                },
+                                "name": "compile-cache"
+                            },
+                            {
+                                "emptyDir": {
+                                    "medium": "Memory",
+                                    "sizeLimit": "16Gi"
+                                },
+                                "name": "shm"
+                            }
+                        ]
+                    }
+                },
+                "replicas": 1,
+                "runtimeVersionOverride": "1.6.0",
+                "sharedMemorySize": "16Gi",
+                "type": "worker"
+            }
+        ]
+    },
+    "status": {
+        "components": {
+            "Frontend": {
+                "componentKind": "PodClique",
+                "componentNames": [
+                    "qwen38-nvfp4-dynamo-agg-0-frontend"
+                ],
+                "gpusPerEngine": 0,
+                "gpusPerReplica": 0,
+                "readyReplicas": 1,
+                "replicas": 1,
+                "runtimeNamespace": "token-labs-qwen38-nvfp4-dynamo-agg",
+                "scheduledReplicas": 1,
+                "updatedReplicas": 1
+            },
+            "VllmWorker": {
+                "componentKind": "PodClique",
+                "componentNames": [
+                    "qwen38-nvfp4-dynamo-agg-0-vllmworker"
+                ],
+                "gpusPerEngine": 1,
+                "gpusPerReplica": 1,
+                "readyReplicas": 1,
+                "replicas": 1,
+                "runtimeNamespace": "token-labs-qwen38-nvfp4-dynamo-agg-18e61795",
+                "scheduledReplicas": 1,
+                "updatedReplicas": 1
+            }
+        },
+        "conditions": [
+            {
+                "lastTransitionTime": "2026-10-25T18:54:43Z",
+                "message": "All resources are ready",
+                "observedGeneration": 3,
+                "reason": "all_resources_are_ready",
+                "status": "True",
+                "type": "Ready"
+            }
+        ],
+        "observedGeneration": 3,
+        "state": "successful"
+    }
+}

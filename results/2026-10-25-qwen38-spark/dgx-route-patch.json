@@ -1,0 +1,33 @@
+[
+  {
+    "op": "test",
+    "path": "/metadata/resourceVersion",
+    "value": "131249034"
+  },
+  {
+    "op": "add",
+    "path": "/spec/rules/-",
+    "value": {
+      "matches": [
+        {
+          "headers": [
+            {
+              "type": "Exact",
+              "name": "x-ai-eg-model",
+              "value": "nvidia/Qwen3.8-27B-NVFP4"
+            }
+          ]
+        }
+      ],
+      "backendRefs": [
+        {
+          "name": "qwen38-admission-gateway"
+        }
+      ],
+      "timeouts": {
+        "request": "600s",
+        "backendRequest": "600s"
+      }
+    }
+  }
+]

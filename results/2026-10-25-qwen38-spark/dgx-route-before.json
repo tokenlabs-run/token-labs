@@ -1,0 +1,150 @@
+{
+  "apiVersion": "aigateway.envoyproxy.io/v1beta1",
+  "kind": "AIGatewayRoute",
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"aigateway.envoyproxy.io/v1beta1\",\"kind\":\"AIGatewayRoute\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/managed-by\":\"gen-aigwroute\"},\"name\":\"token-labs-models\",\"namespace\":\"token-labs\"},\"spec\":{\"llmRequestCosts\":[{\"metadataKey\":\"llm_input_token\",\"type\":\"InputToken\"},{\"metadataKey\":\"llm_output_token\",\"type\":\"OutputToken\"},{\"metadataKey\":\"llm_total_token\",\"type\":\"TotalToken\"}],\"parentRefs\":[{\"group\":\"gateway.networking.k8s.io\",\"kind\":\"Gateway\",\"name\":\"token-labs-gateway\"}],\"rules\":[{\"backendRefs\":[{\"name\":\"muse-glimmer-30b\"}],\"matches\":[{\"headers\":[{\"name\":\"x-ai-eg-model\",\"type\":\"Exact\",\"value\":\"meta-models/Muse-Glimmer-30B\"}]}],\"timeouts\":{\"request\":\"3600s\"}},{\"backendRefs\":[{\"name\":\"qwen3-6-35b-a3b-nvfp4\"}],\"matches\":[{\"headers\":[{\"name\":\"x-ai-eg-model\",\"type\":\"Exact\",\"value\":\"nvidia/Qwen3.6-35B-A3B-NVFP4\"}]}],\"timeouts\":{\"request\":\"3600s\"}}]}}\n"
+    },
+    "creationTimestamp": "2026-08-30T20:43:06Z",
+    "finalizers": [
+      "aigateway.envoyproxy.io/finalizer"
+    ],
+    "generation": 26,
+    "labels": {
+      "app.kubernetes.io/managed-by": "gen-aigwroute"
+    },
+    "name": "token-labs-models",
+    "namespace": "token-labs",
+    "resourceVersion": "131249034",
+    "uid": "8d5a56f8-2fd8-4dec-be38-8da7cbc7436a"
+  },
+  "spec": {
+    "llmRequestCosts": [
+      {
+        "metadataKey": "llm_input_token",
+        "type": "InputToken"
+      },
+      {
+        "metadataKey": "llm_output_token",
+        "type": "OutputToken"
+      },
+      {
+        "metadataKey": "llm_total_token",
+        "type": "TotalToken"
+      }
+    ],
+    "parentRefs": [
+      {
+        "group": "gateway.networking.k8s.io",
+        "kind": "Gateway",
+        "name": "token-labs-gateway"
+      }
+    ],
+    "rules": [
+      {
+        "backendRefs": [
+          {
+            "name": "muse-glimmer-30b",
+            "priority": 0,
+            "weight": 1
+          }
+        ],
+        "matches": [
+          {
+            "headers": [
+              {
+                "name": "x-ai-eg-model",
+                "type": "Exact",
+                "value": "meta-models/Muse-Glimmer-30B"
+              }
+            ]
+          }
+        ],
+        "modelsOwnedBy": "Envoy AI Gateway",
+        "timeouts": {
+          "request": "3600s"
+        }
+      },
+      {
+        "backendRefs": [
+          {
+            "name": "qwen3-6-35b-a3b-nvfp4",
+            "priority": 0,
+            "weight": 1
+          }
+        ],
+        "matches": [
+          {
+            "headers": [
+              {
+                "name": "x-ai-eg-model",
+                "type": "Exact",
+                "value": "nvidia/Qwen3.6-35B-A3B-NVFP4"
+              }
+            ]
+          }
+        ],
+        "modelsOwnedBy": "Envoy AI Gateway",
+        "timeouts": {
+          "request": "3600s"
+        }
+      },
+      {
+        "backendRefs": [
+          {
+            "group": "inference.networking.k8s.io",
+            "kind": "InferencePool",
+            "name": "muse-glimmer-30b-dynamo-agg-151-epp-pool",
+            "priority": 0,
+            "weight": 1
+          }
+        ],
+        "matches": [
+          {
+            "headers": [
+              {
+                "name": "x-ai-eg-model",
+                "type": "Exact",
+                "value": "meta-models/Muse-Glimmer-30B"
+              },
+              {
+                "name": "x-ai-eg-original-path",
+                "type": "Exact",
+                "value": "/v1/chat/completions"
+              }
+            ]
+          },
+          {
+            "headers": [
+              {
+                "name": "x-ai-eg-model",
+                "type": "Exact",
+                "value": "meta-models/Muse-Glimmer-30B"
+              },
+              {
+                "name": "x-ai-eg-original-path",
+                "type": "Exact",
+                "value": "/v1/completions"
+              }
+            ]
+          }
+        ],
+        "modelsOwnedBy": "Envoy AI Gateway",
+        "timeouts": {
+          "request": "3600s"
+        }
+      }
+    ]
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-10-25T03:39:33Z",
+        "message": "AI Gateway Route reconciled successfully",
+        "reason": "ReconciliationSucceeded",
+        "status": "True",
+        "type": "Accepted"
+      }
+    ]
+  }
+}

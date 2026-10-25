@@ -1,0 +1,341 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "flint-nvfp4-vllm-green",
+    "namespace": "token-labs"
+  },
+  "spec": {
+    "minReadySeconds": 600,
+    "progressDeadlineSeconds": 7200,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+      "matchLabels": {
+        "app": "flint-nvfp4-vllm-green"
+      }
+    },
+    "strategy": {
+      "rollingUpdate": {
+        "maxSurge": 1,
+        "maxUnavailable": 0
+      },
+      "type": "RollingUpdate"
+    },
+    "template": {
+      "metadata": {
+        "annotations": {
+          "token-labs/vllm-commit": "aed08d76a682f1475957c0730ea1f5ecb150fda0",
+          "token-labs/vllm-source": "https://github.com/vllm-project/vllm/pull/62938"
+        },
+        "labels": {
+          "app": "flint-nvfp4-vllm-green",
+          "token-labs/model-id": "flint-nvfp4",
+          "token-labs/scenario": "isolated-candidate",
+          "token-labs/slot": "green"
+        }
+      },
+      "spec": {
+        "automountServiceAccountToken": false,
+        "containers": [
+          {
+            "args": [
+              "/model-cache/hub/models--RecursiveSI--flint-nvfp4-gguf/snapshots/6ec43e19b565fc8d560e2d04985d7724f20673bf/flint-nvfp4.gguf",
+              "--hf-config-path",
+              "/model-cache/hub/models--RecursiveSI--flint/snapshots/2a247be0c0aec895ccb0ac7ca92229ec6df37288",
+              "--tokenizer",
+              "/model-cache/hub/models--RecursiveSI--flint/snapshots/2a247be0c0aec895ccb0ac7ca92229ec6df37288",
+              "--served-model-name",
+              "RecursiveSI/flint",
+              "--tensor-parallel-size",
+              "1",
+              "--dtype",
+              "bfloat16",
+              "--kv-cache-dtype",
+              "auto",
+              "--max-model-len",
+              "32768",
+              "--max-num-seqs",
+              "4",
+              "--gpu-memory-utilization",
+              "0.70",
+              "--enable-auto-tool-choice",
+              "--tool-call-parser",
+              "glm47",
+              "--reasoning-parser",
+              "glm47",
+              "--exclude-tools-when-tool-choice-none",
+              "--host",
+              "0.0.0.0",
+              "--port",
+              "8000"
+            ],
+            "command": [
+              "python3",
+              "-m",
+              "vllm.entrypoints.cli.main",
+              "serve"
+            ],
+            "env": [
+              {
+                "name": "HF_HOME",
+                "value": "/model-cache"
+              },
+              {
+                "name": "HF_TOKEN",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "HF_TOKEN",
+                    "name": "hf-token",
+                    "optional": true
+                  }
+                }
+              },
+              {
+                "name": "PYTHONPATH",
+                "value": "/runtime/site-packages"
+              },
+              {
+                "name": "VLLM_USE_RUST_FRONTEND",
+                "value": "0"
+              }
+            ],
+            "image": "vllm/vllm-openai:flint@sha256:5641d14b70c991f8b78c3a5baf0281cb73dbd2ea69932dd6a328820f420ec4bc",
+            "imagePullPolicy": "IfNotPresent",
+            "livenessProbe": {
+              "failureThreshold": 5,
+              "httpGet": {
+                "path": "/health",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 30,
+              "successThreshold": 1,
+              "timeoutSeconds": 5
+            },
+            "name": "vllm",
+            "ports": [
+              {
+                "containerPort": 8000,
+                "name": "http",
+                "protocol": "TCP"
+              }
+            ],
+            "readinessProbe": {
+              "failureThreshold": 3,
+              "httpGet": {
+                "path": "/health",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "timeoutSeconds": 5
+            },
+            "resources": {
+              "limits": {
+                "cpu": "12",
+                "memory": "112Gi",
+                "nvidia.com/gpu": "1"
+              },
+              "requests": {
+                "cpu": "4",
+                "memory": "64Gi",
+                "nvidia.com/gpu": "1"
+              }
+            },
+            "startupProbe": {
+              "failureThreshold": 180,
+              "httpGet": {
+                "path": "/health",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 20,
+              "successThreshold": 1,
+              "timeoutSeconds": 10
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/model-cache",
+                "name": "model-cache"
+              },
+              {
+                "mountPath": "/dev/shm",
+                "name": "shm"
+              },
+              {
+                "mountPath": "/runtime",
+                "name": "pr-runtime",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "initContainers": [
+          {
+            "args": [
+              "from huggingface_hub import snapshot_download\nsnapshot_download(\n    \"RecursiveSI/flint\",\n    revision=\"2a247be0c0aec895ccb0ac7ca92229ec6df37288\",\n    cache_dir=\"/model-cache/hub\",\n    allow_patterns=[\"*.json\", \"*.model\", \"*.tiktoken\", \"*.jinja\", \"*.txt\"],\n)\nsnapshot_download(\n    \"RecursiveSI/flint-nvfp4-gguf\",\n    revision=\"6ec43e19b565fc8d560e2d04985d7724f20673bf\",\n    cache_dir=\"/model-cache/hub\",\n    allow_patterns=[\"flint-nvfp4.gguf\"],\n)\n"
+            ],
+            "command": [
+              "python3",
+              "-c"
+            ],
+            "env": [
+              {
+                "name": "HF_HOME",
+                "value": "/model-cache"
+              },
+              {
+                "name": "HF_TOKEN",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "HF_TOKEN",
+                    "name": "hf-token",
+                    "optional": true
+                  }
+                }
+              },
+              {
+                "name": "PYTHONPATH",
+                "value": "/runtime/site-packages"
+              },
+              {
+                "name": "VLLM_USE_RUST_FRONTEND",
+                "value": "0"
+              }
+            ],
+            "image": "vllm/vllm-openai:flint@sha256:5641d14b70c991f8b78c3a5baf0281cb73dbd2ea69932dd6a328820f420ec4bc",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "download-model",
+            "resources": {
+              "limits": {
+                "cpu": "4",
+                "memory": "8Gi"
+              },
+              "requests": {
+                "cpu": "1",
+                "memory": "2Gi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/model-cache",
+                "name": "model-cache"
+              }
+            ]
+          },
+          {
+            "command": [
+              "python3",
+              "/build/build-pr-runtime.py"
+            ],
+            "env": [
+              {
+                "name": "HF_HOME",
+                "value": "/model-cache"
+              },
+              {
+                "name": "HF_TOKEN",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "HF_TOKEN",
+                    "name": "hf-token",
+                    "optional": true
+                  }
+                }
+              },
+              {
+                "name": "PYTHONPATH",
+                "value": "/runtime/site-packages"
+              },
+              {
+                "name": "VLLM_USE_RUST_FRONTEND",
+                "value": "0"
+              }
+            ],
+            "image": "vllm/vllm-openai:flint@sha256:5641d14b70c991f8b78c3a5baf0281cb73dbd2ea69932dd6a328820f420ec4bc",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "build-vllm-pr",
+            "resources": {
+              "limits": {
+                "cpu": "8",
+                "memory": "16Gi"
+              },
+              "requests": {
+                "cpu": "2",
+                "memory": "4Gi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/model-cache",
+                "name": "model-cache"
+              },
+              {
+                "mountPath": "/runtime",
+                "name": "pr-runtime"
+              },
+              {
+                "mountPath": "/build",
+                "name": "pr-build-script",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "nodeSelector": {
+          "kubernetes.io/arch": "arm64",
+          "kubernetes.io/hostname": "spark-01",
+          "nvidia.com/gpu.product": "NVIDIA-GB10"
+        },
+        "restartPolicy": "Always",
+        "runtimeClassName": "nvidia",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "terminationGracePeriodSeconds": 300,
+        "tolerations": [
+          {
+            "effect": "NoSchedule",
+            "key": "nvidia.com/gpu",
+            "operator": "Exists"
+          }
+        ],
+        "volumes": [
+          {
+            "hostPath": {
+              "path": "/home/nvidia/.cache/huggingface",
+              "type": "Directory"
+            },
+            "name": "model-cache"
+          },
+          {
+            "emptyDir": {
+              "medium": "Memory",
+              "sizeLimit": "8Gi"
+            },
+            "name": "shm"
+          },
+          {
+            "emptyDir": {},
+            "name": "pr-runtime"
+          },
+          {
+            "configMap": {
+              "defaultMode": 292,
+              "name": "flint-vllm-pr-aed08d76"
+            },
+            "name": "pr-build-script"
+          }
+        ]
+      }
+    }
+  }
+}

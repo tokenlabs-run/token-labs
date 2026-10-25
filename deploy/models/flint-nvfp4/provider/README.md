@@ -1,5 +1,13 @@
 # Token Labs Flint provider
 
+Flint was retired on October 25, 2026. This directory preserves the prior deployment and provider configuration for reference; it does not describe an active model.
+
+The DGX Dynamo 1.6.0 upgrade is tracked in the
+[upgrade record](../../../upgrades/dynamo-1.6.0/README.md), with
+[image build instructions](../../../upgrades/dynamo-1.6.0/BUILD_IMAGES.md).
+That change has an explicitly approved one-time downtime exception; the normal
+rollout rules below still apply to other changes.
+
 The served model ID is `RecursiveSI/flint`. Its OpenRouter mapping is
 `recursive/flint-v1.0`. The provider API is
 `https://api.tokenlabs.run/openrouter/v1`; its public model document is

@@ -1,0 +1,166 @@
+{
+  "timestamp": "2026-10-25T18:57:54.502899+00:00",
+  "passed": true,
+  "aggregator_service_unchanged": true,
+  "old_deployment_replicas": 0,
+  "pods": [
+    {
+      "name": "qwen38-nvfp4-dynamo-agg-0-frontend-t5hj8",
+      "owners": [
+        {
+          "apiVersion": "grove.io/v1alpha1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "PodClique",
+          "name": "qwen38-nvfp4-dynamo-agg-0-frontend",
+          "uid": "7e9aa835-20c4-499f-92ba-ac13881c90d0"
+        }
+      ],
+      "containers": [
+        {
+          "allocatedResources": {
+            "cpu": "1",
+            "memory": "1Gi"
+          },
+          "containerID": "containerd://f5e2bc76f62f8b7d3e56c2cdb646a36c24702c3f8c8207e7017a2738f42781d9",
+          "image": "sha256:c10cb37e1961a2bf149511b2466d26daebb48c804e80747c37290c1d9ea63b52",
+          "imageID": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+          "lastState": {},
+          "name": "main",
+          "ready": true,
+          "resources": {
+            "limits": {
+              "cpu": "2",
+              "memory": "4Gi"
+            },
+            "requests": {
+              "cpu": "1",
+              "memory": "1Gi"
+            }
+          },
+          "restartCount": 0,
+          "started": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-25T18:50:08Z"
+            }
+          },
+          "user": {
+            "linux": {
+              "gid": 1003,
+              "supplementalGroups": [
+                1003
+              ],
+              "uid": 1002
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/model-cache",
+              "name": "model-cache"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shared-memory"
+            },
+            {
+              "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+              "name": "kube-api-access-9xhj8",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "qwen38-nvfp4-dynamo-agg-0-vllmworker-6hhd6",
+      "owners": [
+        {
+          "apiVersion": "grove.io/v1alpha1",
+          "blockOwnerDeletion": true,
+          "controller": true,
+          "kind": "PodClique",
+          "name": "qwen38-nvfp4-dynamo-agg-0-vllmworker",
+          "uid": "f30b06fb-32a7-4109-ac8d-f1b129aeb921"
+        }
+      ],
+      "containers": [
+        {
+          "allocatedResources": {
+            "cpu": "4",
+            "memory": "64Gi",
+            "nvidia.com/gpu": "1"
+          },
+          "allocatedResourcesStatus": [
+            {
+              "name": "nvidia.com/gpu",
+              "resources": [
+                {
+                  "health": "Healthy",
+                  "resourceID": "GPU-8b7562d8-8ad1-2020-04bf-f2c159509e0d"
+                }
+              ]
+            }
+          ],
+          "containerID": "containerd://7d61b20676b47316a20ffd7e8989d7b6d53a4a056ae38d07bceaced6eae9ec59",
+          "image": "sha256:c10cb37e1961a2bf149511b2466d26daebb48c804e80747c37290c1d9ea63b52",
+          "imageID": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+          "lastState": {},
+          "name": "main",
+          "ready": true,
+          "resources": {
+            "limits": {
+              "cpu": "12",
+              "memory": "112Gi",
+              "nvidia.com/gpu": "1"
+            },
+            "requests": {
+              "cpu": "4",
+              "memory": "64Gi",
+              "nvidia.com/gpu": "1"
+            }
+          },
+          "restartCount": 0,
+          "started": true,
+          "state": {
+            "running": {
+              "startedAt": "2026-10-25T18:49:36Z"
+            }
+          },
+          "user": {
+            "linux": {
+              "gid": 1003,
+              "supplementalGroups": [
+                1003,
+                44,
+                993
+              ],
+              "uid": 1002
+            }
+          },
+          "volumeMounts": [
+            {
+              "mountPath": "/model-cache",
+              "name": "model-cache"
+            },
+            {
+              "mountPath": "/compile-cache",
+              "name": "compile-cache"
+            },
+            {
+              "mountPath": "/dev/shm",
+              "name": "shared-memory"
+            },
+            {
+              "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+              "name": "kube-api-access-dgfjn",
+              "readOnly": true,
+              "recursiveReadOnly": "Disabled"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

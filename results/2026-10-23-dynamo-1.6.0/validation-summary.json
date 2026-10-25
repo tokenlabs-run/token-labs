@@ -1,0 +1,258 @@
+{
+  "utc": "2026-10-23T21:24:32.951711+00:00",
+  "models": {
+    "qwen": {
+      "api_checks": 8,
+      "api_passed": true,
+      "protocol_checks": 15,
+      "protocols_passed": true,
+      "internal_gateway_checks": 24,
+      "internal_gateway_passed": true,
+      "overload_passed": true,
+      "load": {
+        "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_seconds": 1800,
+        "elapsed_s": 1801.391076289001,
+        "concurrency": 4,
+        "requests": 2084,
+        "errors": 0,
+        "p95_ttft_s": 2.9653360520023853,
+        "p95_duration_s": 6.605744750995655,
+        "by_shape": {
+          "32": {
+            "requests": 696,
+            "p95_ttft_s": 0.7559566419804469,
+            "p95_duration_s": 4.224726343003567
+          },
+          "256": {
+            "requests": 695,
+            "p95_ttft_s": 0.8721847329870798,
+            "p95_duration_s": 4.786326882982394
+          },
+          "2048": {
+            "requests": 693,
+            "p95_ttft_s": 3.4332551150000654,
+            "p95_duration_s": 7.091595945006702
+          }
+        },
+        "passed": true
+      },
+      "baseline": {
+        "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "requested_seconds": 120,
+        "elapsed_s": 122.98060720498324,
+        "concurrency": 4,
+        "requests": 132,
+        "errors": 0,
+        "p95_ttft_s": 5.033091853023507,
+        "p95_duration_s": 7.8417708550114185,
+        "by_shape": {
+          "32": {
+            "requests": 44,
+            "p95_ttft_s": 0.3984126900031697,
+            "p95_duration_s": 1.852471402991796
+          },
+          "256": {
+            "requests": 44,
+            "p95_ttft_s": 0.7429415850201622,
+            "p95_duration_s": 5.2468624979956076
+          },
+          "2048": {
+            "requests": 44,
+            "p95_ttft_s": 5.884596051007975,
+            "p95_duration_s": 7.901621691009495
+          }
+        },
+        "passed": true
+      },
+      "public_gateway_passed": true,
+      "p95_ttft_ratio_to_baseline": 0.5891678790286794,
+      "p95_duration_ratio_to_baseline": 0.8423792116769313
+    },
+    "flint": {
+      "api_checks": 8,
+      "api_passed": true,
+      "protocol_checks": 12,
+      "protocols_passed": true,
+      "internal_gateway_checks": 24,
+      "internal_gateway_passed": true,
+      "overload_passed": true,
+      "load": {
+        "model": "RecursiveSI/flint",
+        "requested_seconds": 1800,
+        "max_tokens": 64,
+        "include_reasoning": true,
+        "elapsed_s": 1800.0871455160086,
+        "concurrency": 1,
+        "requests": 1371,
+        "errors": 0,
+        "p95_ttft_s": 1.3025757519935723,
+        "p95_duration_s": 2.1246249380055815,
+        "by_shape": {
+          "32": {
+            "requests": 457,
+            "p95_ttft_s": 0.2025866420008242,
+            "p95_duration_s": 0.9072097129828762
+          },
+          "256": {
+            "requests": 457,
+            "p95_ttft_s": 0.2626302700082306,
+            "p95_duration_s": 1.0024683059891686
+          },
+          "2048": {
+            "requests": 457,
+            "p95_ttft_s": 1.3610637169913389,
+            "p95_duration_s": 2.181407791998936
+          }
+        },
+        "passed": true
+      },
+      "baseline": {
+        "model": "RecursiveSI/flint",
+        "requested_seconds": 120,
+        "elapsed_s": 120.6763188969926,
+        "concurrency": 1,
+        "requests": 89,
+        "errors": 0,
+        "p95_ttft_s": 1.4005542080267332,
+        "p95_duration_s": 2.233463894983288,
+        "by_shape": {
+          "32": {
+            "requests": 30,
+            "p95_ttft_s": 0.23925756101380102,
+            "p95_duration_s": 0.9561187400249764
+          },
+          "256": {
+            "requests": 30,
+            "p95_ttft_s": 0.48805492199608125,
+            "p95_duration_s": 1.2560446549905464
+          },
+          "2048": {
+            "requests": 29,
+            "p95_ttft_s": 1.7501280139840674,
+            "p95_duration_s": 2.5738478359999135
+          }
+        },
+        "passed": true
+      },
+      "public_gateway_passed": true,
+      "p95_ttft_ratio_to_baseline": 0.9300430818945562,
+      "p95_duration_ratio_to_baseline": 0.9512689875031444
+    }
+  },
+  "limitations": [
+    "No separate model-quality benchmark was run.",
+    "Flint capacity TTFT counts reasoning tokens; its old content-only baseline has different channel semantics.",
+    "Baselines ran for two minutes; new runs lasted 30 minutes. Qwen used a direct sidecar baseline and a stable frontend for the new run. These are not controlled runtime benchmarks."
+  ],
+  "observations": {
+    "samples": 50,
+    "errors": [],
+    "first_utc": "2026-10-23T20:23:26.232367+00:00",
+    "last_utc": "2026-10-23T20:59:42.650337+00:00",
+    "max_kv_cache_fraction": {
+      "qwen": 0.010330578512396715,
+      "flint": 0.010590952622387517
+    }
+  },
+  "service_selectors_preserved": true,
+  "running_versions": {
+    "utc": "2026-10-23T20:43:23.930183+00:00",
+    "pods": [
+      {
+        "pod": "qwen36-nvfp4-dynamo-agg-0-vllmworker-9zk8s",
+        "node": "spark-02",
+        "containers": [
+          {
+            "name": "main",
+            "versions": {
+              "ai-dynamo": "1.6.0",
+              "ai-dynamo-runtime": "1.6.0",
+              "vllm": "0.31.0",
+              "torch": "2.13.0+cu130"
+            },
+            "image_id": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+            "ready": true,
+            "restarts": 0
+          },
+          {
+            "name": "sidecar-frontend",
+            "versions": {
+              "ai-dynamo": "1.6.0",
+              "ai-dynamo-runtime": "1.6.0",
+              "vllm": "0.31.0",
+              "torch": "2.13.0+cu130"
+            },
+            "image_id": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+            "ready": true,
+            "restarts": 0
+          }
+        ]
+      },
+      {
+        "pod": "qwen36-nvfp4-frontend-blue-76c579b968-2f969",
+        "node": "spark-02",
+        "containers": [
+          {
+            "name": "main",
+            "versions": {
+              "ai-dynamo": "1.6.0",
+              "ai-dynamo-runtime": "1.6.0",
+              "vllm": "0.31.0",
+              "torch": "2.13.0+cu130"
+            },
+            "image_id": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+            "ready": true,
+            "restarts": 0
+          }
+        ]
+      },
+      {
+        "pod": "flint-nvfp4-vllm-green-5b64f9744b-x8hvl",
+        "node": "spark-01",
+        "containers": [
+          {
+            "name": "vllm",
+            "versions": {
+              "ai-dynamo": "1.6.0",
+              "ai-dynamo-runtime": "1.6.0",
+              "vllm": "0.32.0.dev0+pr62938.aed08d76.precompiled",
+              "torch": "2.14.0+cu130"
+            },
+            "image_id": "docker.io/elizabetht/dynamo@sha256:89a89d1648860f0806d19fbede6f9d7640c6c9b49895b1bf0cd542ce9a224a18",
+            "ready": true,
+            "restarts": 0
+          },
+          {
+            "name": "dynamo-frontend",
+            "versions": {
+              "ai-dynamo": "1.6.0",
+              "ai-dynamo-runtime": "1.6.0",
+              "vllm": "0.32.0.dev0+pr62938.aed08d76.precompiled",
+              "torch": "2.14.0+cu130"
+            },
+            "image_id": "docker.io/elizabetht/dynamo@sha256:89a89d1648860f0806d19fbede6f9d7640c6c9b49895b1bf0cd542ce9a224a18",
+            "ready": true,
+            "restarts": 0
+          }
+        ]
+      }
+    ]
+  },
+  "public_unauthenticated": {
+    "utc": "2026-10-23T20:37:25.245421+00:00",
+    "checks": [
+      {
+        "path": "/openrouter/models",
+        "status": 200,
+        "response": "{\"data\":[{\"schema_version\":\"2.4\",\"id\":\"RecursiveSI/flint\",\"name\":\"Recursive: Flint\",\"hugging_face_id\":\"RecursiveSI/flint\",\"created\":1792622765,\"quantization\":\"nvfp4\",\"description\":\"Token Labs serves Flint NVFP4 on NVIDIA DGX Spark using vLLM built from PR 62938.\",\"input_modalities\":[{\"type\":\"text\",\"supported_inputs\":{\"max_context_length\":{\"value\":32768,\"unit\":\"token\"}}}],\"output_modalities\":[{\"type\":\"text\",\"max_length\":{\"value\":8192,\"unit\":\"token\"},\"streaming\":true,\"supported_parameters\":{\"temperature\":{\"type\":\"range\",\"min\":0,\"max\":2},\"top_p\":{\"type\":\"range\",\"min\":0,\"max\":1},\"max_tokens\":{\"type\":\"integer\",\"min\":1,\"max\":8192,\"unit\":\"token\"},\"stop\":{\"type\":\"array\",\"max_items\":4},\"seed\":{\"type\":\"integer\"},\"tools\":{\"type\":\"boolean\"},\"tool_choice\":{\"type\":\"unknown\"}}}],\"capacity\":[{\"type\":\"concurrency\",\"unit\":\"request\",\"value\":1}],\"is_ready\":true,\"is_free\":true,\"openrouter\":{\"slug\":\"recursive/flint-v1.0\"}}]}"
+      },
+      {
+        "path": "/openrouter/v1/models",
+        "status": 401,
+        "response": "{\"error\":{\"message\":\"Unauthorized\"}}"
+      }
+    ]
+  },
+  "public_authenticated_status": "passed"
+}

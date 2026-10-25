@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: qwen38-nvfp4
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+    - token-labs
+  selector:
+    matchLabels:
+      app: qwen38-nvfp4-blue
+  podMetricsEndpoints:
+  - port: system
+    path: /metrics
+    interval: 15s
+    scrapeTimeout: 10s
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node
+    - replacement: dynamo
+      targetLabel: stack
+    - replacement: worker
+      targetLabel: role
+    - replacement: qwen38-nvfp4
+      targetLabel: workload

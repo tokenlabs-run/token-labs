@@ -1,0 +1,203 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "provider-catalog-without-flint-20261025",
+        "namespace": "token-labs"
+      },
+      "immutable": true,
+      "data": {
+        "models.json": "{\"data\":[]}"
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "model-aggregator-qwen-recovery",
+        "namespace": "token-labs",
+        "labels": {
+          "app": "model-aggregator-qwen-recovery"
+        }
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 3,
+        "selector": {
+          "matchLabels": {
+            "app": "model-aggregator-qwen-recovery"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": 1,
+            "maxUnavailable": 0
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "model-aggregator-qwen-recovery"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "args": [
+                  "pip install fastapi==0.158.1 uvicorn==0.54.0 httpx==0.28.1 --quiet\nexec uvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app\n"
+                ],
+                "command": [
+                  "/bin/sh",
+                  "-c"
+                ],
+                "env": [
+                  {
+                    "name": "MODEL_BACKEND_SERVICES",
+                    "value": "glm47-flash-agg,muse-glimmer-30b-dynamo-agg-frontend,qwen3-30b-openrouter-sglang,qwen3-30b-openrouter-vllm,qwen36-35b-nvfp4,qwen36-nvfp4-agg,qwen36-nvfp4-dynamo-agg-frontend,qwen36-nvfp4-frontend"
+                  },
+                  {
+                    "name": "OPENROUTER_MODEL_DOCUMENT_PATH",
+                    "value": "/etc/openrouter/models.json"
+                  },
+                  {
+                    "name": "OPENROUTER_MAX_CONCURRENCY",
+                    "value": "16"
+                  },
+                  {
+                    "name": "OPENROUTER_API_KEY",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "api-key",
+                        "name": "openrouter-provider-auth",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "name": "MODEL_CONCURRENCY_LIMITS",
+                    "value": "{}"
+                  }
+                ],
+                "image": "docker.io/library/python@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8000,
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 30,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "aggregator",
+                "ports": [
+                  {
+                    "containerPort": 8000,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/health",
+                    "port": 8000,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 30,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "code"
+                  },
+                  {
+                    "mountPath": "/etc/openrouter",
+                    "name": "openrouter-model-document",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "nodeSelector": {
+              "kubernetes.io/hostname": "spark-01"
+            },
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "model-aggregator",
+            "serviceAccountName": "model-aggregator",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoSchedule",
+                "key": "node-role.kubernetes.io/control-plane",
+                "operator": "Exists"
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "flint-provider-code-f8d1f27542"
+                },
+                "name": "code"
+              },
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "provider-catalog-without-flint-20261025"
+                },
+                "name": "openrouter-model-document"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "model-aggregator-qwen-recovery",
+        "namespace": "token-labs"
+      },
+      "spec": {
+        "selector": {
+          "app": "model-aggregator-qwen-recovery"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "targetPort": 8000
+          }
+        ]
+      }
+    }
+  ]
+}

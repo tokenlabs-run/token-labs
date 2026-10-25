@@ -1,0 +1,30 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: qwen38-nvfp4-dynamo-agg
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+    - token-labs
+  selector:
+    matchLabels:
+      nvidia.com/dynamo-graph-deployment-name: qwen38-nvfp4-dynamo-agg
+      nvidia.com/dynamo-component-type: worker
+  podMetricsEndpoints:
+  - port: system
+    path: /metrics
+    interval: 15s
+    scrapeTimeout: 10s
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+    - replacement: dynamo
+      targetLabel: stack
+    - replacement: worker
+      targetLabel: role
+    - replacement: qwen38-nvfp4
+      targetLabel: workload
