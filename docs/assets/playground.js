@@ -13,7 +13,7 @@
   }
   function controls() {
     const busy = Boolean(controller);
-    $('send').disabled = busy || loadingModels || !$('model').value;
+    $('send').disabled = busy || loadingModels || !$('model').value || $('model').selectedOptions[0]?.disabled;
     $('stop').hidden = !busy;
     for (const id of ['model', 'refresh', 'clear', 'api-key', 'system', 'temperature', 'max-tokens']) {
       $(id).disabled = busy || (loadingModels && ['model', 'refresh'].includes(id));
@@ -26,11 +26,12 @@
     $('empty').hidden = false;
     status($('model').value ? 'Ready when you are.' : 'Choose an available model to start.');
   }
-  async function loadModels() {
+  async function loadModels({background = false} = {}) {
+    if (loadingModels || controller) return;
     const previous = $('model').value;
     loadingModels = true;
     controls();
-    status('Checking available models…');
+    if (!background) status('Checking available models…');
     try {
       const response = await fetch(`${API}/v1/models`, {cache: 'no-store', signal: AbortSignal.timeout(15000)});
       if (!response.ok) throw new Error('Model discovery is unavailable. Try refreshing in a moment.');
@@ -40,9 +41,20 @@
       $('model').replaceChildren(...ids.map(id => new Option(modelLabel(id), id)));
       if (!ids.length) $('model').add(new Option('No models available', ''));
       if (ids.includes(previous)) $('model').value = previous;
-      if (previous && previous !== $('model').value) clear();
-      status(ids.length ? 'Ready when you are.' : 'No models are available right now. Try refreshing later.');
+      if (background && previous && !ids.includes(previous)) {
+        const unavailable = new Option(`${modelLabel(previous)} (unavailable)`, previous);
+        unavailable.disabled = true;
+        $('model').add(unavailable);
+        $('model').value = previous;
+        status('The selected model is unavailable. Choose another model or wait for it to return.', true);
+      } else {
+        if (previous && previous !== $('model').value) clear();
+        if (!background || !previous || $('status').classList.contains('error')) {
+          status(ids.length ? 'Ready when you are.' : 'No models are available right now. Retrying automatically…');
+        }
+      }
     } catch (error) {
+      if (background && previous) return;
       $('model').replaceChildren(new Option('Models unavailable', ''));
       status(error.name === 'TimeoutError' ? 'Model discovery timed out. Try refreshing.' : error.message, true);
     } finally {
@@ -62,7 +74,7 @@
     $('messages').append(article);
     return {article, content};
   }
-  $('refresh').addEventListener('click', loadModels);
+  $('refresh').addEventListener('click', () => loadModels());
   $('clear').addEventListener('click', () => {clear(); $('prompt').focus();});
   $('model').addEventListener('change', () => {clear(); controls();});
   $('stop').addEventListener('click', () => controller?.abort());
@@ -77,7 +89,7 @@
   });
   $('chat-form').addEventListener('submit', async event => {
     event.preventDefault();
-    if (controller || loadingModels || !$('model').value) return;
+    if (controller || loadingModels || !$('model').value || $('model').selectedOptions[0]?.disabled) return;
     const prompt = $('prompt').value.trim();
     const key = $('api-key').value.trim();
     if (!prompt || !key) {status('Enter a message and your provider API key.', true); return;}
@@ -166,5 +178,11 @@
       $('prompt').focus();
     }
   });
+  function refreshAvailableModels() {
+    if (!document.hidden) loadModels({background: true});
+  }
+  setInterval(refreshAvailableModels, 30000);
+  document.addEventListener('visibilitychange', refreshAvailableModels);
+  window.addEventListener('online', refreshAvailableModels);
   loadModels();
 })();
