@@ -1,0 +1,66 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "addressType": "IPv4",
+      "apiVersion": "discovery.k8s.io/v1",
+      "endpoints": [
+        {
+          "addresses": [
+            "10.244.2.11"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "spark-01",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "model-aggregator-qwen-recovery-59686cf876-x6hdn",
+            "namespace": "token-labs",
+            "uid": "79f09323-2257-4564-9700-4e7d70e74e3d"
+          }
+        }
+      ],
+      "kind": "EndpointSlice",
+      "metadata": {
+        "annotations": {
+          "endpoints.kubernetes.io/last-change-trigger-time": "2026-10-25T03:35:10Z"
+        },
+        "creationTimestamp": "2026-10-25T03:34:39Z",
+        "generateName": "model-aggregator-qwen-recovery-",
+        "generation": 3,
+        "labels": {
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "model-aggregator-qwen-recovery"
+        },
+        "name": "model-aggregator-qwen-recovery-sc4sl",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "model-aggregator-qwen-recovery",
+            "uid": "a0e2c3be-4daa-482d-9141-66123809186e"
+          }
+        ],
+        "resourceVersion": "131246129",
+        "uid": "8001a25f-dfee-4297-aac7-61b5a23e7fc5"
+      },
+      "ports": [
+        {
+          "name": "http",
+          "port": 8000,
+          "protocol": "TCP"
+        }
+      ]
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

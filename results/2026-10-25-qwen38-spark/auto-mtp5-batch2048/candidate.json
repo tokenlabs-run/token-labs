@@ -1,0 +1,441 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "qwen38-nvfp4-blue",
+        "namespace": "token-labs",
+        "labels": {
+          "app": "qwen38-nvfp4-blue",
+          "token-labs/model-id": "qwen38-nvfp4",
+          "token-labs/slot": "blue"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "strategy": {
+          "type": "Recreate"
+        },
+        "progressDeadlineSeconds": 7200,
+        "selector": {
+          "matchLabels": {
+            "app": "qwen38-nvfp4-blue"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "qwen38-nvfp4-blue",
+              "token-labs/model-id": "qwen38-nvfp4",
+              "token-labs/slot": "blue"
+            }
+          },
+          "spec": {
+            "nodeSelector": {
+              "kubernetes.io/hostname": "spark-01"
+            },
+            "runtimeClassName": "nvidia",
+            "automountServiceAccountToken": false,
+            "terminationGracePeriodSeconds": 120,
+            "tolerations": [
+              {
+                "key": "nvidia.com/gpu",
+                "operator": "Exists",
+                "effect": "NoSchedule"
+              }
+            ],
+            "securityContext": {
+              "runAsUser": 1002,
+              "runAsGroup": 1003,
+              "fsGroup": 1003
+            },
+            "initContainers": [
+              {
+                "name": "download-model",
+                "securityContext": {
+                  "runAsUser": 0,
+                  "runAsGroup": 0
+                },
+                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                "command": [
+                  "python3",
+                  "-c"
+                ],
+                "args": [
+                  "from huggingface_hub import snapshot_download; snapshot_download('nvidia/Qwen3.8-27B-NVFP4',revision='482ca0f3832238542f8f5295dde86b5f22711d80',cache_dir=\"/model-cache/hub\",max_workers=4)"
+                ],
+                "env": [
+                  {
+                    "name": "HF_HOME",
+                    "value": "/model-cache"
+                  },
+                  {
+                    "name": "DYN_FILE_KV",
+                    "value": "/dynamo-discovery"
+                  },
+                  {
+                    "name": "PYTHONUNBUFFERED",
+                    "value": "1"
+                  },
+                  {
+                    "name": "HOME",
+                    "value": "/tmp"
+                  },
+                  {
+                    "name": "HF_TOKEN",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "hf-token",
+                        "key": "HF_TOKEN",
+                        "optional": true
+                      }
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "model-cache",
+                    "mountPath": "/model-cache"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "1",
+                    "memory": "2Gi"
+                  },
+                  "limits": {
+                    "cpu": "4",
+                    "memory": "8Gi"
+                  }
+                }
+              },
+              {
+                "name": "prepare-cache-permissions",
+                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                "securityContext": {
+                  "runAsUser": 0,
+                  "runAsGroup": 0
+                },
+                "command": [
+                  "sh",
+                  "-ec"
+                ],
+                "args": [
+                  "mkdir -p /compile-cache /model-cache/hub/.locks/models--nvidia--Qwen3.8-27B-NVFP4; chown -R 1002:1003 /compile-cache /model-cache/hub/models--nvidia--Qwen3.8-27B-NVFP4 /model-cache/hub/.locks/models--nvidia--Qwen3.8-27B-NVFP4"
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "model-cache",
+                    "mountPath": "/model-cache"
+                  },
+                  {
+                    "name": "compile-cache",
+                    "mountPath": "/compile-cache"
+                  }
+                ]
+              }
+            ],
+            "containers": [
+              {
+                "name": "worker",
+                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                "imagePullPolicy": "IfNotPresent",
+                "command": [
+                  "python3",
+                  "-m",
+                  "dynamo.vllm"
+                ],
+                "args": [
+                  "--model",
+                  "nvidia/Qwen3.8-27B-NVFP4",
+                  "--revision",
+                  "482ca0f3832238542f8f5295dde86b5f22711d80",
+                  "--served-model-name",
+                  "nvidia/Qwen3.8-27B-NVFP4",
+                  "--tensor-parallel-size",
+                  "1",
+                  "--max-model-len",
+                  "131072",
+                  "--max-num-seqs",
+                  "8",
+                  "--max-num-batched-tokens",
+                  "2048",
+                  "--gpu-memory-utilization",
+                  "0.75",
+                  "--language-model-only",
+                  "--dtype",
+                  "bfloat16",
+                  "--kv-cache-dtype",
+                  "fp8",
+                  "--attention-backend",
+                  "flashinfer",
+                  "--mamba-cache-mode",
+                  "align",
+                  "--enable-prefix-caching",
+                  "--dyn-tool-call-parser",
+                  "qwen3_coder",
+                  "--dyn-reasoning-parser",
+                  "qwen3",
+                  "--dyn-default-thinking-mode",
+                  "disabled",
+                  "--namespace",
+                  "token-labs-qwen38-blue",
+                  "--discovery-backend",
+                  "file",
+                  "--speculative-config",
+                  "{\"method\": \"mtp\", \"num_speculative_tokens\": 5}"
+                ],
+                "env": [
+                  {
+                    "name": "HF_HOME",
+                    "value": "/model-cache"
+                  },
+                  {
+                    "name": "DYN_FILE_KV",
+                    "value": "/dynamo-discovery"
+                  },
+                  {
+                    "name": "PYTHONUNBUFFERED",
+                    "value": "1"
+                  },
+                  {
+                    "name": "HOME",
+                    "value": "/tmp"
+                  },
+                  {
+                    "name": "DYN_SYSTEM_ENABLED",
+                    "value": "true"
+                  },
+                  {
+                    "name": "DYN_SYSTEM_PORT",
+                    "value": "9090"
+                  },
+                  {
+                    "name": "VLLM_WORKER_MULTIPROC_METHOD",
+                    "value": "spawn"
+                  },
+                  {
+                    "name": "TRITON_CACHE_DIR",
+                    "value": "/compile-cache/triton"
+                  },
+                  {
+                    "name": "VLLM_CACHE_ROOT",
+                    "value": "/compile-cache/vllm"
+                  },
+                  {
+                    "name": "TORCHINDUCTOR_CACHE_DIR",
+                    "value": "/compile-cache/torchinductor"
+                  }
+                ],
+                "ports": [
+                  {
+                    "name": "system",
+                    "containerPort": 9090
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "4",
+                    "memory": "64Gi",
+                    "nvidia.com/gpu": "1"
+                  },
+                  "limits": {
+                    "cpu": "12",
+                    "memory": "112Gi",
+                    "nvidia.com/gpu": "1"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "model-cache",
+                    "mountPath": "/model-cache"
+                  },
+                  {
+                    "name": "discovery",
+                    "mountPath": "/dynamo-discovery"
+                  },
+                  {
+                    "name": "shm",
+                    "mountPath": "/dev/shm"
+                  },
+                  {
+                    "name": "compile-cache",
+                    "mountPath": "/compile-cache"
+                  }
+                ],
+                "startupProbe": {
+                  "httpGet": {
+                    "path": "/live",
+                    "port": "system"
+                  },
+                  "periodSeconds": 10,
+                  "failureThreshold": 360,
+                  "timeoutSeconds": 5
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": "system"
+                  },
+                  "periodSeconds": 10,
+                  "failureThreshold": 3,
+                  "timeoutSeconds": 5
+                },
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/live",
+                    "port": "system"
+                  },
+                  "periodSeconds": 30,
+                  "failureThreshold": 5,
+                  "timeoutSeconds": 5
+                }
+              },
+              {
+                "name": "frontend",
+                "image": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+                "imagePullPolicy": "IfNotPresent",
+                "command": [
+                  "python3",
+                  "-m",
+                  "dynamo.frontend"
+                ],
+                "args": [
+                  "--namespace",
+                  "token-labs-qwen38-blue",
+                  "--discovery-backend",
+                  "file"
+                ],
+                "env": [
+                  {
+                    "name": "HF_HOME",
+                    "value": "/model-cache"
+                  },
+                  {
+                    "name": "DYN_FILE_KV",
+                    "value": "/dynamo-discovery"
+                  },
+                  {
+                    "name": "PYTHONUNBUFFERED",
+                    "value": "1"
+                  },
+                  {
+                    "name": "HOME",
+                    "value": "/tmp"
+                  },
+                  {
+                    "name": "DYN_HTTP_PORT",
+                    "value": "8000"
+                  }
+                ],
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8000
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "4Gi"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "model-cache",
+                    "mountPath": "/model-cache"
+                  },
+                  {
+                    "name": "discovery",
+                    "mountPath": "/dynamo-discovery"
+                  }
+                ],
+                "startupProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10,
+                  "failureThreshold": 360,
+                  "timeoutSeconds": 5
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/health",
+                    "port": "http"
+                  },
+                  "periodSeconds": 10,
+                  "failureThreshold": 3,
+                  "timeoutSeconds": 5
+                },
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/live",
+                    "port": "http"
+                  },
+                  "periodSeconds": 30,
+                  "failureThreshold": 5,
+                  "timeoutSeconds": 5
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "model-cache",
+                "hostPath": {
+                  "path": "/home/nvidia/.cache/huggingface",
+                  "type": "Directory"
+                }
+              },
+              {
+                "name": "compile-cache",
+                "hostPath": {
+                  "path": "/home/nvidia/.cache/tokenlabs/qwen38",
+                  "type": "DirectoryOrCreate"
+                }
+              },
+              {
+                "name": "shm",
+                "emptyDir": {
+                  "medium": "Memory",
+                  "sizeLimit": "16Gi"
+                }
+              },
+              {
+                "name": "discovery",
+                "emptyDir": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "qwen38-nvfp4-blue",
+        "namespace": "token-labs"
+      },
+      "spec": {
+        "selector": {
+          "app": "qwen38-nvfp4-blue"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8000,
+            "targetPort": "http"
+          }
+        ]
+      }
+    }
+  ]
+}

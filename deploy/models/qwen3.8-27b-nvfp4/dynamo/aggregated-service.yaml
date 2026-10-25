@@ -1,0 +1,14 @@
+# Diagnostic endpoint for the operator-managed graph, separate from the public Service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen38-nvfp4-dynamo-agg
+  namespace: token-labs
+spec:
+  selector:
+    nvidia.com/dynamo-graph-deployment-name: qwen38-nvfp4-dynamo-agg
+    nvidia.com/dynamo-component-type: frontend
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000

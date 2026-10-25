@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1.7
+ARG DYNAMO_IMAGE
+FROM ${DYNAMO_IMAGE} AS dynamo
+FROM vllm/vllm-openai:flint@sha256:5641d14b70c991f8b78c3a5baf0281cb73dbd2ea69932dd6a328820f420ec4bc
+USER root
+ENV VLLM_USE_RUST_FRONTEND=0
+COPY --from=dynamo /opt/dynamo/wheelhouse/ai_dynamo*.whl /opt/tokenlabs/wheels/
+COPY --from=dynamo /opt/dynamo/wheelhouse/aisimulate*.whl /opt/tokenlabs/wheels/
+COPY --from=dynamo /usr/local/lib/*_dynamo.so* /opt/tokenlabs/dynamo-libs/
+COPY --from=dynamo /usr/local/lib/libvpx.so* /opt/tokenlabs/dynamo-libs/
+ENV LD_LIBRARY_PATH=/opt/tokenlabs/dynamo-libs:${LD_LIBRARY_PATH}
+COPY flint_text_compat.py /opt/tokenlabs/flint_text_compat.py
+COPY flint-wheels/ /opt/tokenlabs/flint-wheels/
+COPY flint-constraints.txt check_dependency_delta.py /opt/tokenlabs/
+RUN python3 -m pip install --no-deps /opt/tokenlabs/flint-wheels/*.whl gguf==0.19.0 \
+    && (python3 -m pip check > /opt/tokenlabs/base-pip-check.txt || true)
+RUN python3 -m pip install -c /opt/tokenlabs/flint-constraints.txt /opt/tokenlabs/wheels/*.whl \
+    && python3 /opt/tokenlabs/check_dependency_delta.py \
+    && python3 /opt/tokenlabs/flint_text_compat.py /usr/local/lib/python3.12/dist-packages \
+    && python3 -m dynamo.frontend --help >/dev/null \
+    && python3 -c "from dynamo.vllm.main import main"

@@ -1,0 +1,91 @@
+{
+  "status": "complete",
+  "model": "nvidia/Qwen3.8-27B-NVFP4",
+  "node": "spark-01",
+  "portal": "https://www.tokenlabs.run/playground.html",
+  "api": "https://api.tokenlabs.run",
+  "configuration": "FlashInfer, MTP 3, FP8 KV cache, 2048-token prefill chunks, text only, 131072-token context, admission concurrency 4",
+  "single_user": {
+    "passed": true,
+    "requests": 9,
+    "errors": 0,
+    "median_decode_tok_s": 27.550768854048425,
+    "p95_ttft_s": 0.22550426702946424,
+    "p95_e2e_s": 10.558473690995015,
+    "aggregate_output_tok_s": 27.23995975152064
+  },
+  "sustained_capacity": {
+    "passed": true,
+    "requests": 588,
+    "errors": 0,
+    "median_decode_tok_s": 24.09171358042076,
+    "p95_ttft_s": 1.9667807669611648,
+    "p95_e2e_s": 12.865266330016311,
+    "aggregate_output_tok_s": 83.10041512302742
+  },
+  "long_context": {
+    "passed": true,
+    "prompt_tokens": 130831,
+    "completion_tokens": 6,
+    "elapsed_s": 116.47525285696611
+  },
+  "overload": {
+    "request_count": 8,
+    "accepted_200": 4,
+    "rejected_429": 4,
+    "unexpected_status_count": 0,
+    "retry_after_missing": 0,
+    "p50_429_headers_ms": 28.752456506481394,
+    "p95_429_headers_ms": 28.826103953178972,
+    "max_429_headers_ms": 28.826103953178972
+  },
+  "public_api_passed": true,
+  "portal_passed": true,
+  "direct_route": {
+    "status": 200,
+    "model": "nvidia/Qwen3.8-27B-NVFP4",
+    "has_completion": true
+  },
+  "inflight_stream_survived_cutover": true,
+  "rollback_aggregator": "model-aggregator-qwen-recovery",
+  "limitations": [
+    "Limited measured configuration search, not a global optimum claim.",
+    "EAGLE-4 wheel investigated was x86_64-only; Spark is ARM64.",
+    "8192-token prefill autotuning stalled; 2048-token chunks succeeded."
+  ],
+  "kernel_log_check": {
+    "checked_utc": "2026-10-25T07:05:36.829083+00:00",
+    "node": "spark-01",
+    "serving_window_since_utc": "2026-10-25T06:03:00Z",
+    "serving_kernel_faults": [],
+    "startup_allocation_warning": {
+      "utc": "2026-10-25T05:53:20Z",
+      "message": "NVRM _memdescAllocInternal returned NV_ERR_NO_MEMORY during startup autotuning. Engine subsequently became ready with zero restarts.",
+      "engine_restart": false
+    }
+  },
+  "public_single_user": {
+    "passed": true,
+    "requests": 9,
+    "errors": 0,
+    "median_decode_tok_s": 27.443146228712934,
+    "p95_ttft_s": 0.2864374170312658,
+    "p95_e2e_s": 10.617334175971337,
+    "aggregate_output_tok_s": 26.869155921826763
+  },
+  "existing_model_cutover_observation": {
+    "passed": true,
+    "rounds": 61,
+    "duration_s": 1801.2
+  },
+  "completed_utc": "2026-10-25T07:06:45.432332+00:00",
+  "post_publication_observation": {
+    "passed": true,
+    "rounds": 61,
+    "duration_s": 1802.0,
+    "worker_restarts": 0,
+    "readiness_drops": 0,
+    "thermal_throttling_samples": 0,
+    "node_pressure_samples": 0
+  }
+}

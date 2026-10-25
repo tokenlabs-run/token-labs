@@ -1,5 +1,11 @@
 # Qwen3.6 35B A3B NVFP4 — Dynamo
 
+The DGX Dynamo 1.6.0 upgrade is tracked in the
+[upgrade record](../../../upgrades/dynamo-1.6.0/README.md), with
+[image build instructions](../../../upgrades/dynamo-1.6.0/BUILD_IMAGES.md).
+That change has an explicitly approved one-time downtime exception; the normal
+rollout rules below still apply to other changes.
+
 These candidate manifests serve `nvidia/Qwen3.6-35B-A3B-NVFP4`.
 
 | File | Graph | Runtime |

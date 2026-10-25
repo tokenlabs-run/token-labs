@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codex-catalog-blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codex-catalog
+      slot: blue
+  template:
+    metadata:
+      labels:
+        app: codex-catalog
+        slot: blue
+    spec:
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/hostname: controller
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: catalog
+        image: docker.io/library/python@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
+        command: [python3, /app/catalog.py]
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            cpu: 25m
+            memory: 32Mi
+          limits:
+            cpu: 250m
+            memory: 128Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: [ALL]
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          periodSeconds: 20
+        volumeMounts:
+        - name: code
+          mountPath: /app
+          readOnly: true
+        - name: auth
+          mountPath: /auth
+          readOnly: true
+      volumes:
+      - name: code
+        configMap:
+          name: codex-catalog-code
+      - name: auth
+        secret:
+          secretName: codex-catalog-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codex-catalog-blue
+spec:
+  selector:
+    app: codex-catalog
+    slot: blue
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codex-catalog
+spec:
+  selector:
+    app: codex-catalog
+    slot: blue
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

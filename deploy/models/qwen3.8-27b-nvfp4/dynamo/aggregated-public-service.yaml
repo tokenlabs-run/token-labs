@@ -1,0 +1,16 @@
+# Apply after the operator graph passes inference checks. This is the stable aggregator backend.
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen38-nvfp4
+  namespace: token-labs
+  labels:
+    token-labs/model: 'true'
+spec:
+  selector:
+    nvidia.com/dynamo-graph-deployment-name: qwen38-nvfp4-dynamo-agg
+    nvidia.com/dynamo-component-type: frontend
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

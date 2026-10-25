@@ -1,0 +1,83 @@
+{
+  "utc": "2026-10-23T20:43:23.930183+00:00",
+  "pods": [
+    {
+      "pod": "qwen36-nvfp4-dynamo-agg-0-vllmworker-9zk8s",
+      "node": "spark-02",
+      "containers": [
+        {
+          "name": "main",
+          "versions": {
+            "ai-dynamo": "1.6.0",
+            "ai-dynamo-runtime": "1.6.0",
+            "vllm": "0.31.0",
+            "torch": "2.13.0+cu130"
+          },
+          "image_id": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+          "ready": true,
+          "restarts": 0
+        },
+        {
+          "name": "sidecar-frontend",
+          "versions": {
+            "ai-dynamo": "1.6.0",
+            "ai-dynamo-runtime": "1.6.0",
+            "vllm": "0.31.0",
+            "torch": "2.13.0+cu130"
+          },
+          "image_id": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+          "ready": true,
+          "restarts": 0
+        }
+      ]
+    },
+    {
+      "pod": "qwen36-nvfp4-frontend-blue-76c579b968-2f969",
+      "node": "spark-02",
+      "containers": [
+        {
+          "name": "main",
+          "versions": {
+            "ai-dynamo": "1.6.0",
+            "ai-dynamo-runtime": "1.6.0",
+            "vllm": "0.31.0",
+            "torch": "2.13.0+cu130"
+          },
+          "image_id": "docker.io/elizabetht/dynamo@sha256:4a317828d3fb5f4eb1ae433ddfbca8dbbaeacd1eec36333bec3e99409a1e82f4",
+          "ready": true,
+          "restarts": 0
+        }
+      ]
+    },
+    {
+      "pod": "flint-nvfp4-vllm-green-5b64f9744b-x8hvl",
+      "node": "spark-01",
+      "containers": [
+        {
+          "name": "vllm",
+          "versions": {
+            "ai-dynamo": "1.6.0",
+            "ai-dynamo-runtime": "1.6.0",
+            "vllm": "0.32.0.dev0+pr62938.aed08d76.precompiled",
+            "torch": "2.14.0+cu130"
+          },
+          "image_id": "docker.io/elizabetht/dynamo@sha256:89a89d1648860f0806d19fbede6f9d7640c6c9b49895b1bf0cd542ce9a224a18",
+          "ready": true,
+          "restarts": 0
+        },
+        {
+          "name": "dynamo-frontend",
+          "versions": {
+            "ai-dynamo": "1.6.0",
+            "ai-dynamo-runtime": "1.6.0",
+            "vllm": "0.32.0.dev0+pr62938.aed08d76.precompiled",
+            "torch": "2.14.0+cu130"
+          },
+          "image_id": "docker.io/elizabetht/dynamo@sha256:89a89d1648860f0806d19fbede6f9d7640c6c9b49895b1bf0cd542ce9a224a18",
+          "ready": true,
+          "restarts": 0
+        }
+      ]
+    }
+  ]
+}

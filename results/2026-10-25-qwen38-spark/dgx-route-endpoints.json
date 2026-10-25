@@ -1,0 +1,67 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "addressType": "IPv4",
+      "apiVersion": "discovery.k8s.io/v1",
+      "endpoints": [
+        {
+          "addresses": [
+            "10.244.2.75"
+          ],
+          "conditions": {
+            "ready": true,
+            "serving": true,
+            "terminating": false
+          },
+          "nodeName": "spark-01",
+          "targetRef": {
+            "kind": "Pod",
+            "name": "model-aggregator-qwen38-blue-796b54dd56-sk84r",
+            "namespace": "token-labs",
+            "uid": "84750c3e-b32e-4f6b-b306-bffe4cd2dcee"
+          }
+        }
+      ],
+      "kind": "EndpointSlice",
+      "metadata": {
+        "annotations": {
+          "endpoints.kubernetes.io/last-change-trigger-time": "2026-10-25T05:31:21Z"
+        },
+        "creationTimestamp": "2026-04-14T21:42:50Z",
+        "generateName": "model-aggregator-",
+        "generation": 238,
+        "labels": {
+          "app": "model-aggregator",
+          "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+          "kubernetes.io/service-name": "model-aggregator"
+        },
+        "name": "model-aggregator-btz6r",
+        "namespace": "token-labs",
+        "ownerReferences": [
+          {
+            "apiVersion": "v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "Service",
+            "name": "model-aggregator",
+            "uid": "0c12fd71-15d7-4d8d-82d5-c34a34bcf0e5"
+          }
+        ],
+        "resourceVersion": "131365160",
+        "uid": "f71439e6-1f56-4f60-9d18-46e922428deb"
+      },
+      "ports": [
+        {
+          "name": "http",
+          "port": 8000,
+          "protocol": "TCP"
+        }
+      ]
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

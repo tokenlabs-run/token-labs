@@ -1,0 +1,84 @@
+{
+  "apiVersion": "batch/v1",
+  "kind": "Job",
+  "metadata": {
+    "name": "qwen38-model-prefetch",
+    "namespace": "token-labs"
+  },
+  "spec": {
+    "backoffLimit": 2,
+    "ttlSecondsAfterFinished": 86400,
+    "template": {
+      "spec": {
+        "restartPolicy": "OnFailure",
+        "automountServiceAccountToken": false,
+        "nodeSelector": {
+          "kubernetes.io/hostname": "spark-01"
+        },
+        "containers": [
+          {
+            "name": "download-model",
+            "image": "docker.io/elizabetht/dynamo@sha256:89a89d1648860f0806d19fbede6f9d7640c6c9b49895b1bf0cd542ce9a224a18",
+            "command": [
+              "python3",
+              "-c"
+            ],
+            "args": [
+              "from huggingface_hub import snapshot_download; snapshot_download('nvidia/Qwen3.8-27B-NVFP4',revision='482ca0f3832238542f8f5295dde86b5f22711d80',cache_dir=\"/model-cache/hub\",max_workers=4)"
+            ],
+            "env": [
+              {
+                "name": "HF_HOME",
+                "value": "/model-cache"
+              },
+              {
+                "name": "DYN_FILE_KV",
+                "value": "/dynamo-discovery"
+              },
+              {
+                "name": "PYTHONUNBUFFERED",
+                "value": "1"
+              },
+              {
+                "name": "HF_TOKEN",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "hf-token",
+                    "key": "HF_TOKEN",
+                    "optional": true
+                  }
+                }
+              }
+            ],
+            "volumeMounts": [
+              {
+                "name": "model-cache",
+                "mountPath": "/model-cache"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "1",
+                "memory": "2Gi"
+              },
+              "limits": {
+                "cpu": "4",
+                "memory": "8Gi"
+              }
+            },
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "volumes": [
+          {
+            "name": "model-cache",
+            "hostPath": {
+              "path": "/home/nvidia/.cache/huggingface",
+              "type": "Directory"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

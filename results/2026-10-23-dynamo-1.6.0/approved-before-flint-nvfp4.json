@@ -1,0 +1,33 @@
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "flint-nvfp4",
+    "namespace": "token-labs"
+  },
+  "spec": {
+    "clusterIP": "10.100.110.70",
+    "clusterIPs": [
+      "10.100.110.70"
+    ],
+    "internalTrafficPolicy": "Cluster",
+    "ipFamilies": [
+      "IPv4"
+    ],
+    "ipFamilyPolicy": "SingleStack",
+    "ports": [
+      {
+        "name": "http",
+        "port": 8000,
+        "protocol": "TCP",
+        "targetPort": "http"
+      }
+    ],
+    "selector": {
+      "token-labs/model-id": "flint-nvfp4",
+      "token-labs/slot": "green"
+    },
+    "sessionAffinity": "None",
+    "type": "ClusterIP"
+  }
+}

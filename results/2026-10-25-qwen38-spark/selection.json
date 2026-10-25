@@ -1,0 +1,41 @@
+{
+  "selected": "auto-mtp3-batch2048",
+  "objective": "Single-user median decode speed and TTFT on Spark-01, text-only",
+  "comparison": [
+    {
+      "config": "auto-mtp3-batch2048",
+      "passed": true,
+      "requests": 9,
+      "errors": 0,
+      "median_decode_tok_s": 27.832008336900245,
+      "p95_ttft_s": 0.22440583299612626,
+      "p95_e2e_s": 10.433929328981321,
+      "aggregate_output_tok_s": 27.401198479096266
+    },
+    {
+      "config": "marlin-mtp3-batch2048",
+      "passed": true,
+      "requests": 9,
+      "errors": 0,
+      "median_decode_tok_s": 27.284112486473955,
+      "p95_ttft_s": 0.22709010198013857,
+      "p95_e2e_s": 10.11761886801105,
+      "aggregate_output_tok_s": 26.941880925214587
+    },
+    {
+      "config": "auto-mtp5-batch2048",
+      "passed": true,
+      "requests": 9,
+      "errors": 0,
+      "median_decode_tok_s": 26.448141934358702,
+      "p95_ttft_s": 0.25981765700271353,
+      "p95_e2e_s": 10.29058917297516,
+      "aggregate_output_tok_s": 27.490043602437378
+    }
+  ],
+  "limitations": [
+    "Limited measured configuration search, not a global optimum claim.",
+    "EAGLE-4 wheel investigated was x86_64-only; Spark is ARM64.",
+    "8192-token prefill autotuning stalled; 2048-token chunks succeeded."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "verified_at_utc": "2026-10-25T03:42:07.958204+00:00",
+  "root_cause": "Controller image filesystem below 15% free caused DiskPressure, eviction, and failed gateway scheduling; missing pinned-local AI controller image then prevented recovery.",
+  "repairs": [
+    "Cleared regenerable uv and Go caches and unused Docker build cache.",
+    "Removed unused local Docker image copies after verifying exact published digests.",
+    "Restored original AI controller image digest and pinned both references against CRI garbage collection.",
+    "Deleted Flint Deployment, pod and dedicated Services; removed only Flint AI gateway rule and backend resources.",
+    "Validated separate Qwen-only aggregator with empty static provider catalog; atomically switched stable Service selector."
+  ],
+  "controller_disk_pressure": "False",
+  "available_gib": 136.29,
+  "public_models_status": 200,
+  "public_models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+        "object": "model",
+        "owned_by": "token-labs"
+      }
+    ]
+  },
+  "verification": {
+    "candidate_and_stable_internal_catalog_auth_chat_stream": "passed",
+    "public_model_discovery": "passed",
+    "live_browser_model_selector_and_cors": "passed",
+    "public_provider_anonymous_rejection": "401 passed",
+    "authenticated_public_inference": "passed after explicit user authorization: authenticated catalog, non-streaming completion, and complete streaming response with DONE"
+  },
+  "retained_rollback": "model-aggregator-flint-green remains running but is not selected by the stable Service; it is a CPU aggregator, not the deleted Flint model.",
+  "public_inference_verified_at_utc": "2026-10-25T04:53:28.889879+00:00"
+}
