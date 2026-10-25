@@ -1,7 +1,30 @@
-# Live model discovery
+# Shared model aggregator
+
+This directory is the source of truth for the shared production aggregator.
+`deployment.yaml` contains the active Deployment, backend allowlist, concurrency
+limits, RBAC, stable and diagnostic Services, and HTTPRoute. Both Qwen3.6 and
+Qwen3.8 use this instance. The live name `model-aggregator-qwen38-blue` is retained
+to avoid replacing resources during this repository consolidation.
+
+| Model | Stable backend Service | Admission limit |
+| --- | --- | --- |
+| `nvidia/Qwen3.6-35B-A3B-NVFP4` | `qwen36-nvfp4-frontend` | Shared global limit of 16 |
+| `nvidia/Qwen3.8-27B-NVFP4` | `qwen38-nvfp4` | 4 |
+
+Edit `MODEL_BACKEND_SERVICES` and `MODEL_CONCURRENCY_LIMITS` in
+`deployment.yaml` when preparing a new aggregator candidate. Model worker and
+frontend manifests remain under their model directories. Model IDs are discovered
+from backend responses rather than maintained in a second static list.
+
+The ConfigMap names match the active Deployment, including their historical names.
+Kustomize suffix hashing is disabled to preserve the current pod template. For a
+code or catalog change, choose new ConfigMap names and deploy a separate candidate;
+never overwrite the ConfigMaps mounted by the active Deployment.
+
+## Live model discovery
 
 Render with `kubectl kustomize deploy/platform/model-aggregator`. Kustomize bundles
-`aggregator.py` into a versioned ConfigMap. For production changes, deploy a separate
+`aggregator.py` into the pinned ConfigMap. For production changes, deploy a separate
 aggregator candidate and diagnostic Service, verify it, then change only the stable
 Service selector. Keep the previous aggregator ready for rollback; do not apply a
 pod-template change to the Deployment selected by the production Service.
@@ -9,8 +32,9 @@ pod-template change to the Deployment selected by the production Service.
 Every 28 seconds the aggregator lists Services in its own namespace and queries
 `/v1/models` on llm-d decode services, Dynamo frontends, and any other serving
 Service labeled `token-labs/model=true`. `MODEL_BACKEND_SERVICES` optionally limits
-those candidates to comma-separated Service names in the same namespace. Production
-leaves this allowlist empty: new eligible Services are discovered automatically,
+those candidates to comma-separated Service names in the same namespace. The active production manifest uses an explicit allowlist that includes both
+Qwen backend Services and preserves existing historical backend names. With an
+empty allowlist, new eligible Services are discovered automatically,
 and only successful backend `/v1/models` responses contribute model IDs and chat
 routes. A running pod alone is not sufficient. Unavailable or removed backends
 leave the catalog on the next refresh. Dynamo frontends and llm-d decode Services
@@ -18,7 +42,8 @@ are recognized by their selectors; other model Services require the label
 `token-labs/model=true`. This also discovers eligible experimental backends: use
 a separate namespace if they must stay outside the public catalog.
 
-Adding or removing a model does not require an aggregator rollout. Changing
+Adding or removing a model behind an already allowed Service does not require an aggregator rollout.
+Adding a new Service to the explicit allowlist requires a candidate rollout. Changing
 aggregator code or configuration still requires a separate candidate and verified
 Service-selector cutover. An explicit nonempty allowlist remains available for
 installations that need to restrict discovery.
@@ -28,8 +53,8 @@ or removed backends disappear on the next refresh; duplicate model IDs merge.
 A failed Kubernetes discovery returns 503, never a static or stale fallback.
 
 `GET /openrouter/models` serves the checked-in OpenRouter schema-2.4 document
-from `models.json`. Kustomize packages it in the versioned
-`openrouter-model-document` ConfigMap and rolls the Deployment when it changes.
+from `models.json`. Kustomize packages it in the pinned catalog ConfigMap.
+Catalog changes require a new ConfigMap and candidate rollout.
 Validate every edit against OpenRouter's current provider schema before deploy.
 The response is served exactly as checked in and does not depend on live model
 discovery. Update `is_ready` explicitly when enabling or disabling OpenRouter
@@ -37,7 +62,7 @@ traffic. Pricing is deliberately omitted until
 commercial terms are approved; never publish placeholder prices. The static
 catalog is currently empty: retired Qwen entries were removed, and GLM provider
 metadata has not been approved. Live `/v1/models` and authenticated
-`/openrouter/v1/models` advertise GLM from backend discovery.
+`/openrouter/v1/models` advertise Qwen3.6 and Qwen3.8 from backend discovery.
 
 OpenRouter should use `https://api.tokenlabs.run/openrouter/v1` as its API base.
 Both `/models` and `/chat/completions` under that base require a bearer key from
@@ -57,7 +82,7 @@ Inference routes and SecurityPolicies are unchanged.
 Run tests with `python -m unittest discover -s deploy/platform/model-aggregator`
 in an environment with FastAPI and httpx installed.
 
-## GLM-only rollout — 2026-09-29
+## Historical GLM-only rollout — 2026-09-29
 
 The initial GLM-only rollout switched the stable `model-aggregator` Service to
 `app=model-aggregator-glm47-candidate`. The previous
@@ -75,10 +100,10 @@ the stream. `/openrouter/models` returned the intentionally empty static catalog
 No GPU worker template was changed or restarted. These are functional checks,
 not a model quality or load-capacity certification.
 
-## Dynamic discovery follow-up — 2026-09-29
+## Historical dynamic discovery follow-up — 2026-09-29
 
 The operator requested a model-neutral aggregator with automatic discovery.
-The stable Service now selects `app=model-aggregator-candidate` again. This
+At that time, the stable Service selected `app=model-aggregator-candidate` again. This
 Deployment has an empty `MODEL_BACKEND_SERVICES` value and uses the same
 application code as before. Updating that environment replaced the old pod;
 future backend additions/removals are handled by discovery without restarting

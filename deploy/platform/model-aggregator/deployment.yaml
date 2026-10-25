@@ -1,16 +1,10 @@
-# Model Aggregator — merges /v1/models from all inference backends
-# Runs on controller node (no GPU needed). Gateway /v1/models route points here.
-# Discovers live model IDs dynamically from eligible serving Services.
-# The stable Service selects the model-neutral candidate. Code changes require
-# a separate candidate; do not update the active Deployment template in place.
-
----
+# Shared production aggregator for Qwen3.6 and Qwen3.8.
+# Preserve live resource names; changes require a separate candidate and Service cutover.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: model-aggregator
   namespace: token-labs
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -18,10 +12,13 @@ metadata:
   name: model-aggregator-service-reader
   namespace: token-labs
 rules:
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["get", "list"]
-
+- apiGroups:
+  - ''
+  resources:
+  - services
+  verbs:
+  - get
+  - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -36,88 +33,117 @@ roleRef:
   kind: Role
   name: model-aggregator-service-reader
   apiGroup: rbac.authorization.k8s.io
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: model-aggregator-candidate
   namespace: token-labs
-  labels:
-    app: model-aggregator-candidate
+  name: model-aggregator-qwen38-blue
 spec:
+  progressDeadlineSeconds: 600
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: model-aggregator-candidate
+      app: model-aggregator-qwen38-blue
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
   template:
     metadata:
       labels:
-        app: model-aggregator-candidate
+        app: model-aggregator-qwen38-blue
     spec:
-      serviceAccountName: model-aggregator
-      nodeSelector:
-        kubernetes.io/hostname: controller
-      tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-        effect: NoSchedule
       containers:
-      - name: aggregator
-        image: python:3.11-slim
-        command: ["/bin/sh", "-c"]
-        args:
-        - |
-          pip install fastapi uvicorn httpx --quiet
-          uvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app
-        ports:
-        - containerPort: 8000
-          name: http
+      - args:
+        - 'pip install fastapi==0.158.1 uvicorn==0.54.0 httpx==0.28.1 --quiet
+
+          exec uvicorn aggregator:app --host 0.0.0.0 --port 8000 --app-dir /app
+
+          '
+        command:
+        - /bin/sh
+        - -c
         env:
         - name: MODEL_BACKEND_SERVICES
-          value: ""  # Discover eligible backends dynamically; no model-specific rollout.
+          value: glm47-flash-agg,muse-glimmer-30b-dynamo-agg-frontend,qwen3-30b-openrouter-sglang,qwen3-30b-openrouter-vllm,qwen36-35b-nvfp4,qwen36-nvfp4-agg,qwen36-nvfp4-dynamo-agg-frontend,qwen36-nvfp4-frontend,qwen38-nvfp4
         - name: OPENROUTER_MODEL_DOCUMENT_PATH
           value: /etc/openrouter/models.json
         - name: OPENROUTER_MAX_CONCURRENCY
-          value: "16"
+          value: '16'
         - name: OPENROUTER_API_KEY
           valueFrom:
             secretKeyRef:
-              name: openrouter-provider-auth
               key: api-key
+              name: openrouter-provider-auth
               optional: true
-        resources:
-          requests:
-            cpu: "100m"
-            memory: 128Mi
-          limits:
-            cpu: "500m"
-            memory: 256Mi
-        readinessProbe:
+        - name: MODEL_CONCURRENCY_LIMITS
+          value: '{"nvidia/Qwen3.8-27B-NVFP4": 4}'
+        image: docker.io/library/python@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
           httpGet:
             path: /health
             port: 8000
+            scheme: HTTP
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: aggregator
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
         volumeMounts:
-        - name: code
-          mountPath: /app
-        - name: openrouter-model-document
-          mountPath: /etc/openrouter
-          readOnly: true
-      volumes:
-      - name: code
-        configMap:
-          name: model-aggregator-code
-      - name: openrouter-model-document
-        configMap:
+        - mountPath: /app
+          name: code
+        - mountPath: /etc/openrouter
           name: openrouter-model-document
-
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: spark-01
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: model-aggregator
+      serviceAccountName: model-aggregator
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: flint-provider-code-f8d1f27542
+        name: code
+      - configMap:
+          defaultMode: 420
+          name: provider-catalog-without-flint-20261025
+        name: openrouter-model-document
 ---
 apiVersion: v1
 kind: Service
@@ -129,28 +155,25 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: model-aggregator-candidate
+    app: model-aggregator-qwen38-blue
   ports:
   - name: http
     port: 8000
     targetPort: 8000
-
 ---
-# Direct access for candidate validation and rollback diagnostics.
 apiVersion: v1
 kind: Service
 metadata:
-  name: model-aggregator-candidate
   namespace: token-labs
+  name: model-aggregator-qwen38-blue
+  labels: {}
 spec:
-  type: ClusterIP
   selector:
-    app: model-aggregator-candidate
+    app: model-aggregator-qwen38-blue
   ports:
   - name: http
     port: 8000
-    targetPort: 8000
-
+    targetPort: http
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -174,9 +197,6 @@ spec:
     - path:
         type: Exact
         value: /openrouter/models
-    - path:
-        type: Exact
-        value: /v1/chat/completions
     - path:
         type: Exact
         value: /openrouter/v1/chat/completions

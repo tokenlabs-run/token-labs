@@ -1,3 +1,4 @@
+# Names match the active pod. For content changes use new immutable names and a candidate rollout.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: token-labs
@@ -5,9 +6,12 @@ resources:
 - deployment.yaml
 - model-list-policy.yaml
 configMapGenerator:
-- name: model-aggregator-code
+- name: flint-provider-code-f8d1f27542
   files:
   - aggregator.py
-- name: openrouter-model-document
+- name: provider-catalog-without-flint-20261025
   files:
   - models.json
+generatorOptions:
+  disableNameSuffixHash: true
+  immutable: true
