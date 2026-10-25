@@ -38,14 +38,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: token-labs
-  name: model-aggregator-qwen38-blue
+  name: model-aggregator-responses-green
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: model-aggregator-qwen38-blue
+      app: model-aggregator-responses-green
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -54,7 +54,7 @@ spec:
   template:
     metadata:
       labels:
-        app: model-aggregator-qwen38-blue
+        app: model-aggregator-responses-green
     spec:
       containers:
       - args:
@@ -138,7 +138,7 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          name: flint-provider-code-f8d1f27542
+          name: aggregator-responses-2549de8e457e
         name: code
       - configMap:
           defaultMode: 420
@@ -155,7 +155,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: model-aggregator-qwen38-blue
+    app: model-aggregator-responses-green
   ports:
   - name: http
     port: 8000
@@ -165,11 +165,11 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: token-labs
-  name: model-aggregator-qwen38-blue
+  name: model-aggregator-responses-green
   labels: {}
 spec:
   selector:
-    app: model-aggregator-qwen38-blue
+    app: model-aggregator-responses-green
   ports:
   - name: http
     port: 8000

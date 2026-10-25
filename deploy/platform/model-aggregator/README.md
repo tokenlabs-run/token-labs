@@ -3,8 +3,8 @@
 This directory is the source of truth for the shared production aggregator.
 `deployment.yaml` contains the active Deployment, backend allowlist, concurrency
 limits, RBAC, stable and diagnostic Services, and HTTPRoute. Both Qwen3.6 and
-Qwen3.8 use this instance. The live name `model-aggregator-qwen38-blue` is retained
-to avoid replacing resources during this repository consolidation.
+Qwen3.8 use this instance. The active Deployment is `model-aggregator-responses-green`. The previous
+`model-aggregator-qwen38-blue` remains ready for rollback.
 
 | Model | Stable backend Service | Admission limit |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Service labeled `token-labs/model=true`. `MODEL_BACKEND_SERVICES` optionally lim
 those candidates to comma-separated Service names in the same namespace. The active production manifest uses an explicit allowlist that includes both
 Qwen backend Services and preserves existing historical backend names. With an
 empty allowlist, new eligible Services are discovered automatically,
-and only successful backend `/v1/models` responses contribute model IDs and chat
+and only successful backend `/v1/models` responses contribute model IDs and inference
 routes. A running pod alone is not sufficient. Unavailable or removed backends
 leave the catalog on the next refresh. Dynamo frontends and llm-d decode Services
 are recognized by their selectors; other model Services require the label
@@ -81,6 +81,38 @@ Inference routes and SecurityPolicies are unchanged.
 
 Run tests with `python -m unittest discover -s deploy/platform/model-aggregator`
 in an environment with FastAPI and httpx installed.
+
+## Native Responses API
+
+Rollout evidence is in `results/2026-10-25-qwen38-responses-gateway/`.
+
+`POST /v1/responses` forwards the request to the discovered model backend's
+native Responses endpoint. Requests, namespace tools, tool-result history, and
+SSE events retain their native format. This endpoint shares model and global
+admission limits with Chat Completions. It does not translate OpenRouter
+reasoning controls or add a Chat Completions adapter. Backends must implement
+Responses themselves.
+
+Qwen3.8's Dynamo frontend supports Responses. The previous aggregator had no
+Responses route, so the public gateway returned 404 despite a working backend.
+The gateway fix adds that route without changing model workers or frontends.
+The existing gateway model route already points to aggregator admission control.
+
+The scripts in `scripts/qwen38-27b/` render an isolated CPU aggregator candidate,
+validate Responses and mixed-protocol admission, and guard the selector switch:
+
+```bash
+python3 scripts/qwen38-27b/prepare_responses_gateway.py --output /tmp/responses-evidence
+python3 scripts/qwen38-27b/check_responses_gateway.py --url <candidate-origin> --output /tmp/responses-evidence/conformance.json
+python3 scripts/qwen38-27b/check_responses_admission.py --url <candidate-origin> --output /tmp/responses-evidence/admission.json
+```
+
+`prepare_responses_gateway.py` renders files without applying them. The promotion
+script also requires the existing authenticated chat checks and a real Codex
+turn against the candidate. It defaults to a server-side dry run. Readiness,
+code identity, unchanged catalogs, and the previous ready endpoint are checked
+immediately before the selector change. Retain the previous Deployment and
+ConfigMap throughout observation and rollback.
 
 ## Historical GLM-only rollout — 2026-09-29
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Verify both models using the provider credential in memory only; no redirects."""
 import argparse,base64,json,pathlib,subprocess,time,urllib.error,urllib.request
-p=argparse.ArgumentParser();p.add_argument('--url',default='https://api.tokenlabs.run');p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--existing-only',action='store_true');a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--url',default='https://api.tokenlabs.run');p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--existing-only',action='store_true');p.add_argument('--service',default='model-aggregator-qwen38-blue');a=p.parse_args()
 k=['kubectl','--context=kubernetes-admin@kubernetes','-n','token-labs']
-service=json.loads(subprocess.check_output(k+['get','svc','model-aggregator-qwen38-blue','-o','json']))
+service=json.loads(subprocess.check_output(k+['get','svc',a.service,'-o','json']))
 assert a.url in {'https://api.tokenlabs.run','http://'+service['spec']['clusterIP']+':8000'}
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise RuntimeError('Redirect refused')

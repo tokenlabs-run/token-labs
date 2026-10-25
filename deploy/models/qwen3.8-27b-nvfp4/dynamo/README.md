@@ -83,7 +83,7 @@ its p95 request latency was 12.87 seconds.
 ## Services and evidence
 
 `qwen38-nvfp4-dynamo-agg` is the diagnostic model Service. `qwen38-nvfp4` is the stable
-model Service. `model-aggregator-qwen38-blue` is the active shared aggregator for both models.
+model Service. `model-aggregator-responses-green` is the active shared aggregator for both models.
 Its Deployment, discovery allowlist, concurrency limits, Services and ConfigMaps
 are maintained in `deploy/platform/model-aggregator/`.
 The existing aggregator remains available for rollback. The public portal reads
