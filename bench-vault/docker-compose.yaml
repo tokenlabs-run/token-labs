@@ -1,0 +1,19 @@
+# MLflow tracking server for bench-vault.
+#   docker compose up -d   ->  UI at http://localhost:5000
+# Runs log with --mlflow when MLFLOW_TRACKING_URI=http://localhost:5000.
+# Note (DGX Spark / GB10, ARM64): if the official image is unavailable for
+# your platform, run MLflow directly on the controller node instead:
+#   pip install mlflow && mlflow server --host 0.0.0.0 --port 5000 \
+#     --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow-data:/mlflow
+    restart: unless-stopped

@@ -1,0 +1,20 @@
+run_name: "qwen3-32b__gb10__vllm-0.11.0__fp8__tp2__c32__isl1024-osl256"
+timestamp_utc: "2026-10-26T22:11:52.166669+00:00"
+model: "Qwen/Qwen3-32B"
+engine: "vllm"
+engine_version: "0.11.0"
+gpu: "GB10"
+quantization: "fp8"
+parallelism:
+  tp: 2
+  pp: 1
+  dp: 1
+harness: "vllm-bench"
+harness_version: "0.11.0"
+metric_schema: "vllm-bench-v1"
+workload:
+  concurrency: 32
+  input_tokens: 1024
+  output_tokens: 256
+  arrival_pattern: "constant"
+notes: ""
