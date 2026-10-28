@@ -254,18 +254,21 @@ async def list_openrouter_models():
     return JSONResponse(document, headers=headers)
 
 
-async def proxy_chat_completions(request: Request):
+async def proxy_inference(request: Request, path: str):
     """Bound queueing and proxy an accepted request to its discovered backend."""
     try:
         payload = await request.json()
     except (ValueError, json.JSONDecodeError):
         return JSONResponse({'error': {'message': 'Invalid JSON'}}, status_code=400)
     model = payload.get('model') if isinstance(payload, dict) else None
+    if not isinstance(model, str):
+        return JSONResponse({'error': {'message': 'model must be a string'}}, status_code=400)
     backend = _model_backends.get(model)
     if backend is None:
         return JSONResponse({'error': {'message': 'Model is not ready'}}, status_code=404)
     try:
-        payload = prepare_openrouter_payload(payload)
+        if path == '/v1/chat/completions':
+            payload = prepare_openrouter_payload(payload)
     except ValueError as error:
         return JSONResponse({'error': {'message': str(error)}}, status_code=400)
     if not await admit(model):
@@ -279,7 +282,7 @@ async def proxy_chat_completions(request: Request):
     try:
         upstream = await _http_client.send(
             _http_client.build_request(
-                'POST', f'{backend}/v1/chat/completions', json=payload,
+                'POST', f'{backend}{path}', json=payload,
                 headers={'accept': request.headers.get('accept', 'application/json')}),
             stream=True,
         )
@@ -315,7 +318,13 @@ async def proxy_chat_completions(request: Request):
 @app.post('/v1/chat/completions')
 async def direct_chat_completions(request: Request):
     """Proxy the public Token Labs API using the same live catalog mapping."""
-    return await proxy_chat_completions(request)
+    return await proxy_inference(request, '/v1/chat/completions')
+
+
+@app.post('/v1/responses')
+async def direct_responses(request: Request):
+    """Preserve native Responses payloads and SSE through shared admission control."""
+    return await proxy_inference(request, '/v1/responses')
 
 
 @app.post('/openrouter/v1/chat/completions')
@@ -327,7 +336,7 @@ async def openrouter_chat_completions(request: Request):
     if not provider_authorized(request.headers.get('authorization')):
         return JSONResponse({'error': {'message': 'Unauthorized'}}, status_code=401,
                             headers={'WWW-Authenticate': 'Bearer'})
-    return await proxy_chat_completions(request)
+    return await proxy_inference(request, '/v1/chat/completions')
 
 
 @app.get('/health')

@@ -169,7 +169,7 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
                                 _model_backends={'RecursiveSI/flint': 'http://flint'},
                                 _inflight=0, _model_inflight={}):
                 with self.assertRaises(asyncio.CancelledError):
-                    await a.proxy_chat_completions(request)
+                    await a.proxy_inference(request, '/v1/chat/completions')
                 self.assertEqual(a._inflight, 0)
                 self.assertEqual(a._model_inflight, {})
 
@@ -192,7 +192,7 @@ class DiscoveryTests(unittest.IsolatedAsyncioTestCase):
                                 _model_backends={'RecursiveSI/flint': 'http://flint'},
                                 MODEL_CONCURRENCY_LIMITS={'RecursiveSI/flint': 1},
                                 _inflight=0, _model_inflight={}):
-                response = await a.proxy_chat_completions(request)
+                response = await a.proxy_inference(request, '/v1/chat/completions')
                 self.assertFalse(await a.admit('RecursiveSI/flint'))
                 await response.body_iterator.__anext__()
                 await response.body_iterator.aclose()
